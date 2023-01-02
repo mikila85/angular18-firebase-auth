@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "team-bldr": {
+      "hosting": {
+        "team-bldr": [
+          "team-bldr"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "team-bldr"
+  }
+}
