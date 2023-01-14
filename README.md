@@ -1,3 +1,6 @@
+### AngularFire Angular v15 support issue
+ https://github.com/angular/angularfire/issues/3290
+
 # TeamBldr
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.0.4.
