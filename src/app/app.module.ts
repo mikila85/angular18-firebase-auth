@@ -15,6 +15,7 @@ import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { EventComponent } from './event/event.component';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 
@@ -28,7 +29,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   declarations: [
     AppComponent,
     HomeComponent,
-    LoginComponent
+    LoginComponent,
+    EventComponent
   ],
   imports: [
     BrowserModule,
