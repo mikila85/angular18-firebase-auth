@@ -1,1 +1,33 @@
-<p>event works!</p>
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>New Event</mat-card-title>
+    </mat-card-header>
+    <div fxLayout='row'>
+        <mat-form-field fxFlex="45%">
+            <mat-label>Choose a date</mat-label>
+            <input matInput [min]="minDate" [matDatepicker]="picker">
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <span fxFlex="10%"></span>
+        <mat-form-field fxFlex="45%">
+            <input type="time" matInput placeholder="Start Time" [ngModel]="eventTime" name="startTime"
+                (ngModelChange)="updateEventTime($event)">
+        </mat-form-field>
+    </div>
+    <mat-form-field>
+        <mat-label>Title</mat-label>
+        <input matInput name="eventTitle">
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Description</mat-label>
+        <textarea matInput name="eventDescription"></textarea>
+    </mat-form-field>
+
+    <mat-card-actions>
+        <button mat-raised-button color="primary">
+            COPY INVITE
+        </button>
+    </mat-card-actions>
+</mat-card>

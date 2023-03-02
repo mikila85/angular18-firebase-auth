@@ -21,6 +21,8 @@ import { LoginComponent } from './login/login.component';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -61,9 +63,12 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatButtonModule,
     MatCardModule,
     MatInputModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
   ],
   providers: [
-    ScreenTrackingService, UserTrackingService
+    ScreenTrackingService, UserTrackingService,
+    { provide: MAT_DATE_LOCALE, useValue: 'en-AU' },
   ],
   bootstrap: [AppComponent]
 })
