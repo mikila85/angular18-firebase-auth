@@ -1,1 +1,17 @@
-<button mat-raised-button color="accent" routerLink="/event">Create New Event</button>
+<mat-card>
+    <mat-card-actions>
+        <button mat-raised-button color="accent" routerLink="/event">Create New Event</button>
+    </mat-card-actions>
+</mat-card>
+
+<mat-nav-list>
+    <a mat-list-item [routerLink]="['/event', teamEvent.id]" *ngFor="let teamEvent of teamEvents">
+        <img matListItemAvatar [src]="teamEvent.icon">
+        <h3 matListItemTitle>{{teamEvent.title}}</h3>
+        <p matListItemLine>
+            {{teamEventDateTime(teamEvent.dateTime) | date:'fullDate'}} at
+            {{teamEventDateTime(teamEvent.dateTime) | date:'shortTime'}}
+        </p>
+        <p>{{teamEvent.icon}}</p>
+    </a>
+</mat-nav-list>

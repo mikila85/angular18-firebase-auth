@@ -5,7 +5,8 @@
     <div fxLayout='row'>
         <mat-form-field fxFlex="55%">
             <mat-label>Choose a date</mat-label>
-            <input matInput [min]="minDate" [matDatepicker]="picker">
+            <input matInput [min]="minDate" [matDatepicker]="picker" [ngModel]="eventDate"
+                (dateChange)="updateEventDate($event.value)">
             <mat-hint>MM/DD/YYYY</mat-hint>
             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
@@ -30,5 +31,9 @@
         <button mat-raised-button color="primary">
             COPY INVITE
         </button>
+        <button mat-raised-button color="warn" (click)="deleteEvent()">
+            DELETE
+        </button>
+
     </mat-card-actions>
 </mat-card>
