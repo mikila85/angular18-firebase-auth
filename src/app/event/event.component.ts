@@ -17,11 +17,11 @@ export class EventComponent implements OnInit {
   minDate: Date = new Date();
   eventDate: Date = new Date();
   eventTime: string = "";
+  isNewEvent = true;
 
   constructor(
     private auth: AngularFireAuth,
     private afs: AngularFirestore,
-    //private fns: AngularFireFunctions,
     private route: ActivatedRoute,
     private router: Router,
   ) { }
@@ -29,6 +29,7 @@ export class EventComponent implements OnInit {
   ngOnInit(): void {
     const eventId = this.route.snapshot.paramMap.get('eventId');
     if (eventId) {
+      this.isNewEvent = false;
       this.eventId = eventId;
       this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
       this.teamEvent = this.teamEventDoc.valueChanges();

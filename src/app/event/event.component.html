@@ -1,6 +1,6 @@
 <mat-card>
     <mat-card-header>
-        <mat-card-title>New Event</mat-card-title>
+        <mat-card-title>{{isNewEvent ? "New Event" : (teamEvent | async)?.title}}</mat-card-title>
     </mat-card-header>
     <div fxLayout='row'>
         <mat-form-field fxFlex="55%">
