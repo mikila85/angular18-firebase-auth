@@ -27,13 +27,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { EventParticipantsComponent } from './event-participants/event-participants.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     LoginComponent,
-    EventComponent
+    EventComponent,
+    EventParticipantsComponent
   ],
   imports: [
     BrowserModule,

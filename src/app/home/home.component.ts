@@ -23,7 +23,7 @@ export class HomeComponent {
   ) { }
 
   ngOnInit(): void {
-    this.afs.collection<TeamEvent>(`events`)
+    this.afs.collection<TeamEvent>(`events`, ref => ref.orderBy('dateTime', 'asc'))
       .valueChanges({ idField: 'id' })
       .subscribe(events => this.teamEvents = events);
   }

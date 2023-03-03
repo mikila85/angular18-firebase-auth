@@ -11,9 +11,10 @@ import { TeamEvent } from '../models/team-event.model';
   styleUrls: ['./event.component.css']
 })
 export class EventComponent implements OnInit {
+  user: firebase.default.User | null = null;
   teamEventDoc: AngularFirestoreDocument<TeamEvent> | undefined;
   teamEvent: Observable<TeamEvent | undefined> | undefined;
-  eventId: string | undefined;
+  eventId: string | null = null;
   minDate: Date = new Date();
   eventDate: Date = new Date();
   eventTime: string = "";
@@ -27,20 +28,22 @@ export class EventComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const eventId = this.route.snapshot.paramMap.get('eventId');
-    if (eventId) {
-      this.isNewEvent = false;
-      this.eventId = eventId;
-      this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
-      this.teamEvent = this.teamEventDoc.valueChanges();
-    }
-    else {
-      console.log('New Event');
-      this.auth.user.subscribe(user => {
-        if (!user) {
-          console.error('User object is falsy');
-          return;
-        }
+    this.eventId = this.route.snapshot.paramMap.get('eventId');
+    this.auth.user.subscribe(user => {
+      if (!user) {
+        console.error('User object is falsy');
+        return;
+      }
+      this.user = user;
+
+      if (this.eventId) {
+        this.isNewEvent = false;
+        this.eventId = this.eventId;
+        this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
+        this.teamEvent = this.teamEventDoc.valueChanges();
+      }
+      else {
+        console.log('New Event');
         this.eventId = this.afs.createId();
         this.afs.collection(`/events`)
           .doc(this.eventId)
@@ -48,8 +51,8 @@ export class EventComponent implements OnInit {
             this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
             this.teamEvent = this.teamEventDoc.valueChanges();
           })
-      });
-    }
+      }
+    });
   }
 
   updateEventDate(date: Date): void {
@@ -69,6 +72,14 @@ export class EventComponent implements OnInit {
     this.eventDate.setMinutes(Number(this.eventTime.substring(3, 5)));
     console.log(this.eventDate)
     this.teamEventDoc?.update({ dateTime: this.eventDate });
+  }
+
+  joinEvent(): void {
+    this.afs.collection(`events/${this.eventId}/participants`).add({
+      uid: this.user?.uid,
+      displayName: this.user?.displayName,
+      photoURL: this.user?.photoURL
+    });
   }
 
   deleteEvent(): void {

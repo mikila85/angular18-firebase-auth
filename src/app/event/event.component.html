@@ -28,12 +28,16 @@
     </mat-form-field>
 
     <mat-card-actions>
-        <button mat-raised-button color="primary">
+        <button mat-raised-button color="primary" (click)="joinEvent()">
+            JOIN
+        </button>
+        <button mat-raised-button>
             COPY INVITE
         </button>
         <button mat-raised-button color="warn" (click)="deleteEvent()">
             DELETE
         </button>
-
     </mat-card-actions>
 </mat-card>
+
+<app-event-participants [eventId]="eventId"></app-event-participants>
