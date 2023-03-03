@@ -1,8 +1,5 @@
-export interface TeamEvent {
-    id?: string;
-    // URL for src of the icon for the event used in nav list
-    icon: string;
-    title: string;
+import { TeamEventBrief } from "./team-event-brief.model";
+
+export interface TeamEvent extends TeamEventBrief {
     description: string;
-    dateTime: firebase.default.firestore.Timestamp | Date;
 }

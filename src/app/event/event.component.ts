@@ -3,6 +3,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { TeamEventBrief } from '../models/team-event-brief.model';
 import { TeamEvent } from '../models/team-event.model';
 
 @Component({
@@ -75,11 +76,28 @@ export class EventComponent implements OnInit {
   }
 
   joinEvent(): void {
-    this.afs.collection(`events/${this.eventId}/participants`).add({
-      uid: this.user?.uid,
-      displayName: this.user?.displayName,
-      photoURL: this.user?.photoURL
-    });
+    this.teamEvent?.subscribe(teamEvent => {
+      if (!teamEvent) {
+        return
+      }
+      const batch = this.afs.firestore.batch();
+
+      batch.set(this.afs.collection(`events/${this.eventId}/participants`)
+        .doc(this.user?.uid).ref, {
+        uid: this.user?.uid,
+        displayName: this.user?.displayName,
+        photoURL: this.user?.photoURL
+      });
+
+      batch.set(this.afs.collection<TeamEventBrief>(`users/${this.user?.uid}/events`)
+        .doc(this.eventId ? this.eventId : undefined).ref, {
+        dateTime: teamEvent.dateTime,
+        icon: teamEvent.icon,
+        title: teamEvent.title
+      });
+
+      batch.commit();
+    })
   }
 
   deleteEvent(): void {
