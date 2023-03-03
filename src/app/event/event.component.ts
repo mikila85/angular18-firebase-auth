@@ -18,7 +18,7 @@ export class EventComponent implements OnInit {
   eventId: string | null = null;
   minDate: Date = new Date();
   eventDate: Date = new Date();
-  eventTime: string = "";
+  eventTime: string = (new Date()).toTimeString();
   isNewEvent = true;
 
   constructor(
@@ -45,13 +45,24 @@ export class EventComponent implements OnInit {
       }
       else {
         console.log('New Event');
+        const batch = this.afs.firestore.batch();
         this.eventId = this.afs.createId();
-        this.afs.collection(`/events`)
-          .doc(this.eventId)
-          .set({ icon: user.photoURL }).then(() => {
-            this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
-            this.teamEvent = this.teamEventDoc.valueChanges();
-          })
+
+        batch.set(this.afs.doc(`events/${this.eventId}`).ref, {
+          dateTime: this.eventDate,
+          icon: user.photoURL
+        });
+
+        batch.set(this.afs.doc<TeamEventBrief>(`users/${this.user?.uid}/events/${this.eventId}`).ref, {
+          dateTime: this.eventDate,
+          icon: user.photoURL,
+          title: "New Event"
+        });
+
+        batch.commit().then(() => {
+          this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
+          this.teamEvent = this.teamEventDoc.valueChanges();
+        });
       }
     });
   }
@@ -71,17 +82,16 @@ export class EventComponent implements OnInit {
 
     this.eventDate.setHours(Number(this.eventTime.substring(0, 2)));
     this.eventDate.setMinutes(Number(this.eventTime.substring(3, 5)));
-    console.log(this.eventDate)
     this.teamEventDoc?.update({ dateTime: this.eventDate });
   }
 
   joinEvent(): void {
     this.teamEvent?.subscribe(teamEvent => {
       if (!teamEvent) {
+        console.error("joinEvent: teamEvent is falsy")
         return
       }
       const batch = this.afs.firestore.batch();
-
       batch.set(this.afs.collection(`events/${this.eventId}/participants`)
         .doc(this.user?.uid).ref, {
         uid: this.user?.uid,
@@ -101,6 +111,13 @@ export class EventComponent implements OnInit {
   }
 
   deleteEvent(): void {
-    this.teamEventDoc?.delete().then(() => { this.router.navigate([`/`]) });
+    if (!this.teamEventDoc) {
+      console.error("deleteEvent: falsy teamEventDoc");
+      return;
+    }
+    const batch = this.afs.firestore.batch();
+    batch.delete(this.teamEventDoc.ref)
+    batch.delete(this.afs.doc(`users/${this.user?.uid}/events/${this.eventId}`).ref)
+    batch.commit().then(() => { this.router.navigate([`/`]) });
   }
 }

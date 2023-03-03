@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
+import { take } from 'rxjs';
+import { TeamEventBrief } from '../models/team-event-brief.model';
 import { TeamEvent } from '../models/team-event.model';
 
 @Component({
@@ -29,13 +31,38 @@ export class HomeComponent {
       }
       this.user = user;
 
-      this.afs.collection<TeamEvent>(`users/${user.uid}/events`, ref => ref.orderBy('dateTime', 'asc'))
-        .valueChanges({ idField: 'id' })
-        .subscribe(events => this.teamEvents = events);
+      const eventChanges = this.afs.collection<TeamEvent>(`users/${user.uid}/events`, ref => ref.orderBy('dateTime', 'asc'))
+        .valueChanges({ idField: 'id' });
+      eventChanges.subscribe(events => this.teamEvents = events);
+      eventChanges.pipe(take(1)).subscribe(events => { this.refreshEvents(events) });
     })
   }
 
   teamEventDateTime(dateTime: Date | firebase.default.firestore.Timestamp) {
     return (<firebase.default.firestore.Timestamp>dateTime)?.toDate();
+  }
+
+  /**
+   * Goes over the list of events from the user's collection
+   * and updates the info with corresponding actual data from events collection.
+   * This is a temporary fix to resolve de-normalized data going out of sync.
+   * Should be fixed and removed after implementing event sourcing.
+   */
+  refreshEvents(userEvents: TeamEvent[]) {
+    debugger
+    userEvents.forEach(userEvent => {
+      this.afs.doc<TeamEvent>(`events/${userEvent.id}`).get().subscribe(event => {
+        const eventData = event.data();
+        if (!eventData) {
+          console.error('refreshEvents: eventData object is falsy');
+          return
+        }
+        this.afs.doc<TeamEventBrief>(`users/${this.user?.uid}/events/${userEvent.id}`).update({
+          dateTime: eventData.dateTime,
+          icon: eventData.icon,
+          title: eventData.title
+        })
+      });
+    });
   }
 }
