@@ -3,7 +3,6 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
 import { TeamEvent } from '../models/team-event.model';
-import { TeamBuilderUser } from '../models/teamBuilderUser';
 
 @Component({
   selector: 'app-home',
@@ -12,7 +11,7 @@ import { TeamBuilderUser } from '../models/teamBuilderUser';
 })
 export class HomeComponent {
   isLoading = true;
-  user: TeamBuilderUser | undefined;
+  user: firebase.default.User | null = null;
   private teamEventsCollection: AngularFirestoreCollection<TeamEvent> | undefined;
   teamEvents: TeamEvent[] | undefined;
 
@@ -23,9 +22,17 @@ export class HomeComponent {
   ) { }
 
   ngOnInit(): void {
-    this.afs.collection<TeamEvent>(`events`, ref => ref.orderBy('dateTime', 'asc'))
-      .valueChanges({ idField: 'id' })
-      .subscribe(events => this.teamEvents = events);
+    this.auth.user.subscribe(user => {
+      if (!user) {
+        console.error('User object is falsy');
+        return;
+      }
+      this.user = user;
+
+      this.afs.collection<TeamEvent>(`users/${user.uid}/events`, ref => ref.orderBy('dateTime', 'asc'))
+        .valueChanges({ idField: 'id' })
+        .subscribe(events => this.teamEvents = events);
+    })
   }
 
   teamEventDateTime(dateTime: Date | firebase.default.firestore.Timestamp) {
