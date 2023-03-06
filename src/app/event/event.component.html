@@ -1,3 +1,4 @@
+<mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 <mat-card>
     <mat-card-header>
         <mat-card-title>{{isNewEvent ? "New Event" : (teamEvent | async)?.title}}</mat-card-title>

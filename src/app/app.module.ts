@@ -15,6 +15,7 @@ import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { EventParticipantsComponent } from './event-participants/event-participants.component';
 import { EventComponent } from './event/event.component';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
@@ -27,8 +28,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { EventParticipantsComponent } from './event-participants/event-participants.component';
 
 @NgModule({
   declarations: [
@@ -70,7 +71,8 @@ import { EventParticipantsComponent } from './event-participants/event-participa
     MatInputModule,
     MatNativeDateModule,
     MatDatepickerModule,
-    MatListModule
+    MatListModule,
+    MatProgressBarModule
   ],
   providers: [
     ScreenTrackingService, UserTrackingService,

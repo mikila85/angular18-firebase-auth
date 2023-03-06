@@ -21,6 +21,7 @@ export class EventComponent implements OnInit {
   eventDate: Date = new Date();
   eventTime: string = (new Date()).toTimeString().substring(0, 5);
   eventTitle: string = "New Event";
+  isLoading = true;
   isNewEvent = true;
   isOwner = false;
   isJoined = false;
@@ -47,7 +48,9 @@ export class EventComponent implements OnInit {
         this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
         this.teamEvent = this.teamEventDoc.valueChanges({ idField: 'id' });
         this.afs.doc(`events/${this.eventId}/participants/${this.user.uid}`)
-          .get().subscribe(p => this.isJoined = p.exists);
+          .get().subscribe(p => {
+            this.isJoined = p.exists;
+          });
       }
       else {
         console.log('New Event');
@@ -70,6 +73,7 @@ export class EventComponent implements OnInit {
         batch.commit().then(() => {
           this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
           this.teamEvent = this.teamEventDoc.valueChanges();
+          this.isLoading = false;
         });
       }
       this.teamEvent?.subscribe(te => {
@@ -80,6 +84,7 @@ export class EventComponent implements OnInit {
         this.eventDate = (te.dateTime as firebase.default.firestore.Timestamp).toDate();
         this.eventTitle = te.title;
         this.isOwner = te.owner === user.uid;
+        this.isLoading = false;
       });
     });
   }

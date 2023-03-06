@@ -13,6 +13,7 @@ export class EventParticipantsComponent {
   user: firebase.default.User | null = null;
   private participantsCollection: AngularFirestoreCollection<firebase.default.User> | undefined;
   participants: Observable<firebase.default.User[]> | undefined;
+  isLoading = true;
 
   constructor(
     private auth: AngularFireAuth,
@@ -25,5 +26,6 @@ export class EventParticipantsComponent {
     });
     this.participantsCollection = this.afs.collection<firebase.default.User>(`/events/${this.eventId}/participants`);
     this.participants = this.participantsCollection.valueChanges();
+    this.participants.subscribe(() => this.isLoading = false)
   }
 }

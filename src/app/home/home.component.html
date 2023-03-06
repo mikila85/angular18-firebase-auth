@@ -3,6 +3,7 @@
         <button mat-raised-button color="accent" routerLink="/event">Create New Event</button>
     </mat-card-actions>
 </mat-card>
+<mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
 <mat-nav-list>
     <a mat-list-item [routerLink]="['/event', teamEvent.id]" *ngFor="let teamEvent of teamEvents">
