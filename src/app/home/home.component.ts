@@ -56,11 +56,13 @@ export class HomeComponent {
           console.error('refreshEvents: eventData object is falsy');
           return
         }
-        this.afs.doc<TeamEventBrief>(`users/${this.user?.uid}/events/${userEvent.id}`).update({
-          dateTime: eventData.dateTime,
-          icon: eventData.icon,
-          title: eventData.title
-        })
+        if (eventData.title && (<firebase.default.firestore.Timestamp>eventData.dateTime).toMillis() > Date.now()) {
+          this.afs.doc<TeamEventBrief>(`users/${this.user?.uid}/events/${userEvent.id}`).update({
+            dateTime: eventData.dateTime,
+            icon: eventData.icon,
+            title: eventData.title
+          })
+        }
       });
     });
   }
