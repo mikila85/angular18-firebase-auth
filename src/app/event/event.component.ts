@@ -23,6 +23,7 @@ export class EventComponent implements OnInit {
   eventTitle: string = "New Event";
   isNewEvent = true;
   isOwner = false;
+  isJoined = false;
 
   constructor(
     private auth: AngularFireAuth,
@@ -43,9 +44,10 @@ export class EventComponent implements OnInit {
 
       if (this.eventId) {
         this.isNewEvent = false;
-        this.eventId = this.eventId;
         this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
         this.teamEvent = this.teamEventDoc.valueChanges({ idField: 'id' });
+        this.afs.doc(`events/${this.eventId}/participants/${this.user.uid}`)
+          .get().subscribe(p => this.isJoined = p.exists);
       }
       else {
         console.log('New Event');
@@ -101,28 +103,36 @@ export class EventComponent implements OnInit {
   }
 
   joinEvent(): void {
-    this.teamEvent?.subscribe(teamEvent => {
-      if (!teamEvent) {
-        console.error("joinEvent: teamEvent is falsy")
-        return
-      }
+    if (this.isJoined) {
       const batch = this.afs.firestore.batch();
-      batch.set(this.afs.collection(`events/${this.eventId}/participants`)
-        .doc(this.user?.uid).ref, {
-        uid: this.user?.uid,
-        displayName: this.user?.displayName,
-        photoURL: this.user?.photoURL
-      });
-
-      batch.set(this.afs.collection<TeamEventBrief>(`users/${this.user?.uid}/events`)
-        .doc(this.eventId ? this.eventId : undefined).ref, {
-        dateTime: teamEvent.dateTime,
-        icon: teamEvent.icon,
-        title: teamEvent.title
-      });
-
+      batch.delete(this.afs.doc(`events/${this.eventId}/participants/${this.user?.uid}`).ref);
+      batch.delete(this.afs.doc(`users/${this.user?.uid}/events/${this.eventId}`).ref);
       batch.commit();
-    })
+    } else {
+      this.teamEvent?.subscribe(teamEvent => {
+        if (!teamEvent) {
+          console.error("joinEvent: teamEvent is falsy")
+          return
+        }
+        const batch = this.afs.firestore.batch();
+        batch.set(this.afs.collection(`events/${this.eventId}/participants`)
+          .doc(this.user?.uid).ref, {
+          uid: this.user?.uid,
+          displayName: this.user?.displayName,
+          photoURL: this.user?.photoURL
+        });
+
+        batch.set(this.afs.collection<TeamEventBrief>(`users/${this.user?.uid}/events`)
+          .doc(this.eventId ? this.eventId : undefined).ref, {
+          dateTime: teamEvent.dateTime,
+          icon: teamEvent.icon,
+          title: teamEvent.title
+        });
+
+        batch.commit();
+      })
+    }
+    this.isJoined = !this.isJoined;
   }
 
   copyEventInvite() {
