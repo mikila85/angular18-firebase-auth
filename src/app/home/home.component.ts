@@ -27,6 +27,7 @@ export class HomeComponent {
     this.auth.user.subscribe(user => {
       if (!user) {
         console.error('User object is falsy');
+        this.isLoading = false;
         return;
       }
       this.user = user;
