@@ -2,41 +2,50 @@
     <mat-card-header>
         <mat-card-title>{{isNewEvent ? "New Event" : (teamEvent | async)?.title}}</mat-card-title>
     </mat-card-header>
-    <div fxLayout='row'>
-        <mat-form-field fxFlex="55%">
-            <mat-label>Choose a date</mat-label>
-            <input matInput [min]="minDate" [matDatepicker]="picker" [ngModel]="eventDate"
-                (dateChange)="updateEventDate($event.value)">
-            <mat-hint>MM/DD/YYYY</mat-hint>
-            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-        <mat-form-field fxFlex="45%">
-            <input type="time" matInput placeholder="Start Time" [ngModel]="eventTime" name="startTime"
-                (ngModelChange)="updateEventTime($event)">
-        </mat-form-field>
-    </div>
-    <mat-form-field>
-        <mat-label>Title</mat-label>
-        <input matInput name="eventTitle" [ngModel]="(teamEvent | async)?.title"
-            (ngModelChange)="teamEventDoc?.update({title: $event})">
-    </mat-form-field>
-    <mat-form-field>
-        <mat-label>Description</mat-label>
-        <textarea matInput name="eventDescription" [ngModel]="(teamEvent | async)?.description"
-            (ngModelChange)="teamEventDoc?.update({description: $event})"></textarea>
-    </mat-form-field>
-
+    <mat-card-content [ngSwitch]="isOwner">
+        <div *ngSwitchCase="true">
+            <div fxLayout='row'>
+                <mat-form-field fxFlex="55%">
+                    <mat-label>Choose a date</mat-label>
+                    <input matInput [min]="minDate" [matDatepicker]="picker" [ngModel]="eventDate"
+                        (dateChange)="updateEventDate($event.value)">
+                    <mat-hint>MM/DD/YYYY</mat-hint>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field fxFlex="45%">
+                    <input type="time" matInput placeholder="Start Time" [ngModel]="eventTime" name="startTime"
+                        (ngModelChange)="updateEventTime($event)">
+                </mat-form-field>
+            </div>
+            <mat-form-field>
+                <mat-label>Title</mat-label>
+                <input matInput name="eventTitle" [ngModel]="(teamEvent | async)?.title"
+                    (ngModelChange)="teamEventDoc?.update({title: $event})">
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Description</mat-label>
+                <textarea matInput name="eventDescription" [ngModel]="(teamEvent | async)?.description"
+                    (ngModelChange)="teamEventDoc?.update({description: $event})"></textarea>
+            </mat-form-field>
+        </div>
+        <div *ngSwitchCase="false">
+            <p>{{eventDate.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}</p>
+            <p>{{(teamEvent | async)?.description}}</p>
+        </div>
+    </mat-card-content>
     <mat-card-actions>
         <button mat-raised-button color="primary" (click)="joinEvent()">
             JOIN
         </button>
-        <button mat-raised-button (click)="copyEventInvite()">
-            COPY INVITE
-        </button>
-        <button mat-raised-button color="warn" (click)="deleteEvent()">
-            DELETE
-        </button>
+        <div *ngIf="isOwner">
+            <button mat-raised-button (click)="copyEventInvite()">
+                COPY INVITE
+            </button>
+            <button mat-raised-button color="warn" (click)="deleteEvent()">
+                DELETE
+            </button>
+        </div>
     </mat-card-actions>
 </mat-card>
 

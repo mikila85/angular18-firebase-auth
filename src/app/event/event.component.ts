@@ -20,7 +20,9 @@ export class EventComponent implements OnInit {
   minDate: Date = new Date();
   eventDate: Date = new Date();
   eventTime: string = (new Date()).toTimeString().substring(0, 5);
+  eventTitle: string = "New Event";
   isNewEvent = true;
+  isOwner = false;
 
   constructor(
     private auth: AngularFireAuth,
@@ -47,6 +49,7 @@ export class EventComponent implements OnInit {
       }
       else {
         console.log('New Event');
+        this.isOwner = true;
         const batch = this.afs.firestore.batch();
         this.eventId = this.afs.createId();
 
@@ -59,7 +62,7 @@ export class EventComponent implements OnInit {
         batch.set(this.afs.doc<TeamEventBrief>(`users/${user.uid}/events/${this.eventId}`).ref, {
           dateTime: this.eventDate,
           icon: user.photoURL,
-          title: "New Event"
+          title: this.eventTitle
         });
 
         batch.commit().then(() => {
@@ -67,6 +70,15 @@ export class EventComponent implements OnInit {
           this.teamEvent = this.teamEventDoc.valueChanges();
         });
       }
+      this.teamEvent?.subscribe(te => {
+        if (!te) {
+          console.error("ngOnInit teamEvent.subscribe: returned falsy team event")
+          return
+        }
+        this.eventDate = (te.dateTime as firebase.default.firestore.Timestamp).toDate();
+        this.eventTitle = te.title;
+      });
+
     });
   }
 
@@ -114,18 +126,12 @@ export class EventComponent implements OnInit {
   }
 
   copyEventInvite() {
-    this.teamEvent?.subscribe(teamEvent => {
-      if (!teamEvent) {
-        console.error("joinEvent: teamEvent is falsy")
-        return
-      }
-      var message = `${teamEvent.title}\n${(teamEvent.dateTime as firebase.default.firestore.Timestamp).toDate().toLocaleString(`en-AU`, {
-        dateStyle: "full",
-        timeStyle: "short"
-      })}\n${window.location.href}`;
+    var message = `${this.eventTitle}\n${this.eventDate.toLocaleString(`en-AU`, {
+      dateStyle: "full",
+      timeStyle: "short"
+    })}\n${window.location.href}`;
 
-      this.clipboard.copy(message);
-    })
+    this.clipboard.copy(message);
   }
 
   deleteEvent(): void {
