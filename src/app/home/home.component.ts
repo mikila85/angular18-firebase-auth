@@ -49,7 +49,6 @@ export class HomeComponent {
    * Should be fixed and removed after implementing event sourcing.
    */
   refreshEvents(userEvents: TeamEvent[]) {
-    debugger
     userEvents.forEach(userEvent => {
       this.afs.doc<TeamEvent>(`events/${userEvent.id}`).get().subscribe(event => {
         const eventData = event.data();

@@ -19,6 +19,7 @@ import { EventComponent } from './event/event.component';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 
+import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
@@ -61,6 +62,7 @@ import { EventParticipantsComponent } from './event-participants/event-participa
       authGuardFallbackURL: '/login',
       authGuardLoggedInURL: '/'
     }),
+    ClipboardModule,
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,

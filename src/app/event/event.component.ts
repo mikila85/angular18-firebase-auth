@@ -1,3 +1,4 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
@@ -18,7 +19,7 @@ export class EventComponent implements OnInit {
   eventId: string | null = null;
   minDate: Date = new Date();
   eventDate: Date = new Date();
-  eventTime: string = (new Date()).toTimeString();
+  eventTime: string = (new Date()).toTimeString().substring(0, 5);
   isNewEvent = true;
 
   constructor(
@@ -26,6 +27,7 @@ export class EventComponent implements OnInit {
     private afs: AngularFirestore,
     private route: ActivatedRoute,
     private router: Router,
+    private clipboard: Clipboard,
   ) { }
 
   ngOnInit(): void {
@@ -41,7 +43,7 @@ export class EventComponent implements OnInit {
         this.isNewEvent = false;
         this.eventId = this.eventId;
         this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
-        this.teamEvent = this.teamEventDoc.valueChanges();
+        this.teamEvent = this.teamEventDoc.valueChanges({ idField: 'id' });
       }
       else {
         console.log('New Event');
@@ -49,11 +51,12 @@ export class EventComponent implements OnInit {
         this.eventId = this.afs.createId();
 
         batch.set(this.afs.doc(`events/${this.eventId}`).ref, {
+          owner: user.uid,
           dateTime: this.eventDate,
           icon: user.photoURL
         });
 
-        batch.set(this.afs.doc<TeamEventBrief>(`users/${this.user?.uid}/events/${this.eventId}`).ref, {
+        batch.set(this.afs.doc<TeamEventBrief>(`users/${user.uid}/events/${this.eventId}`).ref, {
           dateTime: this.eventDate,
           icon: user.photoURL,
           title: "New Event"
@@ -107,6 +110,21 @@ export class EventComponent implements OnInit {
       });
 
       batch.commit();
+    })
+  }
+
+  copyEventInvite() {
+    this.teamEvent?.subscribe(teamEvent => {
+      if (!teamEvent) {
+        console.error("joinEvent: teamEvent is falsy")
+        return
+      }
+      var message = `${teamEvent.title}\n${(teamEvent.dateTime as firebase.default.firestore.Timestamp).toDate().toLocaleString(`en-AU`, {
+        dateStyle: "full",
+        timeStyle: "short"
+      })}\n${window.location.href}`;
+
+      this.clipboard.copy(message);
     })
   }
 
