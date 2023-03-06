@@ -18,12 +18,12 @@
                         (ngModelChange)="updateEventTime($event)">
                 </mat-form-field>
             </div>
-            <mat-form-field>
+            <mat-form-field class="full-width">
                 <mat-label>Title</mat-label>
                 <input matInput name="eventTitle" [ngModel]="(teamEvent | async)?.title"
                     (ngModelChange)="teamEventDoc?.update({title: $event})">
             </mat-form-field>
-            <mat-form-field>
+            <mat-form-field class="full-width">
                 <mat-label>Description</mat-label>
                 <textarea matInput name="eventDescription" [ngModel]="(teamEvent | async)?.description"
                     (ngModelChange)="teamEventDoc?.update({description: $event})"></textarea>

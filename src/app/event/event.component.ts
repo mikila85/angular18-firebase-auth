@@ -77,8 +77,8 @@ export class EventComponent implements OnInit {
         }
         this.eventDate = (te.dateTime as firebase.default.firestore.Timestamp).toDate();
         this.eventTitle = te.title;
+        this.isOwner = te.owner === user.uid;
       });
-
     });
   }
 
