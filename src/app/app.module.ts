@@ -19,6 +19,7 @@ import { EventParticipantsComponent } from './event-participants/event-participa
 import { EventComponent } from './event/event.component';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
+import { MessagesComponent } from './messages/messages.component';
 
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatButtonModule } from '@angular/material/button';
@@ -29,6 +30,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
 @NgModule({
@@ -37,7 +39,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     HomeComponent,
     LoginComponent,
     EventComponent,
-    EventParticipantsComponent
+    EventParticipantsComponent,
+    MessagesComponent
   ],
   imports: [
     BrowserModule,
@@ -72,7 +75,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatNativeDateModule,
     MatDatepickerModule,
     MatListModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatTabsModule
   ],
   providers: [
     ScreenTrackingService, UserTrackingService,
