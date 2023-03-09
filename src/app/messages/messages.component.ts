@@ -26,7 +26,7 @@ export class MessagesComponent implements OnInit {
       this.user = user;
     });
     this.messagesCollection = this.afs.collection<Message>(`events/${this.eventId}/messages`, ref =>
-      ref.orderBy('ts', 'desc'));
+      ref.orderBy('ts', 'asc'));
     this.messages = this.messagesCollection.valueChanges();
   }
 
@@ -45,4 +45,9 @@ export class MessagesComponent implements OnInit {
     });
     this.text = "";
   }
+
+  messageDateTime(dateTime: Date | firebase.default.firestore.Timestamp) {
+    return (<firebase.default.firestore.Timestamp>dateTime)?.toDate();
+  }
+
 }
