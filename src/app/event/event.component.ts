@@ -111,7 +111,9 @@ export class EventComponent implements OnInit {
     if (this.isJoined) {
       const batch = this.afs.firestore.batch();
       batch.delete(this.afs.doc(`events/${this.eventId}/participants/${this.user?.uid}`).ref);
-      batch.delete(this.afs.doc(`users/${this.user?.uid}/events/${this.eventId}`).ref);
+      if (!this.isOwner) {
+        batch.delete(this.afs.doc(`users/${this.user?.uid}/events/${this.eventId}`).ref);
+      }
       batch.commit();
     } else {
       this.teamEvent?.subscribe(teamEvent => {
