@@ -7,6 +7,7 @@
     </mat-card-content>
     <mat-card-actions>
         <button mat-raised-button color="primary" (click)="sendMessage()" [disabled]="!(user && text)">
+            <mat-icon inline=true>send</mat-icon>
             SEND
         </button>
     </mat-card-actions>

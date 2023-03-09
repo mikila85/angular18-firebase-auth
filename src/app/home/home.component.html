@@ -1,6 +1,9 @@
 <mat-card>
     <mat-card-actions>
-        <button mat-raised-button color="accent" routerLink="/event">Create New Event</button>
+        <button mat-raised-button color="accent" routerLink="/event">
+            <mat-icon inline=true>add_circle</mat-icon>
+            Create New Event
+        </button>
     </mat-card-actions>
 </mat-card>
 <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>

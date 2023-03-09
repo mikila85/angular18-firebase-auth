@@ -37,13 +37,16 @@
     </mat-card-content>
     <mat-card-actions>
         <button mat-raised-button color="primary" (click)="joinEvent()">
+            <mat-icon inline=true>{{isJoined ? "person_remove" : "person_add"}}</mat-icon>
             {{isJoined ? "LEAVE" : "JOIN"}}
         </button>
         <div *ngIf="isOwner">
             <button mat-raised-button (click)="copyEventInvite()">
+                <mat-icon inline=true>content_copy</mat-icon>
                 COPY INVITE
             </button>
             <button mat-raised-button color="warn" (click)="deleteEvent()">
+                <mat-icon inline=true>delete</mat-icon>
                 DELETE
             </button>
         </div>
