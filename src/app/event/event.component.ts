@@ -151,6 +151,10 @@ export class EventComponent implements OnInit {
     this.clipboard.copy(message);
   }
 
+  duplicateEvent() {
+
+  }
+
   deleteEvent(): void {
     if (!this.teamEventDoc) {
       console.error("deleteEvent: falsy teamEventDoc");

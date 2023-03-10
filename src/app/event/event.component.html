@@ -35,22 +35,37 @@
             <p>{{(teamEvent | async)?.description}}</p>
         </div>
     </mat-card-content>
-    <mat-card-actions>
-        <button mat-raised-button color="primary" (click)="joinEvent()">
-            <mat-icon inline=true>{{isJoined ? "person_remove" : "person_add"}}</mat-icon>
-            {{isJoined ? "LEAVE" : "JOIN"}}
-        </button>
-        <div *ngIf="isOwner">
+    <div [ngSwitch]="isOwner">
+        <mat-card-actions *ngSwitchCase="true">
+            <button mat-raised-button color="primary" (click)="joinEvent()">
+                <mat-icon inline=true>{{isJoined ? "person_remove" : "person_add"}}</mat-icon>
+                {{isJoined ? "LEAVE" : "JOIN"}}
+            </button>
             <button mat-raised-button (click)="copyEventInvite()">
                 <mat-icon inline=true>content_copy</mat-icon>
-                COPY INVITE
+                INVITE
             </button>
-            <button mat-raised-button color="warn" (click)="deleteEvent()">
-                <mat-icon inline=true>delete</mat-icon>
-                DELETE
+            <button mat-raised-button (click)="duplicateEvent()">
+                <mat-icon inline=true>file_copy</mat-icon>
+                DUPLICATE
             </button>
-        </div>
-    </mat-card-actions>
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+                <button mat-raised-button color="warn" (click)="deleteEvent()">
+                    <mat-icon>delete</mat-icon>
+                    DELETE
+                </button>
+            </mat-menu>
+        </mat-card-actions>
+        <mat-card-actions *ngSwitchCase="false">
+            <button mat-raised-button color="primary" (click)="joinEvent()">
+                <mat-icon inline=true>{{isJoined ? "person_remove" : "person_add"}}</mat-icon>
+                {{isJoined ? "LEAVE" : "JOIN"}}
+            </button>
+        </mat-card-actions>
+    </div>
 </mat-card>
 
 <mat-tab-group>
