@@ -21,6 +21,7 @@ export class EventComponent implements OnInit {
   eventDate: Date = new Date();
   eventTime: string = (new Date()).toTimeString().substring(0, 5);
   eventTitle: string = "New Event";
+  eventDescription: string = "";
   isLoading = true;
   isNewEvent = true;
   isOwner = false;
@@ -83,6 +84,7 @@ export class EventComponent implements OnInit {
         }
         this.eventDate = (te.dateTime as firebase.default.firestore.Timestamp).toDate();
         this.eventTitle = te.title;
+        this.eventDescription = te.description;
         this.isOwner = te.owner === user.uid;
         this.isLoading = false;
       });
@@ -152,7 +154,34 @@ export class EventComponent implements OnInit {
   }
 
   duplicateEvent() {
+    if (!this.user) {
+      console.error("duplicateEvent: user object is falsy");
+      return;
+    }
+    let newEventDate = new Date();
+    newEventDate.setHours(this.eventDate.getHours());
+    newEventDate.setMinutes(this.eventDate.getMinutes());
 
+    this.afs.collection<TeamEvent>('events').add({
+      title: this.eventTitle,
+      description: this.eventDescription,
+      dateTime: newEventDate,
+      owner: this.user.uid,
+      icon: this.user.photoURL
+    }).then(ref => {
+      if (!this.user) {
+        console.error("duplicateEvent: user object is falsy");
+        return;
+      }
+      this.afs.doc<TeamEventBrief>(`users/${this.user.uid}/events/${ref.id}`).set({
+        dateTime: newEventDate,
+        icon: this.user.photoURL,
+        title: this.eventTitle
+      });
+      this.router.navigate([`event/${ref.id}`]).then(() => {
+        window.location.reload();
+      });;
+    })
   }
 
   deleteEvent(): void {
