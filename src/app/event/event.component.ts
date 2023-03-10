@@ -165,7 +165,7 @@ export class EventComponent implements OnInit {
 
     this.afs.collection<TeamEvent>('events').add({
       title: this.eventTitle,
-      description: this.eventDescription,
+      description: this.eventDescription ? this.eventDescription : "",
       dateTime: newEventDate,
       owner: this.user.uid,
       icon: this.user.photoURL
