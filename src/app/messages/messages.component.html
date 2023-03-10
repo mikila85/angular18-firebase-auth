@@ -15,7 +15,7 @@
 
 <mat-card *ngFor="let message of messages | async">
     <mat-card-header>
-        <img mat-card-avatar [src]="message.photoURL" referrerpolicy="no-referrer">
+        <img mat-card-avatar [src]="message.photoURL" referrerpolicy="no-referrer" [alt]="message.displayName">
         <mat-card-title>{{message.displayName}}</mat-card-title>
         <mat-card-subtitle>
             {{messageDateTime(message.ts) | date:'fullDate'}} at

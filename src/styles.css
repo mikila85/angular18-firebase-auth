@@ -13,3 +13,7 @@ body {
 .full-width {
     width: 100%;
 }
+
+.mat-tab-icon {
+    margin-right: 8px;
+}

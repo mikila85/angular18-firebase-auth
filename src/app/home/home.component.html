@@ -10,7 +10,7 @@
 
 <mat-nav-list>
     <a mat-list-item [routerLink]="['/event', teamEvent.id]" *ngFor="let teamEvent of teamEvents">
-        <img matListItemAvatar [src]="teamEvent.icon" referrerpolicy="no-referrer">
+        <img matListItemAvatar [src]="teamEvent.icon" referrerpolicy="no-referrer" [alt]="teamEvent.title">
         <h3 matListItemTitle>{{teamEvent.title}}</h3>
         <p matListItemLine>
             {{teamEventDateTime(teamEvent.dateTime) | date:'fullDate'}} at

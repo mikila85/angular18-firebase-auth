@@ -146,10 +146,14 @@ export class EventComponent implements OnInit {
   }
 
   copyEventInvite() {
+    var eventUrl = window.location.href;
+    if (this.isNewEvent) {
+      eventUrl += `/${this.eventId}`;
+    }
     var message = `${this.eventTitle}\n${this.eventDate.toLocaleString(`en-AU`, {
       dateStyle: "full",
       timeStyle: "short"
-    })}\n${window.location.href}`;
+    })}\n${eventUrl}`;
 
     this.clipboard.copy(message);
   }
