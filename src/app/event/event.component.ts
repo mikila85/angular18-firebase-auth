@@ -83,6 +83,7 @@ export class EventComponent implements OnInit {
           return
         }
         this.eventDate = (te.dateTime as firebase.default.firestore.Timestamp).toDate();
+        this.eventTime = this.eventDate.toLocaleString("en-AU", { hour12: false, timeStyle: "short" });
         this.eventTitle = te.title;
         this.eventDescription = te.description;
         this.isOwner = te.owner === user.uid;
