@@ -1,7 +1,7 @@
 <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 <mat-card>
     <mat-card-header>
-        <mat-card-title>{{isNewEvent ? "New Event" : (teamEvent | async)?.title}}</mat-card-title>
+        <mat-card-title>{{isNewEvent ? "New Event" : eventTitle}}</mat-card-title>
     </mat-card-header>
     <mat-card-content [ngSwitch]="isOwner">
         <div *ngSwitchCase="true">
@@ -26,13 +26,13 @@
             </mat-form-field>
             <mat-form-field class="full-width">
                 <mat-label>Description</mat-label>
-                <textarea matInput name="eventDescription" [ngModel]="(teamEvent | async)?.description"
+                <textarea matInput name="eventDescription" [ngModel]="eventDescription"
                     (ngModelChange)="teamEventDoc?.update({description: $event})"></textarea>
             </mat-form-field>
         </div>
         <div *ngSwitchCase="false">
             <p>{{eventDate.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}</p>
-            <p>{{(teamEvent | async)?.description}}</p>
+            <p>{{eventDescription}}</p>
         </div>
     </mat-card-content>
     <div [ngSwitch]="isOwner">
