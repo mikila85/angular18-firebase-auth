@@ -22,6 +22,8 @@ export class EventComponent implements OnInit {
   eventTime: string = (new Date()).toTimeString().substring(0, 5);
   eventTitle: string = "New Event";
   eventDescription: string = "";
+  isLimitedAttendees: boolean = false;
+  maxAttendees: number | undefined;
   isLoading = true;
   isNewEvent = true;
   isOwner = false;
@@ -62,7 +64,8 @@ export class EventComponent implements OnInit {
         batch.set(this.afs.doc(`events/${this.eventId}`).ref, {
           owner: user.uid,
           dateTime: this.eventDate,
-          icon: user.photoURL
+          icon: user.photoURL,
+          isLimitedAttendees: false
         });
 
         batch.set(this.afs.doc<TeamEventBrief>(`users/${user.uid}/events/${this.eventId}`).ref, {
@@ -86,6 +89,8 @@ export class EventComponent implements OnInit {
         this.eventTime = this.eventDate.toLocaleString("en-AU", { hour12: false, timeStyle: "short" });
         this.eventTitle = te.title;
         this.eventDescription = te.description;
+        this.isLimitedAttendees = te.isLimitedAttendees;
+        this.maxAttendees = te.maxAttendees;
         this.isOwner = te.owner === user.uid;
         this.isLoading = false;
       });
@@ -166,14 +171,18 @@ export class EventComponent implements OnInit {
     let newEventDate = new Date();
     newEventDate.setHours(this.eventDate.getHours());
     newEventDate.setMinutes(this.eventDate.getMinutes());
-
-    this.afs.collection<TeamEvent>('events').add({
+    var duplicateEvent: TeamEvent = {
       title: this.eventTitle,
       description: this.eventDescription ? this.eventDescription : "",
       dateTime: newEventDate,
       owner: this.user.uid,
-      icon: this.user.photoURL
-    }).then(ref => {
+      icon: this.user.photoURL,
+      isLimitedAttendees: this.isLimitedAttendees,
+    };
+    if (this.maxAttendees) {
+      duplicateEvent.maxAttendees = this.maxAttendees;
+    }
+    this.afs.collection<TeamEvent>('events').add(duplicateEvent).then(ref => {
       if (!this.user) {
         console.error("duplicateEvent: user object is falsy");
         return;

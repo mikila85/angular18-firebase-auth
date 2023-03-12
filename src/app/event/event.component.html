@@ -29,6 +29,15 @@
                 <textarea matInput name="eventDescription" [ngModel]="eventDescription"
                     (ngModelChange)="teamEventDoc?.update({description: $event})"></textarea>
             </mat-form-field>
+            <mat-slide-toggle [(ngModel)]="isLimitedAttendees"
+                (ngModelChange)="teamEventDoc?.update({isLimitedAttendees: $event})">
+                Attendee limit
+            </mat-slide-toggle>
+            <mat-form-field *ngIf="isLimitedAttendees">
+                <mat-label>Max number</mat-label>
+                <input matInput type="number" name="maxAttendees" [(ngModel)]="maxAttendees"
+                    (ngModelChange)="teamEventDoc?.update({maxAttendees: $event})">
+            </mat-form-field>
         </div>
         <div *ngSwitchCase="false">
             <p>{{eventDate.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}</p>
@@ -72,7 +81,7 @@
     <mat-tab>
         <ng-template mat-tab-label>
             <mat-icon class="mat-tab-icon">groups</mat-icon>
-            Participants
+            Attendees
         </ng-template>
         <app-event-participants [eventId]="eventId"></app-event-participants>
     </mat-tab>

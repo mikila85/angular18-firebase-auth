@@ -17,3 +17,7 @@ body {
 .mat-tab-icon {
     margin-right: 8px;
 }
+
+.mat-mdc-slide-toggle {
+    margin-right: 8px;
+}
