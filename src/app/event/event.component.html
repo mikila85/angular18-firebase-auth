@@ -81,9 +81,10 @@
     <mat-tab>
         <ng-template mat-tab-label>
             <mat-icon class="mat-tab-icon">groups</mat-icon>
-            Attendees
+            Attendees {{numberOfAttendees()}}
         </ng-template>
-        <app-event-participants [eventId]="eventId"></app-event-participants>
+        <app-event-participants [eventId]="eventId"
+            (numberOfParticipantsEvent)="numberOfParticipants = $event"></app-event-participants>
     </mat-tab>
     <mat-tab label="Messages">
         <ng-template mat-tab-label>

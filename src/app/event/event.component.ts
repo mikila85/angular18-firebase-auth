@@ -24,6 +24,7 @@ export class EventComponent implements OnInit {
   eventDescription: string = "";
   isLimitedAttendees: boolean = false;
   maxAttendees: number | undefined;
+  numberOfParticipants: number = 0;
   isLoading = true;
   isNewEvent = true;
   isOwner = false;
@@ -113,6 +114,14 @@ export class EventComponent implements OnInit {
     this.eventDate.setHours(Number(this.eventTime.substring(0, 2)));
     this.eventDate.setMinutes(Number(this.eventTime.substring(3, 5)));
     this.teamEventDoc?.update({ dateTime: this.eventDate });
+  }
+
+  numberOfAttendees(): string {
+    var attendeesInfo = this.numberOfParticipants.toString();
+    if (this.isLimitedAttendees) {
+      attendeesInfo += `/${this.maxAttendees}`;
+    }
+    return attendeesInfo;
   }
 
   joinEvent(): void {
