@@ -3,9 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { TeamEventBrief } from '../models/team-event-brief.model';
 import { TeamEvent } from '../models/team-event.model';
+import { TeamUserBrief } from '../models/team-user-brief';
 
 @Component({
   selector: 'app-event',
@@ -22,6 +23,7 @@ export class EventComponent implements OnInit {
   eventTime: string = (new Date()).toTimeString().substring(0, 5);
   eventTitle: string = "New Event";
   eventDescription: string = "";
+  eventIcon: string | null = null;
   isLimitedAttendees: boolean = false;
   maxAttendees: number | undefined;
   numberOfParticipants: number = 0;
@@ -29,6 +31,7 @@ export class EventComponent implements OnInit {
   isNewEvent = true;
   isOwner = false;
   isJoined = false;
+  isWaitlist = false;
 
   constructor(
     private auth: AngularFireAuth,
@@ -54,6 +57,10 @@ export class EventComponent implements OnInit {
         this.afs.doc(`events/${this.eventId}/participants/${this.user.uid}`)
           .get().subscribe(p => {
             this.isJoined = p.exists;
+          });
+        this.afs.doc(`events/${this.eventId}/waitlist/${this.user.uid}`)
+          .get().subscribe(p => {
+            this.isWaitlist = p.exists;
           });
       }
       else {
@@ -90,6 +97,7 @@ export class EventComponent implements OnInit {
         this.eventTime = this.eventDate.toLocaleString("en-AU", { hour12: false, timeStyle: "short" });
         this.eventTitle = te.title;
         this.eventDescription = te.description;
+        this.eventIcon = te.icon;
         this.isLimitedAttendees = te.isLimitedAttendees;
         this.maxAttendees = te.maxAttendees;
         this.isOwner = te.owner === user.uid;
@@ -125,6 +133,10 @@ export class EventComponent implements OnInit {
   }
 
   joinEvent(): void {
+    if (this.isWaitlist && !this.isJoined) {
+      // Must be on waitlist and wants to leave waitlist.
+      this.joinWaitlist()
+    }
     if (this.isJoined) {
       const batch = this.afs.firestore.batch();
       batch.delete(this.afs.doc(`events/${this.eventId}/participants/${this.user?.uid}`).ref);
@@ -132,31 +144,78 @@ export class EventComponent implements OnInit {
         batch.delete(this.afs.doc(`users/${this.user?.uid}/events/${this.eventId}`).ref);
       }
       batch.commit();
+      this.promoteNextPersonOnWaitlist();
     } else {
       this.teamEvent?.subscribe(teamEvent => {
         if (!teamEvent) {
           console.error("joinEvent: teamEvent is falsy")
           return
         }
-        const batch = this.afs.firestore.batch();
-        batch.set(this.afs.collection(`events/${this.eventId}/participants`)
-          .doc(this.user?.uid).ref, {
-          uid: this.user?.uid,
-          displayName: this.user?.displayName,
-          photoURL: this.user?.photoURL
-        });
-
-        batch.set(this.afs.collection<TeamEventBrief>(`users/${this.user?.uid}/events`)
-          .doc(this.eventId ? this.eventId : undefined).ref, {
-          dateTime: teamEvent.dateTime,
-          icon: teamEvent.icon,
-          title: teamEvent.title
-        });
-
-        batch.commit();
+        this.registerParticipant(<TeamUserBrief>this.user);
       })
     }
     this.isJoined = !this.isJoined;
+  }
+
+  private registerParticipant(user: TeamUserBrief) {
+    const batch = this.afs.firestore.batch();
+    batch.set(this.afs.collection(`events/${this.eventId}/participants`)
+      .doc(user.uid).ref, {
+      uid: user.uid,
+      displayName: user.displayName,
+      photoURL: user.photoURL
+    });
+
+    batch.set(this.afs.collection<TeamEventBrief>(`users/${this.user?.uid}/events`)
+      .doc(this.eventId ? this.eventId : undefined).ref, {
+      dateTime: this.eventDate,
+      icon: this.eventIcon,
+      title: this.eventTitle
+    });
+    batch.commit();
+  }
+
+  joinWaitlist(): void {
+    if (this.isWaitlist) {
+      const batch = this.afs.firestore.batch();
+      batch.delete(this.afs.doc(`events/${this.eventId}/waitlist/${this.user?.uid}`).ref);
+      if (!this.isOwner) {
+        batch.delete(this.afs.doc(`users/${this.user?.uid}/events/${this.eventId}`).ref);
+      }
+      batch.commit();
+    } else {
+      const batch = this.afs.firestore.batch();
+      batch.set(this.afs.collection(`events/${this.eventId}/waitlist`)
+        .doc(this.user?.uid).ref, {
+        uid: this.user?.uid,
+        displayName: this.user?.displayName,
+        photoURL: this.user?.photoURL,
+        ts: new Date()
+      });
+
+      batch.set(this.afs.collection<TeamEventBrief>(`users/${this.user?.uid}/events`)
+        .doc(this.eventId ? this.eventId : undefined).ref, {
+        dateTime: this.eventDate,
+        icon: this.eventIcon,
+        title: this.eventTitle
+      });
+
+      batch.commit()
+        .then(result => console.info("batch.commit() succeeded:", result))
+        .catch(error => console.error("batch.commit() failed:", error))
+    }
+    this.isWaitlist = !this.isWaitlist;
+  }
+
+  promoteNextPersonOnWaitlist() {
+    this.afs.collection<TeamUserBrief>(`events/${this.eventId}/waitlist`, ref => ref.orderBy('ts', 'asc'))
+      .valueChanges({ idField: 'uid' })
+      .pipe(take(1)).subscribe(firstInWaitlist => {
+        if (firstInWaitlist.length > 0) {
+          this.registerParticipant(firstInWaitlist[0]);
+          this.afs.doc<TeamUserBrief>(`events/${this.eventId}/waitlist/${firstInWaitlist[0].uid}`).delete();
+        }
+      });
   }
 
   copyEventInvite() {

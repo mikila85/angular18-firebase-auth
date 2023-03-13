@@ -71,7 +71,7 @@
         </mat-card-actions>
 
         <mat-card-actions *ngSwitchCase="false">
-            <ng-container *ngIf="isJoined; else joinButton">
+            <ng-container *ngIf="isJoined || isWaitlist; else joinButton">
                 <button mat-raised-button color="primary" (click)="joinEvent()">
                     <mat-icon inline=true>person_remove</mat-icon>
                     LEAVE
@@ -79,15 +79,15 @@
             </ng-container>
             <ng-template #joinButton>
                 <ng-container
-                    *ngIf="!isLimitedAttendees || (maxAttendees != undefined && numberOfParticipants < maxAttendees);else joinWaitlist">
+                    *ngIf="!isLimitedAttendees || (maxAttendees != undefined && numberOfParticipants < maxAttendees);else waitlist">
                     <button mat-raised-button color="primary" (click)="joinEvent()">
                         <mat-icon inline=true>person_add</mat-icon>
                         JOIN
                     </button>
                 </ng-container>
             </ng-template>
-            <ng-template #joinWaitlist>
-                <button mat-raised-button color="primary" (click)="joinEvent()">
+            <ng-template #waitlist>
+                <button mat-raised-button color="primary" (click)="joinWaitlist()">
                     <mat-icon inline=true>hourglass_empty</mat-icon>
                     JOIN WAITLIST
                 </button>
