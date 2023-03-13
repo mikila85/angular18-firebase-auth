@@ -45,6 +45,7 @@
         </div>
     </mat-card-content>
     <div [ngSwitch]="isOwner">
+        <!--Owner of the event can always join without the waitlist-->
         <mat-card-actions *ngSwitchCase="true">
             <button mat-raised-button color="primary" (click)="joinEvent()">
                 <mat-icon inline=true>{{isJoined ? "person_remove" : "person_add"}}</mat-icon>
@@ -68,11 +69,29 @@
                 </button>
             </mat-menu>
         </mat-card-actions>
+
         <mat-card-actions *ngSwitchCase="false">
-            <button mat-raised-button color="primary" (click)="joinEvent()">
-                <mat-icon inline=true>{{isJoined ? "person_remove" : "person_add"}}</mat-icon>
-                {{isJoined ? "LEAVE" : "JOIN"}}
-            </button>
+            <ng-container *ngIf="isJoined; else joinButton">
+                <button mat-raised-button color="primary" (click)="joinEvent()">
+                    <mat-icon inline=true>person_remove</mat-icon>
+                    LEAVE
+                </button>
+            </ng-container>
+            <ng-template #joinButton>
+                <ng-container
+                    *ngIf="!isLimitedAttendees || (maxAttendees != undefined && numberOfParticipants < maxAttendees);else joinWaitlist">
+                    <button mat-raised-button color="primary" (click)="joinEvent()">
+                        <mat-icon inline=true>person_add</mat-icon>
+                        JOIN
+                    </button>
+                </ng-container>
+            </ng-template>
+            <ng-template #joinWaitlist>
+                <button mat-raised-button color="primary" (click)="joinEvent()">
+                    <mat-icon inline=true>hourglass_empty</mat-icon>
+                    JOIN WAITLIST
+                </button>
+            </ng-template>
         </mat-card-actions>
     </div>
 </mat-card>
