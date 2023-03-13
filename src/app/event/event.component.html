@@ -105,7 +105,20 @@
         <app-event-participants [eventId]="eventId"
             (numberOfParticipantsEvent)="numberOfParticipants = $event"></app-event-participants>
     </mat-tab>
-    <mat-tab label="Messages">
+    <mat-tab *ngIf="waitlist.length > 0">
+        <ng-template mat-tab-label>
+            <mat-icon class="mat-tab-icon">hourglass_empty</mat-icon>
+            Waitlist {{waitlist.length}}
+        </ng-template>
+        <mat-list>
+            <mat-list-item *ngFor="let participant of waitlist">
+                <img matListItemAvatar [src]="participant.photoURL" referrerpolicy="no-referrer"
+                    [alt]="participant.displayName">
+                <h3 matListItemTitle>{{participant.displayName}}</h3>
+            </mat-list-item>
+        </mat-list>
+    </mat-tab>
+    <mat-tab label="Messages" hidden>
         <ng-template mat-tab-label>
             <mat-icon class="mat-tab-icon">forum</mat-icon>
             Messages

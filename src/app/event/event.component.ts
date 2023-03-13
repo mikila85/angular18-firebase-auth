@@ -27,6 +27,7 @@ export class EventComponent implements OnInit {
   isLimitedAttendees: boolean = false;
   maxAttendees: number | undefined;
   numberOfParticipants: number = 0;
+  waitlist: TeamUserBrief[] = [];
   isLoading = true;
   isNewEvent = true;
   isOwner = false;
@@ -103,6 +104,8 @@ export class EventComponent implements OnInit {
         this.isOwner = te.owner === user.uid;
         this.isLoading = false;
       });
+
+      this.getWaitlist();
     });
   }
 
@@ -135,7 +138,8 @@ export class EventComponent implements OnInit {
   joinEvent(): void {
     if (this.isWaitlist && !this.isJoined) {
       // Must be on waitlist and wants to leave waitlist.
-      this.joinWaitlist()
+      this.joinWaitlist();
+      return;
     }
     if (this.isJoined) {
       const batch = this.afs.firestore.batch();
@@ -216,6 +220,12 @@ export class EventComponent implements OnInit {
           this.afs.doc<TeamUserBrief>(`events/${this.eventId}/waitlist/${firstInWaitlist[0].uid}`).delete();
         }
       });
+  }
+
+  getWaitlist() {
+    this.afs.collection<TeamUserBrief>(`/events/${this.eventId}/waitlist`)
+      .valueChanges()
+      .subscribe((w) => this.waitlist = w)
   }
 
   copyEventInvite() {
