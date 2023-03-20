@@ -25,7 +25,10 @@ export class EventComponent implements OnInit {
   eventDescription: string = "";
   eventIcon: string | null = null;
   isLimitedAttendees: boolean = false;
+  isTeamAllocations: boolean = false;
   maxAttendees: number | undefined;
+  teamColors = ['Red', 'White', 'Blue', 'Orange', 'Yellow', 'Green', 'Gray'];
+  teams: { color: string, size: number }[] = [{ color: 'Red', size: 0 }]
   numberOfParticipants: number = 0;
   waitlist: TeamUserBrief[] = [];
   isLoading = true;
@@ -101,6 +104,7 @@ export class EventComponent implements OnInit {
         this.eventIcon = te.icon;
         this.isLimitedAttendees = te.isLimitedAttendees;
         this.maxAttendees = te.maxAttendees;
+        this.isTeamAllocations = te.isTeamAllocations;
         this.isOwner = te.owner === user.uid;
         this.isLoading = false;
       });
@@ -256,6 +260,7 @@ export class EventComponent implements OnInit {
       owner: this.user.uid,
       icon: this.user.photoURL,
       isLimitedAttendees: this.isLimitedAttendees,
+      isTeamAllocations: this.isTeamAllocations,
     };
     if (this.maxAttendees) {
       duplicateEvent.maxAttendees = this.maxAttendees;

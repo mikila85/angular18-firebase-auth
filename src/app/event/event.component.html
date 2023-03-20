@@ -29,15 +29,49 @@
                 <textarea matInput name="eventDescription" [ngModel]="eventDescription"
                     (ngModelChange)="teamEventDoc?.update({description: $event})"></textarea>
             </mat-form-field>
-            <mat-slide-toggle [(ngModel)]="isLimitedAttendees"
-                (ngModelChange)="teamEventDoc?.update({isLimitedAttendees: $event})">
-                Attendee limit
+            <div fxLayout='row'>
+                <mat-slide-toggle [(ngModel)]="isLimitedAttendees"
+                    (ngModelChange)="teamEventDoc?.update({isLimitedAttendees: $event})">
+                    Attendee limit
+                </mat-slide-toggle>
+                <mat-form-field *ngIf="isLimitedAttendees">
+                    <mat-label>Max number</mat-label>
+                    <input matInput type="number" name="maxAttendees" [(ngModel)]="maxAttendees"
+                        (ngModelChange)="teamEventDoc?.update({maxAttendees: $event})">
+                </mat-form-field>
+            </div>
+
+            <mat-slide-toggle [(ngModel)]="isTeamAllocations"
+                (ngModelChange)="teamEventDoc?.update({isTeamAllocations: $event})">
+                Team Allocations
             </mat-slide-toggle>
-            <mat-form-field *ngIf="isLimitedAttendees">
-                <mat-label>Max number</mat-label>
-                <input matInput type="number" name="maxAttendees" [(ngModel)]="maxAttendees"
-                    (ngModelChange)="teamEventDoc?.update({maxAttendees: $event})">
-            </mat-form-field>
+            <div *ngIf="isTeamAllocations">
+                <div fxLayout='row' fxLayoutAlign="stretch center" *ngFor="let team of teams; let i = index">
+                    <button mat-flat-button fxFlex="50%" [matMenuTriggerFor]="teamColorMenu"
+                        [matMenuTriggerData]="{index: i}" [style]="'background-color:'+team.color">
+                        {{team.color}}
+                    </button>
+                    <mat-form-field fxFlex="40%">
+                        <input type="number" matInput placeholder="Team Size" [(ngModel)]="team.size" name="teamSize">
+                    </mat-form-field>
+                    <button mat-icon-button aria-label="Remove team" (click)="teams.splice(i,1)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </div>
+                <button mat-raised-button [matMenuTriggerFor]="teamColorMenu"
+                    [matMenuTriggerData]="{index: teams.length}" (click)="teams.push({color:'White', size: 0})">
+                    <mat-icon inline=true>add</mat-icon>
+                    Add Team
+                </button>
+                <mat-menu #teamColorMenu="matMenu">
+                    <ng-template matMenuContent let-index="index">
+                        <button mat-flat-button *ngFor="let teamColor of teamColors"
+                            [style]="'background-color:'+teamColor" (click)="teams[index].color = teamColor">
+                            {{teamColor}}
+                        </button>
+                    </ng-template>
+                </mat-menu>
+            </div>
         </div>
         <div *ngSwitchCase="false">
             <p>{{eventDate.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}</p>
@@ -62,7 +96,7 @@
             <button mat-icon-button [matMenuTriggerFor]="menu">
                 <mat-icon>more_vert</mat-icon>
             </button>
-            <mat-menu #menu="matMenu">
+            <mat-menu #menu="matMenu" yPosition="above">
                 <button mat-raised-button color="warn" (click)="deleteEvent()">
                     <mat-icon>delete</mat-icon>
                     DELETE

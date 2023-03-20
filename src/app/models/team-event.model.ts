@@ -4,5 +4,6 @@ export interface TeamEvent extends TeamEventBrief {
     owner: string;
     description: string;
     isLimitedAttendees: boolean;
-    maxAttendees?: number
+    maxAttendees?: number;
+    isTeamAllocations: boolean;
 }
