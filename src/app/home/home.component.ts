@@ -32,6 +32,8 @@ export class HomeComponent {
       }
       this.user = user;
 
+      // Uncomment to show all events
+      //const eventChanges = this.afs.collection<TeamEvent>(`events`, ref => ref.orderBy('dateTime', 'desc'))
       const eventChanges = this.afs.collection<TeamEvent>(`users/${user.uid}/events`, ref => ref.orderBy('dateTime', 'desc'))
         .valueChanges({ idField: 'id' });
       eventChanges.subscribe(events => {
