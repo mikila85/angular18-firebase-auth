@@ -8,7 +8,7 @@ import { AuthProvider } from 'ngx-auth-firebaseui';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  providers = [AuthProvider.Google];
+  providers = [AuthProvider.Google, AuthProvider.Facebook, AuthProvider.Microsoft];
 
   constructor(
     private router: Router,
