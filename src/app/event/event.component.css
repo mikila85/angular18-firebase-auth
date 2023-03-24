@@ -1,0 +1,9 @@
+ mat-slide-toggle {
+     margin: 8px 0;
+     display: block;
+ }
+
+ .stripe-button {
+     color: white;
+     background-color: #635bff;
+ }

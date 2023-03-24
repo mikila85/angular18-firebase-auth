@@ -2,8 +2,10 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
+import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, take } from 'rxjs';
+import { StripeAccountLink } from '../models/stripe-account-link';
 import { TeamEventBrief } from '../models/team-event-brief.model';
 import { TeamEvent } from '../models/team-event.model';
 import { TeamUserBrief } from '../models/team-user-brief';
@@ -26,6 +28,8 @@ export class EventComponent implements OnInit {
   eventIcon: string | null = null;
   isLimitedAttendees: boolean = false;
   isTeamAllocations: boolean = false;
+  isEventFee: boolean = false;
+  isStripeAccount: boolean = false;
   maxAttendees: number | undefined;
   teamColors = ['Red', 'White', 'Blue', 'Orange', 'Yellow', 'Green', 'Gray'];
   teams: { color: string, size: number }[] = [{ color: 'Red', size: 0 }]
@@ -42,6 +46,7 @@ export class EventComponent implements OnInit {
     private afs: AngularFirestore,
     private route: ActivatedRoute,
     private router: Router,
+    private readonly functions: Functions,
     private clipboard: Clipboard,
   ) { }
 
@@ -105,6 +110,7 @@ export class EventComponent implements OnInit {
         this.isLimitedAttendees = te.isLimitedAttendees;
         this.maxAttendees = te.maxAttendees;
         this.isTeamAllocations = te.isTeamAllocations;
+        this.isEventFee = te.isEventFee
         this.isOwner = te.owner === user.uid;
         this.isLoading = false;
       });
@@ -261,6 +267,7 @@ export class EventComponent implements OnInit {
       icon: this.user.photoURL,
       isLimitedAttendees: this.isLimitedAttendees,
       isTeamAllocations: this.isTeamAllocations,
+      isEventFee: this.isEventFee
     };
     if (this.maxAttendees) {
       duplicateEvent.maxAttendees = this.maxAttendees;
@@ -291,4 +298,20 @@ export class EventComponent implements OnInit {
     batch.delete(this.afs.doc(`users/${this.user?.uid}/events/${this.eventId}`).ref)
     batch.commit().then(() => { this.router.navigate([`/`]) });
   }
+
+  createStripeConnectedAccount() {
+    const createAccount = httpsCallableData<unknown, StripeAccountLink>(this.functions, 'createStripeConnectedAccount');
+    const getAccount = httpsCallableData(this.functions, 'getStripeConnectedAccount');
+
+    createAccount({ email: this.user?.email }).subscribe((accountLink: StripeAccountLink) => {
+      console.log(accountLink);
+      location.href = accountLink.url;
+      /*
+        getAccount({ id: accountLink.id }).subscribe(account => {
+          console.log(account);
+        })
+      */
+    })
+  }
+
 }

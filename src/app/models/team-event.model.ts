@@ -6,4 +6,5 @@ export interface TeamEvent extends TeamEventBrief {
     isLimitedAttendees: boolean;
     maxAttendees?: number;
     isTeamAllocations: boolean;
+    isEventFee: boolean;
 }
