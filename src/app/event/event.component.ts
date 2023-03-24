@@ -36,6 +36,7 @@ export class EventComponent implements OnInit {
   numberOfParticipants: number = 0;
   waitlist: TeamUserBrief[] = [];
   isLoading = true;
+  isStripeLoading = false;
   isNewEvent = true;
   isOwner = false;
   isJoined = false;
@@ -300,12 +301,14 @@ export class EventComponent implements OnInit {
   }
 
   createStripeConnectedAccount() {
+    this.isStripeLoading = true;
     const createAccount = httpsCallableData<unknown, StripeAccountLink>(this.functions, 'createStripeConnectedAccount');
     const getAccount = httpsCallableData(this.functions, 'getStripeConnectedAccount');
 
     createAccount({ email: this.user?.email }).subscribe((accountLink: StripeAccountLink) => {
       console.log(accountLink);
       location.href = accountLink.url;
+      // this.isStripeLoading = false;
       /*
         getAccount({ id: accountLink.id }).subscribe(account => {
           console.log(account);

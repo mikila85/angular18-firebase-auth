@@ -20,6 +20,7 @@ import { EventComponent } from './event/event.component';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { MessagesComponent } from './messages/messages.component';
+import { StripePaymentComponent } from './stripe-payment/stripe-payment.component';
 
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,10 +32,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { StripePaymentComponent } from './stripe-payment/stripe-payment.component';
 
 @NgModule({
   declarations: [
@@ -86,6 +87,7 @@ import { StripePaymentComponent } from './stripe-payment/stripe-payment.componen
     MatDatepickerModule,
     MatListModule,
     MatProgressBarModule,
+    MatProgressSpinnerModule,
     MatTabsModule,
     MatMenuModule,
     MatSlideToggleModule

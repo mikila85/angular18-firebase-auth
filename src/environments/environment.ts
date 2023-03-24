@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  useEmulators: true,
+  useEmulators: false,
   firebase: {
     projectId: 'team-bldr',
     appId: '1:814914099009:web:204eba22ab3db03a61f3c0',

@@ -6,17 +6,17 @@ const stripe = require('stripe')('sk_test_51MocYgCxlz3elfmgLtXVZxrEhrmZE3lXUBFMf
 // Create and deploy your first functions
 // https://firebase.google.com/docs/functions/get-started
 
-exports.helloWorld = functions.https.onRequest((request, response) => {
+exports.helloWorld = functions.region('australia-southeast1').https.onRequest((request, response) => {
     functions.logger.info("Hello logs!", { structuredData: true });
     response.send("Hello from Firebase!");
 });
 
-exports.testMessage = functions.https.onCall((data, context) => {
+exports.testMessage = functions.region('australia-southeast1').https.onCall((data, context) => {
     return "Hello from callable function!"
 });
 
 // https://stripe.com/docs/api?lang=node
-exports.createStripeConnectedAccount = functions.https.onCall(async (data, context) => {
+exports.createStripeConnectedAccount = functions.region('australia-southeast1').https.onCall(async (data, context) => {
     const newAccount = await stripe.accounts.create({
         type: 'express',
         email: data.email,
@@ -25,8 +25,8 @@ exports.createStripeConnectedAccount = functions.https.onCall(async (data, conte
 
     const accountLink = await stripe.accountLinks.create({
         account: newAccount.id,
-        refresh_url: 'http://localhost:4200/',
-        return_url: 'http://localhost:4200/',
+        refresh_url: 'https://team-bldr.web.app/',
+        return_url: 'https://team-bldr.web.app/',
         type: 'account_onboarding',
     });
     console.log(accountLink);
@@ -35,7 +35,7 @@ exports.createStripeConnectedAccount = functions.https.onCall(async (data, conte
     return accountLink;
 })
 
-exports.getStripeConnectedAccount = functions.https.onCall(async (data, context) => {
+exports.getStripeConnectedAccount = functions.region('australia-southeast1').https.onCall(async (data, context) => {
     const account = await stripe.accounts.retrieve(data.id);
     console.log(account);
     return account;

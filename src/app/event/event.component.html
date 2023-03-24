@@ -76,7 +76,8 @@
             <mat-slide-toggle [(ngModel)]="isEventFee" (ngModelChange)="teamEventDoc?.update({isEventFee: $event})">
                 Event Fee
             </mat-slide-toggle>
-            <div *ngIf="isEventFee">
+            <mat-spinner style="margin:0 auto;" *ngIf="isStripeLoading"></mat-spinner>
+            <div *ngIf="isEventFee && !isStripeLoading">
                 <div *ngIf="!isStripeAccount">
                     <a href="https://stripe.com">
                         <img src="https://images.ctfassets.net/fzn2n1nzq965/4M6d6BSWzlgsrJx8rdZb0I/733f37ef69b5ca1d3d33e127184f4ce4/Powered_by_Stripe.svg?q=80&amp;w=1082"
