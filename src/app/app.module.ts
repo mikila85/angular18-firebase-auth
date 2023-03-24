@@ -6,7 +6,7 @@ import { getAnalytics, provideAnalytics, ScreenTrackingService, UserTrackingServ
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { getFunctions, provideFunctions } from '@angular/fire/functions';
+import { connectFunctionsEmulator, getFunctions, provideFunctions } from '@angular/fire/functions';
 import { getMessaging, provideMessaging } from '@angular/fire/messaging';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -34,6 +34,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { StripePaymentComponent } from './stripe-payment/stripe-payment.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     LoginComponent,
     EventComponent,
     EventParticipantsComponent,
-    MessagesComponent
+    MessagesComponent,
+    StripePaymentComponent
   ],
   imports: [
     BrowserModule,
@@ -54,7 +56,13 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     provideAnalytics(() => getAnalytics()),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
-    provideFunctions(() => getFunctions()),
+    provideFunctions(() => {
+      const functions = getFunctions();
+      if (environment.useEmulators) {
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+      }
+      return functions;
+    }),
     provideMessaging(() => getMessaging()),
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: !isDevMode(),
