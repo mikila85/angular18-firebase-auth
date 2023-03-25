@@ -20,6 +20,9 @@ exports.createStripeConnectedAccount = functions.region('australia-southeast1').
     const newAccount = await stripe.accounts.create({
         type: 'express',
         email: data.email,
+        business_profile: {
+            url: data.businessProfileUrl
+        }
     });
     console.log(newAccount);
 

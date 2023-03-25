@@ -304,16 +304,28 @@ export class EventComponent implements OnInit {
     this.isStripeLoading = true;
     const createAccount = httpsCallableData<unknown, StripeAccountLink>(this.functions, 'createStripeConnectedAccount');
     const getAccount = httpsCallableData(this.functions, 'getStripeConnectedAccount');
-
-    createAccount({ email: this.user?.email }).subscribe((accountLink: StripeAccountLink) => {
+    const createAccountData = {
+      email: this.user?.email,
+      businessProfileUrl: `https://team-bldr.web.app/profile/${this.user?.uid}`
+    }
+    createAccount(createAccountData).subscribe((accountLink: StripeAccountLink) => {
       console.log(accountLink);
-      location.href = accountLink.url;
-      // this.isStripeLoading = false;
+      window.open(accountLink.url, '_self', '')
+      this.isStripeLoading = false;
       /*
         getAccount({ id: accountLink.id }).subscribe(account => {
           console.log(account);
         })
       */
+    })
+  }
+
+  getStripeConnectedAccount(stripeAccountId: string) {
+    this.isStripeLoading = true;
+    const getAccount = httpsCallableData(this.functions, 'getStripeConnectedAccount');
+
+    getAccount({ id: stripeAccountId }).subscribe(account => {
+      console.log(account);
     })
   }
 

@@ -36,6 +36,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { UserProfileComponent } from './user-profile/user-profile.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     EventComponent,
     EventParticipantsComponent,
     MessagesComponent,
-    StripePaymentComponent
+    StripePaymentComponent,
+    UserProfileComponent
   ],
   imports: [
     BrowserModule,
@@ -58,7 +60,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     provideFunctions(() => {
-      const functions = getFunctions();
+      const functions = getFunctions(undefined, 'australia-southeast1');
       if (environment.useEmulators) {
         connectFunctionsEmulator(functions, 'localhost', 5001);
       }
