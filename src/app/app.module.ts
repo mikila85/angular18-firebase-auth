@@ -36,7 +36,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { UserProfileComponent } from './user-profile/user-profile.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +46,6 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
     EventParticipantsComponent,
     MessagesComponent,
     StripePaymentComponent,
-    UserProfileComponent
   ],
   imports: [
     BrowserModule,
