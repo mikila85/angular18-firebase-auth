@@ -30,6 +30,7 @@ export class EventComponent implements OnInit {
   isTeamAllocations: boolean = false;
   isEventFee: boolean = false;
   isStripeAccount: boolean = false;
+  price: number = 0;
   maxAttendees: number | undefined;
   teamColors = ['Red', 'White', 'Blue', 'Orange', 'Yellow', 'Green', 'Gray'];
   teams: { color: string, size: number }[] = [{ color: 'Red', size: 0 }]
@@ -37,6 +38,7 @@ export class EventComponent implements OnInit {
   waitlist: TeamUserBrief[] = [];
   isLoading = true;
   isStripeLoading = false;
+  isPriceLoading = false;
   isNewEvent = true;
   isOwner = false;
   isJoined = false;
@@ -303,20 +305,16 @@ export class EventComponent implements OnInit {
   createStripeConnectedAccount() {
     this.isStripeLoading = true;
     const createAccount = httpsCallableData<unknown, StripeAccountLink>(this.functions, 'createStripeConnectedAccount');
-    const getAccount = httpsCallableData(this.functions, 'getStripeConnectedAccount');
     const createAccountData = {
       email: this.user?.email,
-      businessProfileUrl: `https://team-bldr.web.app/profile/${this.user?.uid}`
+      businessProfileUrl: `https://team-bldr.web.app/profile/${this.user?.uid}`,
+      refreshUrl: window.location.href,
+      returnUrl: `${window.location.origin}/stripe/${this.eventId}/`
     }
     createAccount(createAccountData).subscribe((accountLink: StripeAccountLink) => {
       console.log(accountLink);
       window.open(accountLink.url, '_self', '')
       this.isStripeLoading = false;
-      /*
-        getAccount({ id: accountLink.id }).subscribe(account => {
-          console.log(account);
-        })
-      */
     })
   }
 
@@ -329,4 +327,38 @@ export class EventComponent implements OnInit {
     })
   }
 
+  createStripePrice(price: number) {
+    this.isPriceLoading = true;
+    const total = price * 100 + price * 10;
+    const stripePrice = httpsCallableData(this.functions, 'createStripePrice');
+
+    stripePrice({
+      unit_amount: total,
+      currency: 'aud',
+      product_data: {
+        name: 'Beach Volleyball at North Beach'
+      }
+    }).subscribe(p => {
+      console.log(p);
+      this.isPriceLoading = false;
+
+    })
+  }
+
+  createStripeCheckoutSession() {
+    const stripeCheckout = httpsCallableData(this.functions, 'createStripeCheckoutSession');
+
+    stripeCheckout({
+      mode: 'payment',
+      line_items: [{ price: 'price_1Mq7MRCxlz3elfmgJUXrajq2', quantity: 1 }],
+      payment_intent_data: {
+        application_fee_amount: 100,
+        transfer_data: { destination: 'acct_1MrXpwCenjzHfoe6' },
+      },
+      success_url: 'https://example.com/success',
+      cancel_url: 'https://example.com/cancel',
+    }).subscribe(r => {
+      console.log(r);
+    })
+  }
 }

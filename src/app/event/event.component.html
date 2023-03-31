@@ -91,10 +91,28 @@
                         <mat-icon inline=true>account_balance</mat-icon>
                         Create Stripe Account
                     </button>
-                    <!-- <button mat-raised-button (click)="getStripeConnectedAccount('acct_1Mpfc4E73Omfilj5')">
-                        <mat-icon inline=true>account_balance</mat-icon>
-                        Get Stripe Account
-                    </button> -->
+                    <!--
+                        <button mat-raised-button (click)="getStripeConnectedAccount('acct_1MrXpwCenjzHfoe6')">
+                            <mat-icon inline=true>account_balance</mat-icon>
+                            Get Stripe Account
+                        </button>
+                    -->
+                    <div fxLayout="row">
+                        <mat-form-field>
+                            <span matPrefix>$</span>
+                            <input matInput type="number" min="1" step="any" [(ngModel)]="price">
+                            <button mat-raised-button matSuffix (click)="createStripePrice(price)">
+                                Set the price
+                            </button>
+                        </mat-form-field>
+                    </div>
+                    <mat-progress-bar *ngIf="isPriceLoading" mode="indeterminate"></mat-progress-bar>
+                </div>
+                <div fxLayout="row">
+                    <button mat-raised-button (click)="createStripeCheckoutSession()">
+                        <mat-icon inline=true>shopping_cart</mat-icon>
+                        Proceed to Checkout
+                    </button>
                 </div>
             </div>
         </div>

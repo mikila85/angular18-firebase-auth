@@ -20,6 +20,7 @@ import { EventComponent } from './event/event.component';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { MessagesComponent } from './messages/messages.component';
+import { StripeAccountCreatedComponent } from './stripe-account-created/stripe-account-created.component';
 import { StripePaymentComponent } from './stripe-payment/stripe-payment.component';
 
 import { ClipboardModule } from '@angular/cdk/clipboard';
@@ -46,6 +47,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     EventParticipantsComponent,
     MessagesComponent,
     StripePaymentComponent,
+    StripeAccountCreatedComponent,
   ],
   imports: [
     BrowserModule,

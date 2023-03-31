@@ -28,8 +28,8 @@ exports.createStripeConnectedAccount = functions.region('australia-southeast1').
 
     const accountLink = await stripe.accountLinks.create({
         account: newAccount.id,
-        refresh_url: 'https://team-bldr.web.app/',
-        return_url: 'https://team-bldr.web.app/',
+        refresh_url: data.refreshUrl,
+        return_url: data.returnUrl + newAccount.id,
         type: 'account_onboarding',
     });
     console.log(accountLink);
@@ -42,6 +42,16 @@ exports.getStripeConnectedAccount = functions.region('australia-southeast1').htt
     const account = await stripe.accounts.retrieve(data.id);
     console.log(account);
     return account;
+})
+
+exports.createStripePrice = functions.region('australia-southeast1').https.onCall(async (data, context) => {
+    const price = await stripe.prices.create(data)
+    return price;
+})
+
+exports.createStripeCheckoutSession = functions.region('australia-southeast1').https.onCall(async (data, context) => {
+    const session = await stripe.checkout.sessions.create(data);
+    return session;
 })
 
 // curl -X DELETE https://api.stripe.com/v1/accounts/acct_1Mp0zDERJM2fKCZr -u sk_test_51MocYgCxlz3elfmgLtXVZxrEhrmZE3lXUBFMfpcpknrHfmkOJ9vIsJEF9RAiD9xwrCj79wXmSHpJaMMiZsZrYkXm00fvanaNSc:
