@@ -52,10 +52,10 @@ exports.getStripeConnectedAccount = functions.region('australia-southeast1').htt
 
 exports.createStripePrice = functions.region('australia-southeast1').https.onCall(async (data, context) => {
     const stripeConnected = require('stripe')('sk_test_51MocYgCxlz3elfmgLtXVZxrEhrmZE3lXUBFMfpcpknrHfmkOJ9vIsJEF9RAiD9xwrCj79wXmSHpJaMMiZsZrYkXm00fvanaNSc', {
-        stripeAccount: 'acct_1MrYtQCoutHG1Gei'
+        stripeAccount: data.stripeAccount
     });
 
-    const price = await stripeConnected.prices.create(data)
+    const price = await stripeConnected.prices.create(data.newPrice)
     return price;
 })
 

@@ -103,14 +103,6 @@
                             </button>
                         </mat-form-field>
                     </div>
-                    <mat-progress-bar *ngIf="isPriceLoading" mode="indeterminate"></mat-progress-bar>
-                </div>
-                <div *ngIf="isStripePrice" fxLayout="row" fxLayoutAlign="stretch center">
-                    <span>Pay {{price | currency}} </span>
-                    <button mat-raised-button (click)="createStripeCheckoutSession()">
-                        <mat-icon inline=true>shopping_cart</mat-icon>
-                        Proceed to Checkout
-                    </button>
                 </div>
             </div>
         </div>
@@ -118,6 +110,19 @@
             <p>{{eventDate.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}</p>
             <p>{{eventDescription}}</p>
         </div>
+        <mat-progress-bar *ngIf="isPriceLoading" mode="indeterminate"></mat-progress-bar>
+        <div *ngIf="isStripePrice && !isPaid" fxLayout="row" fxLayoutAlign="stretch center">
+            <span>Pay {{price | currency}} </span>
+            <button mat-raised-button style="margin-left: 16px;" (click)="createStripeCheckoutSession()">
+                <mat-icon inline=true>shopping_cart</mat-icon>
+                Proceed to Checkout
+            </button>
+        </div>
+        <p *ngIf="isPaid">
+            Paid
+            {{paidOn?.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
+        </p>
+
     </mat-card-content>
     <div [ngSwitch]="isOwner">
         <!--Owner of the event can always join without the waitlist-->

@@ -6,6 +6,7 @@ import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, take } from 'rxjs';
 import { Stripe } from 'stripe';
+import { Participant } from '../models/participant.model';
 import { StripeAccountLink } from '../models/stripe-account-link';
 import { TeamEventBrief } from '../models/team-event-brief.model';
 import { TeamEvent } from '../models/team-event.model';
@@ -34,6 +35,7 @@ export class EventComponent implements OnInit {
   isStripeAccount: boolean = false;
   isStripePrice: boolean = false;
   price: number = 0;
+  stripeAccountId: string | undefined;
   stripePriceUnitAmount: number = 0;
   stripePriceId: string | undefined;
   maxAttendees: number | undefined;
@@ -48,6 +50,8 @@ export class EventComponent implements OnInit {
   isOwner = false;
   isJoined = false;
   isWaitlist = false;
+  isPaid: boolean | undefined = false;
+  paidOn: Date | undefined = undefined;
 
   constructor(
     private auth: AngularFireAuth,
@@ -71,17 +75,21 @@ export class EventComponent implements OnInit {
           console.error("ngOnInit userDoc.subscribe: returned falsy user");
           return;
         }
-        this.user.stripeAccountId = u.stripeAccountId;
-        this.isStripeAccount = true;
+        if (u.stripeAccountId) {
+          this.user.stripeAccountId = u.stripeAccountId;
+          this.isStripeAccount = true;
+        }
       });
 
       if (this.eventId) {
         this.isNewEvent = false;
         this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
         this.teamEvent = this.teamEventDoc.valueChanges({ idField: 'id' });
-        this.afs.doc(`events/${this.eventId}/participants/${this.user.uid}`)
+        this.afs.doc<Participant>(`events/${this.eventId}/participants/${this.user.uid}`)
           .get().subscribe(p => {
             this.isJoined = p.exists;
+            this.isPaid = p.data()?.isPaid;
+            this.paidOn = p.data()?.paidOn?.toDate();
           });
         this.afs.doc(`events/${this.eventId}/waitlist/${this.user.uid}`)
           .get().subscribe(p => {
@@ -89,7 +97,6 @@ export class EventComponent implements OnInit {
           });
       }
       else {
-        console.log('New Event');
         this.isOwner = true;
         const batch = this.afs.firestore.batch();
         this.eventId = this.afs.createId();
@@ -128,7 +135,12 @@ export class EventComponent implements OnInit {
         this.isTeamAllocations = te.isTeamAllocations;
         this.isEventFee = te.isEventFee
         this.isOwner = te.owner === user.uid;
-        this.isLoading = false;
+
+        this.stripeAccountId = te.stripeAccountId;
+        if (this.isOwner && this.isStripeAccount && te.stripeAccountId !== this.user?.stripeAccountId) {
+          this.stripeAccountId = this.user?.stripeAccountId;
+          this.teamEventDoc?.update({ stripeAccountId: this.user?.stripeAccountId });
+        }
         this.isStripePrice = !!te.stripePriceId;
         this.stripePriceId = te.stripePriceId;
         if (te.stripePriceUnitAmount) {
@@ -137,6 +149,7 @@ export class EventComponent implements OnInit {
         if (te.stripePriceUnitAmount) {
           this.price = te.stripePriceUnitAmount / 100;
         }
+        this.isLoading = false;
       });
 
       this.getWaitlist();
@@ -337,7 +350,6 @@ export class EventComponent implements OnInit {
       returnUrl: `${window.location.origin}/stripe/${this.eventId}/`
     }
     createAccount(createAccountData).subscribe((accountLink: StripeAccountLink) => {
-      console.log(accountLink);
       window.open(accountLink.url, '_self', '')
       this.isStripeLoading = false;
     })
@@ -359,13 +371,14 @@ export class EventComponent implements OnInit {
     const priceTotal = priceWithStripeFees + applicationFees;
     const stripePrice = httpsCallableData<unknown, Stripe.Price>(this.functions, 'createStripePrice');
 
-    stripePrice({
+    const newPrice = {
       unit_amount: priceTotal,
       currency: 'aud',
       product_data: {
         name: this.eventTitle
       }
-    }).subscribe(stripePrice => {
+    }
+    stripePrice({ stripeAccount: this.user?.stripeAccountId, newPrice }).subscribe(stripePrice => {
       this.stripePriceId = stripePrice.id;
       if (stripePrice.unit_amount) {
         this.stripePriceUnitAmount = stripePrice.unit_amount;
@@ -396,15 +409,15 @@ export class EventComponent implements OnInit {
         success_url: returnUrl + 'success',
         cancel_url: returnUrl + 'cancel',
       },
-      connectedAccountId: this.user?.stripeAccountId
+      connectedAccountId: this.stripeAccountId
     }
     stripeCheckout(checkoutData).subscribe(r => {
       this.isPriceLoading = false;
-      console.log(r);
       if (r.url) {
         window.open(r.url, '_blank', '')
       } else {
         console.error("No URL returned by createStripeCheckoutSession")
+        console.log(r);
       }
     })
   }
