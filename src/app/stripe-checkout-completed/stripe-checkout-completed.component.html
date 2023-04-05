@@ -1,0 +1,19 @@
+<mat-progress-bar *ngIf="isSuccess" mode="indeterminate"></mat-progress-bar>
+
+<p *ngIf="isSuccess">Stripe payment success.</p>
+
+<mat-card *ngIf="!isSuccess">
+    <mat-card-header>
+        <div mat-card-avatar class="stripe-header-image"></div>
+        <mat-card-title>Stripe Payment is Cancelled</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <p>No money is withdrawn from your account.</p>
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-raised-button (click)="navigateToEvent()">
+            <mat-icon inline=true>check_circle</mat-icon>
+            OK
+        </button>
+    </mat-card-actions>
+</mat-card>

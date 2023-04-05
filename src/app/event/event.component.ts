@@ -385,6 +385,7 @@ export class EventComponent implements OnInit {
     this.isPriceLoading = true;
     const stripeCheckout = httpsCallableData<unknown, Stripe.Checkout.Session>(this.functions, 'createStripeCheckoutSession');
 
+    const returnUrl = `${window.location.origin}/stripe-payment/${this.eventId}/${this.user?.uid}/`
     const checkoutData = {
       payment: {
         mode: 'payment',
@@ -392,8 +393,8 @@ export class EventComponent implements OnInit {
         payment_intent_data: {
           application_fee_amount: 50,
         },
-        success_url: 'https://example.com/success',
-        cancel_url: 'https://example.com/cancel',
+        success_url: returnUrl + 'success',
+        cancel_url: returnUrl + 'cancel',
       },
       connectedAccountId: this.user?.stripeAccountId
     }

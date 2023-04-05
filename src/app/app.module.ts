@@ -21,12 +21,13 @@ import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { MessagesComponent } from './messages/messages.component';
 import { StripeAccountCreatedComponent } from './stripe-account-created/stripe-account-created.component';
+import { StripeCheckoutCompletedComponent } from './stripe-checkout-completed/stripe-checkout-completed.component';
 import { StripePaymentComponent } from './stripe-payment/stripe-payment.component';
 
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -48,6 +49,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MessagesComponent,
     StripePaymentComponent,
     StripeAccountCreatedComponent,
+    StripeCheckoutCompletedComponent,
   ],
   imports: [
     BrowserModule,
