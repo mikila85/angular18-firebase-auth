@@ -60,16 +60,6 @@ exports.createStripePrice = functions.region('australia-southeast1').https.onCal
 })
 
 exports.createStripeCheckoutSession = functions.region('australia-southeast1').https.onCall(async (data, context) => {
-    /*
-    const paymentIntent = await stripe.paymentIntents.create({
-        amount: 1000,
-        currency: 'aud',
-        automatic_payment_methods: {enabled: true},
-        application_fee_amount: 123,
-      }, {
-        stripeAccount: data.connectedAccountId,
-      });
-*/
     const session = await stripe.checkout.sessions.create(data.payment, { stripeAccount: data.connectedAccountId });
     return session;
 })

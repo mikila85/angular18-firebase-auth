@@ -5,9 +5,11 @@ import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, take } from 'rxjs';
+import { Stripe } from 'stripe';
 import { StripeAccountLink } from '../models/stripe-account-link';
 import { TeamEventBrief } from '../models/team-event-brief.model';
 import { TeamEvent } from '../models/team-event.model';
+import { TeamUser } from '../models/team-user';
 import { TeamUserBrief } from '../models/team-user-brief';
 
 @Component({
@@ -16,7 +18,7 @@ import { TeamUserBrief } from '../models/team-user-brief';
   styleUrls: ['./event.component.css']
 })
 export class EventComponent implements OnInit {
-  user: firebase.default.User | null = null;
+  user: TeamUser | null = null;
   teamEventDoc: AngularFirestoreDocument<TeamEvent> | undefined;
   teamEvent: Observable<TeamEvent | undefined> | undefined;
   eventId: string | null = null;
@@ -30,7 +32,10 @@ export class EventComponent implements OnInit {
   isTeamAllocations: boolean = false;
   isEventFee: boolean = false;
   isStripeAccount: boolean = false;
+  isStripePrice: boolean = false;
   price: number = 0;
+  stripePriceUnitAmount: number = 0;
+  stripePriceId: string | undefined;
   maxAttendees: number | undefined;
   teamColors = ['Red', 'White', 'Blue', 'Orange', 'Yellow', 'Green', 'Gray'];
   teams: { color: string, size: number }[] = [{ color: 'Red', size: 0 }]
@@ -61,6 +66,14 @@ export class EventComponent implements OnInit {
         return;
       }
       this.user = user;
+      this.afs.doc<TeamUser>(`users/${user.uid}`).valueChanges().subscribe(u => {
+        if (!u || !this.user) {
+          console.error("ngOnInit userDoc.subscribe: returned falsy user");
+          return;
+        }
+        this.user.stripeAccountId = u.stripeAccountId;
+        this.isStripeAccount = true;
+      });
 
       if (this.eventId) {
         this.isNewEvent = false;
@@ -116,6 +129,14 @@ export class EventComponent implements OnInit {
         this.isEventFee = te.isEventFee
         this.isOwner = te.owner === user.uid;
         this.isLoading = false;
+        this.isStripePrice = !!te.stripePriceId;
+        this.stripePriceId = te.stripePriceId;
+        if (te.stripePriceUnitAmount) {
+          this.stripePriceUnitAmount = te.stripePriceUnitAmount;
+        }
+        if (te.stripePriceUnitAmount) {
+          this.price = te.stripePriceUnitAmount / 100;
+        }
       });
 
       this.getWaitlist();
@@ -270,7 +291,10 @@ export class EventComponent implements OnInit {
       icon: this.user.photoURL,
       isLimitedAttendees: this.isLimitedAttendees,
       isTeamAllocations: this.isTeamAllocations,
-      isEventFee: this.isEventFee
+      isEventFee: this.isEventFee,
+      maxAttendees: this.maxAttendees,
+      stripePriceId: this.stripePriceId,
+      stripePriceUnitAmount: this.stripePriceUnitAmount,
     };
     if (this.maxAttendees) {
       duplicateEvent.maxAttendees = this.maxAttendees;
@@ -306,6 +330,7 @@ export class EventComponent implements OnInit {
     this.isStripeLoading = true;
     const createAccount = httpsCallableData<unknown, StripeAccountLink>(this.functions, 'createStripeConnectedAccount');
     const createAccountData = {
+      accountType: 'standard',
       email: this.user?.email,
       businessProfileUrl: `https://team-bldr.web.app/profile/${this.user?.uid}`,
       refreshUrl: window.location.href,
@@ -329,36 +354,57 @@ export class EventComponent implements OnInit {
 
   createStripePrice(price: number) {
     this.isPriceLoading = true;
-    const total = price * 100 + price * 10;
-    const stripePrice = httpsCallableData(this.functions, 'createStripePrice');
+    const priceWithStripeFees = Math.ceil((price * 1.031 + 0.3) * 100);
+    const applicationFees = 50;
+    const priceTotal = priceWithStripeFees + applicationFees;
+    const stripePrice = httpsCallableData<unknown, Stripe.Price>(this.functions, 'createStripePrice');
 
     stripePrice({
-      unit_amount: total,
+      unit_amount: priceTotal,
       currency: 'aud',
       product_data: {
-        name: 'Beach Volleyball at North Beach'
+        name: this.eventTitle
       }
-    }).subscribe(p => {
-      console.log(p);
-      this.isPriceLoading = false;
-
+    }).subscribe(stripePrice => {
+      this.stripePriceId = stripePrice.id;
+      if (stripePrice.unit_amount) {
+        this.stripePriceUnitAmount = stripePrice.unit_amount;
+      } else {
+        this.stripePriceUnitAmount = 0;
+      }
+      this.teamEventDoc?.update({
+        stripePriceId: stripePrice.id,
+        stripePriceUnitAmount: this.stripePriceUnitAmount
+      }).then(() => {
+        this.isPriceLoading = false;
+      })
     })
   }
 
   createStripeCheckoutSession() {
-    const stripeCheckout = httpsCallableData(this.functions, 'createStripeCheckoutSession');
+    this.isPriceLoading = true;
+    const stripeCheckout = httpsCallableData<unknown, Stripe.Checkout.Session>(this.functions, 'createStripeCheckoutSession');
 
-    stripeCheckout({
-      mode: 'payment',
-      line_items: [{ price: 'price_1Mq7MRCxlz3elfmgJUXrajq2', quantity: 1 }],
-      payment_intent_data: {
-        application_fee_amount: 100,
-        transfer_data: { destination: 'acct_1MrXpwCenjzHfoe6' },
+    const checkoutData = {
+      payment: {
+        mode: 'payment',
+        line_items: [{ price: this.stripePriceId, quantity: 1 }],
+        payment_intent_data: {
+          application_fee_amount: 50,
+        },
+        success_url: 'https://example.com/success',
+        cancel_url: 'https://example.com/cancel',
       },
-      success_url: 'https://example.com/success',
-      cancel_url: 'https://example.com/cancel',
-    }).subscribe(r => {
+      connectedAccountId: this.user?.stripeAccountId
+    }
+    stripeCheckout(checkoutData).subscribe(r => {
+      this.isPriceLoading = false;
       console.log(r);
+      if (r.url) {
+        window.open(r.url, '_blank', '')
+      } else {
+        console.error("No URL returned by createStripeCheckoutSession")
+      }
     })
   }
 }
