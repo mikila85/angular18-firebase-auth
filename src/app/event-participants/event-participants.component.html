@@ -4,5 +4,8 @@
         <img matListItemAvatar [src]="participant.photoURL" referrerpolicy="no-referrer"
             [alt]="participant.displayName">
         <h3 matListItemTitle>{{participant.displayName}}</h3>
+        <p matListItemLine *ngIf="participant.isPaid">Paid
+            {{participant.paidOn?.toDate()?.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
+        </p>
     </mat-list-item>
 </mat-list>

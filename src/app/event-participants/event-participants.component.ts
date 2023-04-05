@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
 import { Observable } from 'rxjs';
+import { Participant } from '../models/participant.model';
 
 @Component({
   selector: 'app-event-participants',
@@ -12,8 +13,8 @@ export class EventParticipantsComponent {
   @Input() eventId: string | null = null;
   @Output() numberOfParticipantsEvent = new EventEmitter<number>();
   user: firebase.default.User | null = null;
-  private participantsCollection: AngularFirestoreCollection<firebase.default.User> | undefined;
-  participants: Observable<firebase.default.User[]> | undefined;
+  private participantsCollection: AngularFirestoreCollection<Participant> | undefined;
+  participants: Observable<Participant[]> | undefined;
   isLoading = true;
 
   constructor(
@@ -25,7 +26,7 @@ export class EventParticipantsComponent {
     this.auth.user.subscribe(user => {
       this.user = user;
     });
-    this.participantsCollection = this.afs.collection<firebase.default.User>(`/events/${this.eventId}/participants`);
+    this.participantsCollection = this.afs.collection<Participant>(`/events/${this.eventId}/participants`);
     this.participants = this.participantsCollection.valueChanges();
     this.participants.subscribe((p) => {
       this.isLoading = false;
