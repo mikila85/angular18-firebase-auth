@@ -18,10 +18,16 @@ exports.testMessage = functions.region('australia-southeast1').https.onCall((dat
 // https://stripe.com/docs/api?lang=node
 exports.createStripeConnectedAccount = functions.region('australia-southeast1').https.onCall(async (data, context) => {
     const newAccount = await stripe.accounts.create({
-        type: 'express',
+        type: data.accountType,
         email: data.email,
         business_profile: {
-            url: data.businessProfileUrl
+            url: data.businessProfileUrl,
+            product_description: "Seamlessly collect fees for events to pass them on quickly and accurately, without any hassle."
+        },
+        settings: {
+            payments: {
+                statement_descriptor: "TEAM-BLDR.WEB.APP"
+            }
         }
     });
     console.log(newAccount);
@@ -45,12 +51,26 @@ exports.getStripeConnectedAccount = functions.region('australia-southeast1').htt
 })
 
 exports.createStripePrice = functions.region('australia-southeast1').https.onCall(async (data, context) => {
-    const price = await stripe.prices.create(data)
+    const stripeConnected = require('stripe')('sk_test_51MocYgCxlz3elfmgLtXVZxrEhrmZE3lXUBFMfpcpknrHfmkOJ9vIsJEF9RAiD9xwrCj79wXmSHpJaMMiZsZrYkXm00fvanaNSc', {
+        stripeAccount: 'acct_1MrYtQCoutHG1Gei'
+    });
+
+    const price = await stripeConnected.prices.create(data)
     return price;
 })
 
 exports.createStripeCheckoutSession = functions.region('australia-southeast1').https.onCall(async (data, context) => {
-    const session = await stripe.checkout.sessions.create(data);
+    /*
+    const paymentIntent = await stripe.paymentIntents.create({
+        amount: 1000,
+        currency: 'aud',
+        automatic_payment_methods: {enabled: true},
+        application_fee_amount: 123,
+      }, {
+        stripeAccount: data.connectedAccountId,
+      });
+*/
+    const session = await stripe.checkout.sessions.create(data.payment, { stripeAccount: data.connectedAccountId });
     return session;
 })
 
