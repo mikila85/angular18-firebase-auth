@@ -394,9 +394,10 @@ export class EventComponent implements OnInit {
   createStripePrice(price: number) {
     this.isPriceLoading = true;
     const priceWithStripeFees = Math.ceil((price * 100 + 30) / (1 - 0.0175));
+    const tax = (priceWithStripeFees - (price * 100)) / 10;
     const applicationFees = Math.trunc(price * EventComponent.applicationFeePercentage);
-    const priceTotal = priceWithStripeFees + applicationFees;
-    const stripePrice = httpsCallableData<unknown, Stripe.Price>(this.functions, 'createStripePrice');
+    const priceTotal = priceWithStripeFees + applicationFees + tax;
+    const createStripePrice = httpsCallableData<unknown, Stripe.Price>(this.functions, 'createStripePrice');
 
     const newPrice = {
       unit_amount: priceTotal,
@@ -405,7 +406,7 @@ export class EventComponent implements OnInit {
         name: this.eventTitle
       }
     }
-    stripePrice({ stripeAccount: this.user?.stripeAccountId, newPrice }).subscribe(stripePrice => {
+    createStripePrice({ stripeAccount: this.user?.stripeAccountId, newPrice }).subscribe(stripePrice => {
       this.stripePriceId = stripePrice.id;
       if (stripePrice.unit_amount) {
         this.stripePriceUnitAmount = stripePrice.unit_amount;
