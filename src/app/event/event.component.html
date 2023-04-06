@@ -78,7 +78,7 @@
             </mat-slide-toggle>
             <mat-spinner style="margin:0 auto;" *ngIf="isStripeLoading"></mat-spinner>
             <div *ngIf="isEventFee && !isStripeLoading">
-                <a href="https://stripe.com">
+                <a [href]="stripeUrl">
                     <img src="https://images.ctfassets.net/fzn2n1nzq965/4M6d6BSWzlgsrJx8rdZb0I/733f37ef69b5ca1d3d33e127184f4ce4/Powered_by_Stripe.svg?q=80&amp;w=1082"
                         alt="Powered by Stripe" width="150" height="34" loading="lazy">
                 </a>

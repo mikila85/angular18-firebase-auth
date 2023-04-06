@@ -31,6 +31,7 @@ export class EventComponent implements OnInit {
   eventIcon: string | null = null;
   isLimitedAttendees: boolean = false;
   isTeamAllocations: boolean = false;
+  stripeUrl: string = "https://stripe.com";
   isEventFee: boolean = false;
   isStripeAccount: boolean = false;
   isStripePrice: boolean = false;
@@ -77,6 +78,7 @@ export class EventComponent implements OnInit {
         }
         if (u.stripeAccountId) {
           this.user.stripeAccountId = u.stripeAccountId;
+          this.stripeUrl = "https://dashboard.stripe.com";
           this.isStripeAccount = true;
         }
       });
