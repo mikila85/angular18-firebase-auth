@@ -19,6 +19,7 @@ import { TeamUserBrief } from '../models/team-user-brief';
   styleUrls: ['./event.component.css']
 })
 export class EventComponent implements OnInit {
+  static readonly applicationFeePercentage = 5;
   user: TeamUser | null = null;
   teamEventDoc: AngularFirestoreDocument<TeamEvent> | undefined;
   teamEvent: Observable<TeamEvent | undefined> | undefined;
@@ -33,9 +34,10 @@ export class EventComponent implements OnInit {
   isTeamAllocations: boolean = false;
   stripeUrl: string = "https://stripe.com";
   isEventFee: boolean = false;
+  eventFee: number = 0;
+  applicationFee: number = 0;
   isStripeAccount: boolean = false;
   isStripePrice: boolean = false;
-  price: number = 0;
   stripeAccountId: string | undefined;
   stripePriceUnitAmount: number = 0;
   stripePriceId: string | undefined;
@@ -70,16 +72,24 @@ export class EventComponent implements OnInit {
         console.error('User object is falsy');
         return;
       }
-      this.user = user;
+      this.user = Object.assign(user);
       this.afs.doc<TeamUser>(`users/${user.uid}`).valueChanges().subscribe(u => {
         if (!u || !this.user) {
           console.error("ngOnInit userDoc.subscribe: returned falsy user");
           return;
         }
+        this.user.isStripeAccountEnabled = u.isStripeAccountEnabled;
         if (u.stripeAccountId) {
           this.user.stripeAccountId = u.stripeAccountId;
           this.stripeUrl = "https://dashboard.stripe.com";
           this.isStripeAccount = true;
+          if (!u.isStripeAccountEnabled) {
+            this.getStripeConnectedAccount(u.stripeAccountId).subscribe((account) => {
+              if (account.charges_enabled && account.payouts_enabled) {
+                this.afs.doc(`users/${user.uid}`).update({ isStripeAccountEnabled: true });
+              }
+            })
+          }
         }
       });
 
@@ -87,13 +97,13 @@ export class EventComponent implements OnInit {
         this.isNewEvent = false;
         this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
         this.teamEvent = this.teamEventDoc.valueChanges({ idField: 'id' });
-        this.afs.doc<Participant>(`events/${this.eventId}/participants/${this.user.uid}`)
+        this.afs.doc<Participant>(`events/${this.eventId}/participants/${this.user?.uid}`)
           .get().subscribe(p => {
             this.isJoined = p.exists;
             this.isPaid = p.data()?.isPaid;
             this.paidOn = p.data()?.paidOn?.toDate();
           });
-        this.afs.doc(`events/${this.eventId}/waitlist/${this.user.uid}`)
+        this.afs.doc(`events/${this.eventId}/waitlist/${this.user?.uid}`)
           .get().subscribe(p => {
             this.isWaitlist = p.exists;
           });
@@ -143,13 +153,16 @@ export class EventComponent implements OnInit {
           this.stripeAccountId = this.user?.stripeAccountId;
           this.teamEventDoc?.update({ stripeAccountId: this.user?.stripeAccountId });
         }
+        if (te.eventFee) {
+          this.eventFee = te.eventFee;
+        }
+        if (te.applicationFee) {
+          this.applicationFee = te.applicationFee;
+        }
         this.isStripePrice = !!te.stripePriceId;
         this.stripePriceId = te.stripePriceId;
         if (te.stripePriceUnitAmount) {
           this.stripePriceUnitAmount = te.stripePriceUnitAmount;
-        }
-        if (te.stripePriceUnitAmount) {
-          this.price = te.stripePriceUnitAmount / 100;
         }
         this.isLoading = false;
       });
@@ -307,6 +320,8 @@ export class EventComponent implements OnInit {
       isLimitedAttendees: this.isLimitedAttendees,
       isTeamAllocations: this.isTeamAllocations,
       isEventFee: this.isEventFee,
+      eventFee: this.eventFee,
+      applicationFee: this.applicationFee,
       maxAttendees: this.maxAttendees,
       stripePriceId: this.stripePriceId,
       stripePriceUnitAmount: this.stripePriceUnitAmount,
@@ -358,18 +373,28 @@ export class EventComponent implements OnInit {
   }
 
   getStripeConnectedAccount(stripeAccountId: string) {
-    this.isStripeLoading = true;
-    const getAccount = httpsCallableData(this.functions, 'getStripeConnectedAccount');
-
-    getAccount({ id: stripeAccountId }).subscribe(account => {
-      console.log(account);
-    })
+    const getAccount = httpsCallableData<unknown, Stripe.Account>(this.functions, 'getStripeConnectedAccount');
+    return getAccount({ id: stripeAccountId });
   }
 
+  /** The sample computation based on the following values:
+    $10.00 = Expected payout for the Connect account
+    $0.50 = Application fee
+    1.75% or 0.0175 = Stripe fixed percentage fee (Domestic card)
+    $0.30 = Stripe fixed fee
+
+    Step 1: $10.00 + $0.30 = $10.30
+    Step 2: 1 - 0.0175 = 0.9825
+    Step 3: $10.30 / 0.9825 = $10.48
+    Step 4: $10.48 + $0.50 = $11.98 Total amount to be charged
+
+    After getting the Total charge, you can already follow the Flow of funds in this link:
+    https://stripe.com/docs/connect/destination-charges#flow-of-funds-app-fee
+  */
   createStripePrice(price: number) {
     this.isPriceLoading = true;
-    const priceWithStripeFees = Math.ceil((price * 1.031 + 0.3) * 100);
-    const applicationFees = 50;
+    const priceWithStripeFees = Math.ceil((price * 100 + 30) / (1 - 0.0175));
+    const applicationFees = Math.trunc(price * EventComponent.applicationFeePercentage);
     const priceTotal = priceWithStripeFees + applicationFees;
     const stripePrice = httpsCallableData<unknown, Stripe.Price>(this.functions, 'createStripePrice');
 
@@ -389,8 +414,11 @@ export class EventComponent implements OnInit {
       }
       this.teamEventDoc?.update({
         stripePriceId: stripePrice.id,
-        stripePriceUnitAmount: this.stripePriceUnitAmount
+        stripePriceUnitAmount: this.stripePriceUnitAmount,
+        eventFee: price,
+        applicationFee: applicationFees,
       }).then(() => {
+        this.applicationFee = applicationFees;
         this.isPriceLoading = false;
       })
     })
@@ -406,7 +434,7 @@ export class EventComponent implements OnInit {
         mode: 'payment',
         line_items: [{ price: this.stripePriceId, quantity: 1 }],
         payment_intent_data: {
-          application_fee_amount: 50,
+          application_fee_amount: this.applicationFee,
         },
         success_url: returnUrl + 'success',
         cancel_url: returnUrl + 'cancel',

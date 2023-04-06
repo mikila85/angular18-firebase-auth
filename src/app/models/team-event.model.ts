@@ -7,6 +7,8 @@ export interface TeamEvent extends TeamEventBrief {
     maxAttendees?: number;
     isTeamAllocations: boolean;
     isEventFee: boolean;
+    eventFee?: number;
+    applicationFee?: number;
     stripeAccountId?: string;
     stripePriceId?: string;
     stripePriceUnitAmount?: number;

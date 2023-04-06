@@ -78,10 +78,16 @@
             </mat-slide-toggle>
             <mat-spinner style="margin:0 auto;" *ngIf="isStripeLoading"></mat-spinner>
             <div *ngIf="isEventFee && !isStripeLoading">
-                <a [href]="stripeUrl">
+                <a [href]="stripeUrl" mat-button>
                     <img src="https://images.ctfassets.net/fzn2n1nzq965/4M6d6BSWzlgsrJx8rdZb0I/733f37ef69b5ca1d3d33e127184f4ce4/Powered_by_Stripe.svg?q=80&amp;w=1082"
                         alt="Powered by Stripe" width="150" height="34" loading="lazy">
                 </a>
+                <a [href]="stripeUrl" *ngIf="isStripeAccount && !user?.isStripeAccountEnabled" mat-raised-button
+                    class="stripe-button">
+                    <mat-icon inline=true>account_balance</mat-icon>
+                    Complete Stripe Onboarding
+                </a>
+
                 <div *ngIf="!isStripeAccount">
                     <p>
                         To start accepting payments and moving funds to your bank account through the app, you need to
@@ -92,17 +98,22 @@
                         Create Stripe Account
                     </button>
                 </div>
-                <div *ngIf="isStripeAccount">
+                <div *ngIf="isStripeAccount && user?.isStripeAccountEnabled">
                     <div fxLayout="row">
                         <mat-form-field>
                             <span matPrefix>$</span>
-                            <input matInput type="number" [ngModel]="price | currency:'':''"
-                                [ngModelOptions]="{updateOn:'blur'}" (ngModelChange)="price=$event" />
-                            <button mat-raised-button matSuffix (click)="createStripePrice(price)">
+                            <input matInput type="number" [ngModel]="eventFee | currency:'':''"
+                                [ngModelOptions]="{updateOn:'blur'}" (ngModelChange)="eventFee=$event" />
+                            <button mat-raised-button matSuffix (click)="createStripePrice(eventFee)">
                                 Get Total Fee
                             </button>
                         </mat-form-field>
                     </div>
+                    <p>
+                        Application Fee: {{applicationFee/100 | currency}}<br />
+                        Estimated Stripe Fee: {{(stripePriceUnitAmount-eventFee-applicationFee)/100 | currency}}<br />
+                        Total payable: {{stripePriceUnitAmount/100 | currency}}
+                    </p>
                 </div>
             </div>
         </div>
@@ -112,7 +123,7 @@
         </div>
         <mat-progress-bar *ngIf="isPriceLoading" mode="indeterminate"></mat-progress-bar>
         <div *ngIf="isStripePrice && !isPaid" fxLayout="row" fxLayoutAlign="stretch center">
-            <span>Pay {{price | currency}} </span>
+            <span>Pay {{stripePriceUnitAmount/100 | currency}} </span>
             <button mat-raised-button style="margin-left: 16px;" (click)="createStripeCheckoutSession()">
                 <mat-icon inline=true>shopping_cart</mat-icon>
                 Proceed to Checkout
