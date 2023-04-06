@@ -20,6 +20,7 @@ import { TeamUserBrief } from '../models/team-user-brief';
 })
 export class EventComponent implements OnInit {
   static readonly applicationFeePercentage = 5;
+  selectedTabIndex: number = 0;
   user: TeamUser | null = null;
   teamEventDoc: AngularFirestoreDocument<TeamEvent> | undefined;
   teamEvent: Observable<TeamEvent | undefined> | undefined;
@@ -67,6 +68,7 @@ export class EventComponent implements OnInit {
 
   ngOnInit(): void {
     this.eventId = this.route.snapshot.paramMap.get('eventId');
+    this.selectedTabIndex = Number(localStorage.getItem('selectedTabIndex'));
     this.auth.user.subscribe(user => {
       if (!user) {
         console.error('User object is falsy');
@@ -451,5 +453,9 @@ export class EventComponent implements OnInit {
         console.log(r);
       }
     })
+  }
+
+  storeSelectedTabIndex(tabIndex: number) {
+    localStorage.setItem('selectedTabIndex', tabIndex.toString());
   }
 }

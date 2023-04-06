@@ -187,7 +187,7 @@
     </div>
 </mat-card>
 
-<mat-tab-group>
+<mat-tab-group [selectedIndex]="selectedTabIndex" (selectedIndexChange)="storeSelectedTabIndex($event)">
     <mat-tab>
         <ng-template mat-tab-label>
             <mat-icon class="mat-tab-icon">groups</mat-icon>
