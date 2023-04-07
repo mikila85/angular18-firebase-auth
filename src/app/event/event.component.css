@@ -7,3 +7,12 @@
      color: white;
      background-color: #635bff;
  }
+
+ .stripe-actionRequired-button {
+     color: red;
+     background-color: rgb(255, 231, 242);
+ }
+
+ svg {
+     fill: currentColor;
+ }

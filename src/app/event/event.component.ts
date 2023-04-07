@@ -396,7 +396,7 @@ export class EventComponent implements OnInit {
   createStripePrice(price: number) {
     this.isPriceLoading = true;
     const priceWithStripeFees = Math.ceil((price * 100 + 30) / (1 - 0.0175));
-    const tax = (priceWithStripeFees - (price * 100)) / 10;
+    const tax = Math.ceil((priceWithStripeFees - (price * 100)) / 10);
     const applicationFees = Math.trunc(price * EventComponent.applicationFeePercentage);
     const priceTotal = priceWithStripeFees + applicationFees + tax;
     const createStripePrice = httpsCallableData<unknown, Stripe.Price>(this.functions, 'createStripePrice');
