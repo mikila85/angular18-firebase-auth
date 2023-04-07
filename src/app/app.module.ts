@@ -13,6 +13,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
 import { environment } from '../environments/environment';
+import { AboutComponent } from './about/about.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthFirebaseuiAvatarComponent } from "./auth-firebaseui-avatar/auth-firebaseui-avatar.component";
@@ -24,6 +25,7 @@ import { MessagesComponent } from './messages/messages.component';
 import { StripeAccountCreatedComponent } from './stripe-account-created/stripe-account-created.component';
 import { StripeCheckoutCompletedComponent } from './stripe-checkout-completed/stripe-checkout-completed.component';
 import { StripePaymentComponent } from './stripe-payment/stripe-payment.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
 
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatButtonModule } from '@angular/material/button';
@@ -53,6 +55,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     StripePaymentComponent,
     StripeAccountCreatedComponent,
     StripeCheckoutCompletedComponent,
+    UserProfileComponent,
+    AboutComponent,
   ],
   imports: [
     BrowserModule,

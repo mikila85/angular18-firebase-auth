@@ -1,0 +1,40 @@
+<mat-card>
+    <mat-card-header>
+        <div mat-card-avatar class="header-image"></div>
+        <mat-card-title>Team Builder App</mat-card-title>
+        <mat-card-subtitle>Social Events Organiser</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+        <p>
+            Welcome to a social event organisation app designed to make planning and coordinating events easier for you
+            and your friends! The simple interface makes it easy to create events, invite team members, and keep track
+            of attendees.
+        </p>
+        <p>
+            With this app, you can also collect money from your team members to pay for events or venues using Stripe
+            integration. No more chasing down payments or dealing with awkward money situations!
+        </p>
+        <p>
+            The app is developed by Alexander Zhidkov. Feel free to connect on
+            <a href="https://www.linkedin.com/in/azhidkov">LinkedIn</a> or send me an <a href=""
+                (click)="openEmail()">email</a>.
+        </p>
+        <p>
+            You can find the source code on <a href="https://github.com/AlexZhidkov/team-bldr-v2301">GitHub</a>.
+            Please <a href="https://github.com/AlexZhidkov/team-bldr-v2301/issues/new">raise an issue</a>
+            if you find any bugs.
+            And check out the
+            <a href="https://github.com/AlexZhidkov/team-bldr-v2301/discussions">Discussions</a>
+            to share your ideas and feedback.
+        </p>
+        <p>
+            Thank you for using the app and I hope it helps you plan some amazing social events with your friends!
+        </p>
+    </mat-card-content>
+    <mat-card-actions align="end">
+        <button mat-raised-button color="accent" routerLink="/event">
+            <mat-icon inline=true>add_circle</mat-icon>
+            Create New Event
+        </button>
+    </mat-card-actions>
+</mat-card>
