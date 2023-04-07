@@ -137,7 +137,7 @@
             <p>{{eventDescription}}</p>
         </div>
         <mat-progress-bar *ngIf="isPriceLoading" mode="indeterminate"></mat-progress-bar>
-        <div *ngIf="isStripePrice && !isPaid" fxLayout="row" fxLayoutAlign="stretch center">
+        <div *ngIf="isJoined && isStripePrice && !isPaid" fxLayout="row" fxLayoutAlign="stretch center">
             <span>Pay {{stripePriceUnitAmount/100 | currency}} </span>
             <button mat-raised-button style="margin-left: 16px;" (click)="createStripeCheckoutSession()">
                 <mat-icon inline=true>shopping_cart</mat-icon>
