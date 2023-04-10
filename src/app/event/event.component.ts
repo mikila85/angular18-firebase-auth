@@ -388,6 +388,7 @@ export class EventComponent implements OnInit {
     this.isStripeLoading = true;
     const createAccount = httpsCallableData<unknown, StripeAccountLink>(this.functions, 'createStripeConnectedAccount');
     const createAccountData = {
+      isTestMode: this.isTestMode,
       accountType: 'standard',
       email: this.user?.email,
       businessProfileUrl: `https://team-bldr.web.app/profile/${this.user?.uid}`,
@@ -402,7 +403,7 @@ export class EventComponent implements OnInit {
 
   getStripeConnectedAccount(stripeAccountId: string) {
     const getAccount = httpsCallableData<unknown, Stripe.Account>(this.functions, 'getStripeConnectedAccount');
-    return getAccount({ id: stripeAccountId });
+    return getAccount({ isTestMode: this.isTestMode, id: stripeAccountId });
   }
 
   /** The sample computation based on the following values:
@@ -434,7 +435,7 @@ export class EventComponent implements OnInit {
         name: this.eventTitle
       }
     }
-    createStripePrice({ stripeAccount: this.user?.stripeAccountId, newPrice }).subscribe(stripePrice => {
+    createStripePrice({ isTestMode: this.isTestMode, stripeAccount: this.user?.stripeAccountId, newPrice }).subscribe(stripePrice => {
       this.stripePriceId = stripePrice.id;
       if (stripePrice.unit_amount) {
         this.stripePriceUnitAmount = stripePrice.unit_amount;
@@ -459,6 +460,7 @@ export class EventComponent implements OnInit {
 
     const returnUrl = `${window.location.origin}/stripe-payment/${this.eventId}/${this.user?.uid}/`
     const checkoutData = {
+      isTestMode: this.isTestMode,
       payment: {
         mode: 'payment',
         line_items: [{ price: this.stripePriceId, quantity: 1 }],
