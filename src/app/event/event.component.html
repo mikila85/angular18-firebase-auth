@@ -73,82 +73,92 @@
                 </mat-menu>
             </div>
 
-            <mat-slide-toggle [(ngModel)]="isEventFee" (ngModelChange)="teamEventDoc?.update({isEventFee: $event})">
-                Event Fee
-            </mat-slide-toggle>
-            <mat-spinner style="margin:0 auto;" *ngIf="isStripeLoading"></mat-spinner>
-            <div *ngIf="isEventFee && !isStripeLoading">
-                <a [href]="stripeUrl" mat-button>
-                    <img src="https://images.ctfassets.net/fzn2n1nzq965/4M6d6BSWzlgsrJx8rdZb0I/733f37ef69b5ca1d3d33e127184f4ce4/Powered_by_Stripe.svg?q=80&amp;w=1082"
-                        alt="Powered by Stripe" width="150" height="34" loading="lazy">
-                </a>
-                <div *ngIf="isStripeAccount && !user?.isStripeAccountEnabled">
-                    <h3>Your Stripe account is not activated.</h3>
-                    <p>
-                        Please complete Stripe onboarding by providing required information.
-                        Use <span class="stripe-actionRequired-button">
-                            Action required
-                            <svg aria-hidden="true" height="12" width="12" viewBox="0 0 16 16"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="m10.115 1.308 5.635 11.269A2.365 2.365 0 0 1 13.634 16H2.365A2.365 2.365 0 0 1 .25 12.577L5.884 1.308a2.365 2.365 0 0 1 4.231 0zM8 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM8 9c.552 0 1-.32 1-.714V4.714C9 4.32 8.552 4 8 4s-1 .32-1 .714v3.572C7 8.68 7.448 9 8 9z"
-                                    fill-rule="evenodd"></path>
-                            </svg>
-                        </span> button on your Stripe dashboard.
-                    </p>
-                    <a href="https://dashboard.stripe.com/account/status" mat-raised-button class="stripe-button">
-                        <mat-icon inline=true>account_balance</mat-icon>
-                        Complete Stripe Onboarding
+            <div [style]="isTestMode ? 'background-color:beige':''">
+                <div fxLayout='row'>
+                    <mat-slide-toggle [(ngModel)]="isEventFee"
+                        (ngModelChange)="teamEventDoc?.update({isEventFee: $event})">
+                        Event Fee
+                    </mat-slide-toggle>
+                    <span fxFlex></span>
+                    <mat-slide-toggle [(ngModel)]="isTestMode"
+                        (ngModelChange)="teamEventDoc?.update({isTestMode: $event})"
+                        *ngIf="isEventFee && user?.isTester">
+                        Test mode
+                    </mat-slide-toggle>
+                </div>
+                <mat-spinner style="margin:0 auto;" *ngIf="isStripeLoading"></mat-spinner>
+                <div *ngIf="isEventFee && !isStripeLoading">
+                    <a [href]="stripeUrl" mat-button>
+                        <img src="https://images.ctfassets.net/fzn2n1nzq965/4M6d6BSWzlgsrJx8rdZb0I/733f37ef69b5ca1d3d33e127184f4ce4/Powered_by_Stripe.svg?q=80&amp;w=1082"
+                            alt="Powered by Stripe" width="150" height="34" loading="lazy">
                     </a>
-                </div>
-
-                <div *ngIf="!isStripeAccount">
-                    <p>
-                        To start accepting payments and moving funds to your bank account through the app, you need to
-                        set up your account with the internet payment processing platform Stripe.
-                    </p>
-                    <button mat-raised-button (click)="createStripeConnectedAccount()" class="stripe-button">
-                        <mat-icon inline=true>account_balance</mat-icon>
-                        Create Stripe Account
-                    </button>
-                </div>
-                <div *ngIf="isStripeAccount && user?.isStripeAccountEnabled">
-                    <div fxLayout="row">
-                        <mat-form-field>
-                            <span matPrefix>$</span>
-                            <input matInput type="number" [ngModel]="eventFee | currency:'':''"
-                                [ngModelOptions]="{updateOn:'blur'}" (ngModelChange)="eventFee=$event" />
-                            <button mat-raised-button matSuffix (click)="createStripePrice(eventFee)">
-                                Get Total Fee
-                            </button>
-                        </mat-form-field>
+                    <div *ngIf="isStripeAccount && !user?.isStripeAccountEnabled">
+                        <h3>Your Stripe account is not activated.</h3>
+                        <p>
+                            Please complete Stripe onboarding by providing required information.
+                            Use <span class="stripe-actionRequired-button">
+                                Action required
+                                <svg aria-hidden="true" height="12" width="12" viewBox="0 0 16 16"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="m10.115 1.308 5.635 11.269A2.365 2.365 0 0 1 13.634 16H2.365A2.365 2.365 0 0 1 .25 12.577L5.884 1.308a2.365 2.365 0 0 1 4.231 0zM8 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM8 9c.552 0 1-.32 1-.714V4.714C9 4.32 8.552 4 8 4s-1 .32-1 .714v3.572C7 8.68 7.448 9 8 9z"
+                                        fill-rule="evenodd"></path>
+                                </svg>
+                            </span> button on your Stripe dashboard.
+                        </p>
+                        <a href="https://dashboard.stripe.com/account/status" mat-raised-button class="stripe-button">
+                            <mat-icon inline=true>account_balance</mat-icon>
+                            Complete Stripe Onboarding
+                        </a>
                     </div>
-                    <p>
-                        Application Fee: {{applicationFee/100 | currency}}<br />
-                        Estimated Stripe Fee: {{(stripePriceUnitAmount-eventFee*100-applicationFee)/100 |
-                        currency}}<br />
-                        Total payable: {{stripePriceUnitAmount/100 | currency}}
-                    </p>
+
+                    <div *ngIf="!isStripeAccount">
+                        <p>
+                            To start accepting payments and moving funds to your bank account through the app,
+                            you need set up your account with the internet payment processing platform Stripe.
+                        </p>
+                        <button mat-raised-button (click)="createStripeConnectedAccount()" class="stripe-button">
+                            <mat-icon inline=true>account_balance</mat-icon>
+                            Create Stripe Account
+                        </button>
+                    </div>
+                    <div *ngIf="isStripeAccount && user?.isStripeAccountEnabled">
+                        <div fxLayout="row">
+                            <mat-form-field>
+                                <span matPrefix>$</span>
+                                <input matInput type="number" [ngModel]="eventFee | currency:'':''"
+                                    [ngModelOptions]="{updateOn:'blur'}" (ngModelChange)="eventFee=$event" />
+                                <button mat-raised-button matSuffix (click)="createStripePrice(eventFee)">
+                                    Get Total Fee
+                                </button>
+                            </mat-form-field>
+                        </div>
+                        <p>
+                            Application Fee: {{applicationFee/100 | currency}}<br />
+                            Estimated Stripe Fee: {{(stripePriceUnitAmount-eventFee*100-applicationFee)/100 |
+                            currency}}<br />
+                            Total payable: {{stripePriceUnitAmount/100 | currency}}
+                        </p>
+                    </div>
                 </div>
             </div>
+            <div *ngSwitchCase="false">
+                <p>{{eventDate.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}</p>
+                <p>{{eventDescription}}</p>
+            </div>
+            <mat-progress-bar *ngIf="isPriceLoading" mode="indeterminate"></mat-progress-bar>
+            <div *ngIf="isJoined && isStripePrice && !isPaid" fxLayout="row" fxLayoutAlign="stretch center">
+                <span>Pay {{stripePriceUnitAmount/100 | currency}} </span>
+                <button mat-raised-button style="margin-left: 16px;" (click)="createStripeCheckoutSession()">
+                    <mat-icon inline=true>shopping_cart</mat-icon>
+                    Proceed to Checkout
+                </button>
+            </div>
+            <p *ngIf="isPaid">
+                Paid
+                {{paidOn?.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
+            </p>
         </div>
-        <div *ngSwitchCase="false">
-            <p>{{eventDate.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}</p>
-            <p>{{eventDescription}}</p>
-        </div>
-        <mat-progress-bar *ngIf="isPriceLoading" mode="indeterminate"></mat-progress-bar>
-        <div *ngIf="isJoined && isStripePrice && !isPaid" fxLayout="row" fxLayoutAlign="stretch center">
-            <span>Pay {{stripePriceUnitAmount/100 | currency}} </span>
-            <button mat-raised-button style="margin-left: 16px;" (click)="createStripeCheckoutSession()">
-                <mat-icon inline=true>shopping_cart</mat-icon>
-                Proceed to Checkout
-            </button>
-        </div>
-        <p *ngIf="isPaid">
-            Paid
-            {{paidOn?.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
-        </p>
-
     </mat-card-content>
     <div [ngSwitch]="isOwner">
         <!--Owner of the event can always join without the waitlist-->

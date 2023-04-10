@@ -35,6 +35,7 @@ export class EventComponent implements OnInit {
   isTeamAllocations: boolean = false;
   stripeUrl: string = "https://stripe.com";
   isEventFee: boolean = false;
+  isTestMode: boolean = false;
   eventFee: number = 0;
   applicationFee: number = 0;
   isStripeAccount: boolean = false;
@@ -81,6 +82,7 @@ export class EventComponent implements OnInit {
           return;
         }
         this.user.isStripeAccountEnabled = u.isStripeAccountEnabled;
+        this.user.isTester = u.isTester;
         if (u.stripeAccountId) {
           this.user.stripeAccountId = u.stripeAccountId;
           this.stripeUrl = "https://dashboard.stripe.com";
@@ -111,28 +113,7 @@ export class EventComponent implements OnInit {
           });
       }
       else {
-        this.isOwner = true;
-        const batch = this.afs.firestore.batch();
-        this.eventId = this.afs.createId();
-
-        batch.set(this.afs.doc(`events/${this.eventId}`).ref, {
-          owner: user.uid,
-          dateTime: this.eventDate,
-          icon: user.photoURL,
-          isLimitedAttendees: false
-        });
-
-        batch.set(this.afs.doc<TeamEventBrief>(`users/${user.uid}/events/${this.eventId}`).ref, {
-          dateTime: this.eventDate,
-          icon: user.photoURL,
-          title: this.eventTitle
-        });
-
-        batch.commit().then(() => {
-          this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
-          this.teamEvent = this.teamEventDoc.valueChanges();
-          this.isLoading = false;
-        });
+        this.createNewEvent();
       }
       this.teamEvent?.subscribe(te => {
         if (!te) {
@@ -141,13 +122,18 @@ export class EventComponent implements OnInit {
         }
         this.eventDate = (te.dateTime as firebase.default.firestore.Timestamp).toDate();
         this.eventTime = this.eventDate.toLocaleString("en-AU", { hour12: false, timeStyle: "short" });
-        this.eventTitle = te.title;
+        if (te.title) {
+          this.eventTitle = te.title;
+        }
         this.eventDescription = te.description;
         this.eventIcon = te.icon;
         this.isLimitedAttendees = te.isLimitedAttendees;
         this.maxAttendees = te.maxAttendees;
         this.isTeamAllocations = te.isTeamAllocations;
         this.isEventFee = te.isEventFee
+        if (te.isTestMode) {
+          this.isTestMode = te.isTestMode
+        }
         this.isOwner = te.owner === user.uid;
 
         this.stripeAccountId = te.stripeAccountId;
@@ -173,6 +159,43 @@ export class EventComponent implements OnInit {
     });
   }
 
+  createNewEvent(): void {
+    if (!this.user) {
+      console.error('User object is falsy');
+      return;
+    }
+    this.isOwner = true;
+    const batch = this.afs.firestore.batch();
+    this.eventId = this.afs.createId();
+
+    var newEvent: TeamEvent = {
+      owner: this.user.uid,
+      dateTime: this.eventDate,
+      icon: this.user.photoURL,
+      isLimitedAttendees: false,
+      isEventFee: false,
+      isTeamAllocations: false,
+      description: '',
+    }
+    if (this.user?.isTester) {
+      newEvent.isTestMode = true;
+    }
+
+    batch.set(this.afs.doc(`events/${this.eventId}`).ref, newEvent);
+
+    batch.set(this.afs.doc<TeamEventBrief>(`users/${this.user.uid}/events/${this.eventId}`).ref, {
+      dateTime: this.eventDate,
+      icon: this.user.photoURL,
+      title: this.eventTitle
+    });
+
+    batch.commit().then(() => {
+      this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
+      this.teamEvent = this.teamEventDoc.valueChanges();
+      this.isLoading = false;
+    });
+
+  }
   updateEventDate(date: Date): void {
     this.eventDate = date;
     this.updateEventDateTime();
@@ -328,6 +351,9 @@ export class EventComponent implements OnInit {
       stripePriceId: this.stripePriceId,
       stripePriceUnitAmount: this.stripePriceUnitAmount,
     };
+    if (this.isTestMode) {
+      duplicateEvent.isTestMode = this.isTestMode;
+    }
     if (this.maxAttendees) {
       duplicateEvent.maxAttendees = this.maxAttendees;
     }
@@ -384,12 +410,12 @@ export class EventComponent implements OnInit {
     $0.50 = Application fee
     1.75% or 0.0175 = Stripe fixed percentage fee (Domestic card)
     $0.30 = Stripe fixed fee
-
+  
     Step 1: $10.00 + $0.30 = $10.30
     Step 2: 1 - 0.0175 = 0.9825
     Step 3: $10.30 / 0.9825 = $10.48
     Step 4: $10.48 + $0.50 = $11.98 Total amount to be charged
-
+  
     After getting the Total charge, you can already follow the Flow of funds in this link:
     https://stripe.com/docs/connect/destination-charges#flow-of-funds-app-fee
   */
