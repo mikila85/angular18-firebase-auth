@@ -177,10 +177,11 @@ export class EventComponent implements OnInit {
       isTeamAllocations: false,
       description: '',
     }
+    /* disable until test mode is implemented
     if (this.user?.isTester) {
       newEvent.isTestMode = true;
     }
-
+    */
     batch.set(this.afs.doc(`events/${this.eventId}`).ref, newEvent);
 
     batch.set(this.afs.doc<TeamEventBrief>(`users/${this.user.uid}/events/${this.eventId}`).ref, {

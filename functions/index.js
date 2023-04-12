@@ -1,6 +1,8 @@
 const functions = require("firebase-functions");
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
+// Store and access sensitive configuration information using the Secret Manager
+// https://firebase.google.com/docs/functions/config-env#secret-manager
 const stripeApiTestKey = 'sk_test_51MocYgCxlz3elfmgLtXVZxrEhrmZE3lXUBFMfpcpknrHfmkOJ9vIsJEF9RAiD9xwrCj79wXmSHpJaMMiZsZrYkXm00fvanaNSc';
 
 // Create and deploy your first functions

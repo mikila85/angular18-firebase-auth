@@ -73,18 +73,20 @@
                 </mat-menu>
             </div>
 
-            <div [style]="isTestMode ? 'background-color:beige':''">
+            <div [style]="isEventFee && isTestMode ? 'background-color:beige':''">
                 <div fxLayout='row'>
                     <mat-slide-toggle [(ngModel)]="isEventFee"
                         (ngModelChange)="teamEventDoc?.update({isEventFee: $event})">
                         Event Fee
                     </mat-slide-toggle>
+                    <!-- disable until test mode is implemented
                     <span fxFlex></span>
                     <mat-slide-toggle [(ngModel)]="isTestMode"
                         (ngModelChange)="teamEventDoc?.update({isTestMode: $event})"
                         *ngIf="isEventFee && user?.isTester">
                         Test mode
                     </mat-slide-toggle>
+                    -->
                 </div>
                 <mat-spinner style="margin:0 auto;" *ngIf="isStripeLoading"></mat-spinner>
                 <div *ngIf="isEventFee && !isStripeLoading">
@@ -123,6 +125,11 @@
                         </button>
                     </div>
                     <div *ngIf="isStripeAccount && user?.isStripeAccountEnabled">
+                        <p>
+                            Please provide the amount you want to receive in your account from each participant and
+                            use the "Get Total Fee" button to calculate the total amount participants have to pay,
+                            including application and stripe processing fees.
+                        </p>
                         <div fxLayout="row">
                             <mat-form-field>
                                 <span matPrefix>$</span>
@@ -142,49 +149,56 @@
                     </div>
                 </div>
             </div>
-            <div *ngSwitchCase="false">
-                <p>{{eventDate.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}</p>
-                <p>{{eventDescription}}</p>
-            </div>
-            <mat-progress-bar *ngIf="isPriceLoading" mode="indeterminate"></mat-progress-bar>
-            <div *ngIf="isJoined && isStripePrice && !isPaid" fxLayout="row" fxLayoutAlign="stretch center">
-                <span>Pay {{stripePriceUnitAmount/100 | currency}} </span>
-                <button mat-raised-button style="margin-left: 16px;" (click)="createStripeCheckoutSession()">
-                    <mat-icon inline=true>shopping_cart</mat-icon>
-                    Proceed to Checkout
-                </button>
-            </div>
-            <p *ngIf="isPaid">
-                Paid
-                {{paidOn?.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
-            </p>
         </div>
+        <div *ngSwitchCase="false">
+            <p>{{eventDate.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}</p>
+            <p>{{eventDescription}}</p>
+        </div>
+        <mat-progress-bar *ngIf="isPriceLoading" mode="indeterminate"></mat-progress-bar>
+        <div *ngIf="isStripePrice && !isJoined">Fee {{stripePriceUnitAmount/100 | currency}} </div>
+        <div *ngIf="isStripePrice && isJoined && !isPaid" fxLayout="row" fxLayoutAlign="stretch center">
+            <span>Pay {{stripePriceUnitAmount/100 | currency}} </span>
+            <button mat-raised-button style="margin-left: 16px;" (click)="createStripeCheckoutSession()">
+                <mat-icon inline=true>shopping_cart</mat-icon>
+                Proceed to Checkout
+            </button>
+        </div>
+        <p *ngIf="isPaid">
+            Paid
+            {{paidOn?.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
+        </p>
     </mat-card-content>
     <div [ngSwitch]="isOwner">
-        <!--Owner of the event can always join without the waitlist-->
-        <mat-card-actions *ngSwitchCase="true">
-            <button mat-raised-button color="primary" (click)="joinEvent()">
-                <mat-icon inline=true>{{isJoined ? "person_remove" : "person_add"}}</mat-icon>
-                {{isJoined ? "LEAVE" : "JOIN"}}
-            </button>
-            <button mat-raised-button (click)="copyEventInvite()">
-                <mat-icon inline=true>content_copy</mat-icon>
-                INVITE
-            </button>
-            <button mat-raised-button (click)="duplicateEvent()">
-                <mat-icon inline=true>file_copy</mat-icon>
-                DUPLICATE
-            </button>
-            <button mat-icon-button [matMenuTriggerFor]="menu">
-                <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu" yPosition="above">
-                <button mat-raised-button color="warn" (click)="deleteEvent()">
-                    <mat-icon>delete</mat-icon>
-                    DELETE
+        <div *ngSwitchCase="true">
+            <mat-card-content>
+                Use the "Invite" button to copy the invite URL and paste it into your social network group chat
+                or email to your team members.
+            </mat-card-content>
+            <mat-card-actions>
+                <!--Owner of the event can always join without the waitlist-->
+                <button mat-raised-button color="primary" (click)="joinEvent()">
+                    <mat-icon inline=true>{{isJoined ? "person_remove" : "person_add"}}</mat-icon>
+                    {{isJoined ? "LEAVE" : "JOIN"}}
                 </button>
-            </mat-menu>
-        </mat-card-actions>
+                <button mat-raised-button (click)="copyEventInvite()">
+                    <mat-icon inline=true>content_copy</mat-icon>
+                    INVITE
+                </button>
+                <button mat-raised-button (click)="duplicateEvent()">
+                    <mat-icon inline=true>file_copy</mat-icon>
+                    DUPLICATE
+                </button>
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu" yPosition="above">
+                    <button mat-raised-button color="warn" (click)="deleteEvent()">
+                        <mat-icon>delete</mat-icon>
+                        DELETE
+                    </button>
+                </mat-menu>
+            </mat-card-actions>
+        </div>
 
         <mat-card-actions *ngSwitchCase="false">
             <ng-container *ngIf="isJoined || isWaitlist; else joinButton">
