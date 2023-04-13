@@ -251,7 +251,7 @@
     <mat-tab label="Messages" hidden>
         <ng-template mat-tab-label>
             <mat-icon class="mat-tab-icon">forum</mat-icon>
-            Messages
+            <span matBadge="#" matBadgeColor="warn" [matBadgeHidden]="!isUnreadMessage">Messages</span>
         </ng-template>
         <app-messages [eventId]="eventId"></app-messages>
     </mat-tab>

@@ -2,10 +2,12 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
+import { Timestamp } from '@angular/fire/firestore';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, take } from 'rxjs';
 import { Stripe } from 'stripe';
+import { Message } from '../models/message';
 import { Participant } from '../models/participant.model';
 import { StripeAccountLink } from '../models/stripe-account-link';
 import { TeamEventBrief } from '../models/team-event-brief.model';
@@ -57,6 +59,8 @@ export class EventComponent implements OnInit {
   isWaitlist = false;
   isPaid: boolean | undefined = false;
   paidOn: Date | undefined = undefined;
+  lastReadMessageOn: firebase.default.firestore.Timestamp = new Timestamp(0, 0);
+  isUnreadMessage: boolean = false;
 
   constructor(
     private auth: AngularFireAuth,
@@ -97,22 +101,34 @@ export class EventComponent implements OnInit {
         }
       });
 
-      if (this.eventId) {
+      if (this.eventId) { // Existing event        
         this.isNewEvent = false;
         this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
         this.teamEvent = this.teamEventDoc.valueChanges({ idField: 'id' });
         this.afs.doc<Participant>(`events/${this.eventId}/participants/${this.user?.uid}`)
           .get().subscribe(p => {
             this.isJoined = p.exists;
-            this.isPaid = p.data()?.isPaid;
-            this.paidOn = p.data()?.paidOn?.toDate();
+            const participantData = p.data();
+            if (!participantData) {
+              console.error("ngOnInit participantDoc.subscribe: returned falsy participant");
+              return;
+            }
+            this.isPaid = participantData.isPaid;
+            this.paidOn = participantData.paidOn?.toDate();
+            this.lastReadMessageOn = participantData.lastReadMessageOn ? participantData.lastReadMessageOn : new Timestamp(0, 0);
+            this.afs.collection<Message>(`events/${this.eventId}/messages`, ref => ref.orderBy('ts', 'desc').limit(1))
+              .valueChanges().subscribe(messages => {
+                if (messages[0].ts > this.lastReadMessageOn) {
+                  this.isUnreadMessage = !this.isMessagesTabOpen(this.selectedTabIndex);
+                }
+              });
           });
         this.afs.doc(`events/${this.eventId}/waitlist/${this.user?.uid}`)
           .get().subscribe(p => {
             this.isWaitlist = p.exists;
           });
       }
-      else {
+      else { // New event
         this.createNewEvent();
       }
       this.teamEvent?.subscribe(te => {
@@ -485,6 +501,17 @@ export class EventComponent implements OnInit {
   }
 
   storeSelectedTabIndex(tabIndex: number) {
-    localStorage.setItem('selectedTabIndex', tabIndex.toString());
+    if (this.isMessagesTabOpen(tabIndex)) {
+      this.isUnreadMessage = false;
+      this.lastReadMessageOn = Timestamp.now();
+      this.afs.doc(`events/${this.eventId}/participants/${this.user?.uid}`).update({ lastReadMessageOn: this.lastReadMessageOn });
+    }
+    this.selectedTabIndex = tabIndex;
+    localStorage.setItem('selectedTabIndex', this.selectedTabIndex.toString());
+  }
+
+  isMessagesTabOpen(tabIndex: number): boolean {
+    const messagesTabIndex = this.waitlist.length > 0 ? 2 : 1;
+    return tabIndex === messagesTabIndex;
   }
 }

@@ -28,6 +28,7 @@ import { StripePaymentComponent } from './stripe-payment/stripe-payment.componen
 import { UserProfileComponent } from './user-profile/user-profile.component';
 
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
@@ -102,7 +103,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTabsModule,
     MatMenuModule,
     MatSlideToggleModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatBadgeModule
   ],
   providers: [
     ScreenTrackingService, UserTrackingService,

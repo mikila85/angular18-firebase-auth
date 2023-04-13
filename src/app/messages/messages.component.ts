@@ -26,7 +26,7 @@ export class MessagesComponent implements OnInit {
       this.user = user;
     });
     this.messagesCollection = this.afs.collection<Message>(`events/${this.eventId}/messages`, ref =>
-      ref.orderBy('ts', 'asc'));
+      ref.orderBy('ts', 'desc'));
     this.messages = this.messagesCollection.valueChanges();
   }
 
