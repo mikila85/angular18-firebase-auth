@@ -22,7 +22,7 @@
             <mat-form-field class="full-width">
                 <mat-label>Title</mat-label>
                 <input matInput name="eventTitle" [ngModel]="(teamEvent | async)?.title"
-                    (ngModelChange)="teamEventDoc?.update({title: $event})">
+                    (ngModelChange)="updateEventTitle($event)">
             </mat-form-field>
             <mat-form-field class="full-width">
                 <mat-label>Description</mat-label>

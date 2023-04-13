@@ -229,6 +229,12 @@ export class EventComponent implements OnInit {
     this.eventDate.setHours(Number(this.eventTime.substring(0, 2)));
     this.eventDate.setMinutes(Number(this.eventTime.substring(3, 5)));
     this.teamEventDoc?.update({ dateTime: this.eventDate });
+    this.afs.doc(`users/${this.user?.uid}/events/${this.eventId}`).update({ dateTime: this.eventDate });
+  }
+
+  updateEventTitle(eventTitle: string) {
+    this.teamEventDoc?.update({ title: eventTitle });
+    this.afs.doc(`users/${this.user?.uid}/events/${this.eventId}`).update({ title: eventTitle });
   }
 
   numberOfAttendees(): string {
