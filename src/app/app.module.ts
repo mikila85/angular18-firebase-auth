@@ -43,6 +43,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { UserProfileViewComponent } from './user-profile-view/user-profile-view.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     StripeCheckoutCompletedComponent,
     UserProfileComponent,
     AboutComponent,
+    UserProfileViewComponent,
   ],
   imports: [
     BrowserModule,

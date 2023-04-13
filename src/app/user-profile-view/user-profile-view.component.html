@@ -1,0 +1,12 @@
+<mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+<mat-card *ngIf="!isLoading">
+    <mat-card-header>
+        <mat-card-title-group>
+            <mat-card-title>{{user.displayName}}</mat-card-title>
+            <img mat-card-md-image [src]="user.photoURL" referrerpolicy="no-referrer" alt="Profile image">
+        </mat-card-title-group>
+    </mat-card-header>
+    <mat-card-content>
+        {{user.about}}
+    </mat-card-content>
+</mat-card>
