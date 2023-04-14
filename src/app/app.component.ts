@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Component, inject } from '@angular/core';
+import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { LinkMenuItem } from 'ngx-auth-firebaseui';
 
@@ -9,7 +9,7 @@ import { LinkMenuItem } from 'ngx-auth-firebaseui';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  user: firebase.default.User | null = null;
+  private auth: Auth = inject(Auth);
   showSignInButton: boolean = false;
   avatarLinks: LinkMenuItem[] = [
     { icon: 'account_circle', text: 'Profile', callback: () => { this.router.navigate(['profile']); } },
@@ -21,14 +21,10 @@ export class AppComponent {
     },
   ];
 
-  constructor(
-    private auth: AngularFireAuth,
-    private router: Router
-  ) { }
+  constructor(private router: Router) { }
 
-  ngOnInit(): void {
-    this.auth.user.subscribe(user => {
-      this.user = user;
+  async ngOnInit(): Promise<void> {
+    onAuthStateChanged(this.auth, (user) => {
       this.showSignInButton = Boolean(!user);
     });
   }
