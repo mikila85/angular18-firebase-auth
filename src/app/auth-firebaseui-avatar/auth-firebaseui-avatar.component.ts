@@ -1,7 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { AngularFireAuth } from "@angular/fire/compat/auth";
+import { Component, EventEmitter, Input, OnInit, Output, inject } from "@angular/core";
+import { Auth, User, onAuthStateChanged, signOut } from '@angular/fire/auth';
 import { MatDialog } from "@angular/material/dialog";
-import firebase from "firebase/compat/app";
 
 export interface LinkMenuItem {
   text: string;
@@ -44,18 +43,15 @@ export class AuthFirebaseuiAvatarComponent implements OnInit {
   @Output()
   onSignOut: EventEmitter<void> = new EventEmitter();
 
-  user: firebase.User | null = null;
+  private auth: Auth = inject(Auth);
+  user: User | null = null;
   displayNameInitials: string | null = null;
 
-  constructor(public afa: AngularFireAuth, public dialog: MatDialog) { }
+  constructor(public dialog: MatDialog) { }
 
   ngOnInit() {
-    this.afa.user.subscribe(user => {
-      if (!user) {
-        console.error('User object is falsy');
-        return;
-      }
-      this.user = Object.assign(user);
+    onAuthStateChanged(this.auth, (user) => {
+      this.user = user;
       this.displayNameInitials = user
         ? this.getDisplayNameInitials(user.displayName)
         : null;
@@ -79,7 +75,7 @@ export class AuthFirebaseuiAvatarComponent implements OnInit {
 
   async signOut() {
     try {
-      await this.afa.signOut();
+      await signOut(this.auth);
       // Sign-out successful.
       this.onSignOut.emit();
     } catch (e) {
