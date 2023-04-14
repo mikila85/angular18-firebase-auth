@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { Auth, user } from '@angular/fire/auth';
+import { Component, OnInit, inject } from '@angular/core';
+import { Auth } from '@angular/fire/auth';
 import { DocumentData, DocumentReference, Firestore, doc, getDoc, updateDoc } from '@angular/fire/firestore';
 
 @Component({
@@ -7,22 +7,18 @@ import { DocumentData, DocumentReference, Firestore, doc, getDoc, updateDoc } fr
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.css']
 })
-export class UserProfileComponent {
+export class UserProfileComponent implements OnInit {
   private firestore: Firestore = inject(Firestore);
   private auth: Auth = inject(Auth);
-  user$ = user(this.auth);
+  userRef: DocumentReference<DocumentData> | undefined = undefined;
   user: any;
   isLoading: boolean = true;
-  userRef: DocumentReference<DocumentData> | undefined = undefined;
 
-  constructor() {
-    this.user$.subscribe((user) => {
-      this.userRef = doc(this.firestore, `users/${user?.uid}`);
-      getDoc(this.userRef).then((user) => {
-        this.user = user.data();
-        this.isLoading = false;
-      });
-    });
+  async ngOnInit(): Promise<void> {
+    const authUser = await this.auth.currentUser;
+    this.userRef = doc(this.firestore, `users/${authUser?.uid}`);
+    this.user = (await getDoc(this.userRef)).data();
+    this.isLoading = false;
   }
 
   updateUser(partialUser: any) {

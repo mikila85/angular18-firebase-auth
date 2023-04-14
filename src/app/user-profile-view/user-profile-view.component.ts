@@ -16,12 +16,10 @@ export class UserProfileViewComponent implements OnInit {
     private route: ActivatedRoute,
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     const userId = this.route.snapshot.paramMap.get('userId');
     const docRef = doc(this.firestore, `users/${userId}`);
-    getDoc(docRef).then((user) => {
-      this.user = user.data();
-      this.isLoading = false;
-    });
+    this.user = (await getDoc(docRef)).data();
+    this.isLoading = false;
   }
 }
