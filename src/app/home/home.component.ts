@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { Component, OnInit, inject } from '@angular/core';
+import { Auth, User, onAuthStateChanged } from '@angular/fire/auth';
+import { Firestore, collection, onSnapshot, orderBy, query } from '@angular/fire/firestore';
 import { TeamEvent } from '../models/team-event.model';
 
 @Component({
@@ -8,34 +8,31 @@ import { TeamEvent } from '../models/team-event.model';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
+  private firestore: Firestore = inject(Firestore);
   isLoading = true;
-  user: firebase.default.User | null = null;
-  teamEvents: TeamEvent[] | undefined;
+  private auth: Auth = inject(Auth);
+  user: User | null = null;
+  teamEvents: TeamEvent[] = [];
 
-  constructor(
-    private auth: AngularFireAuth,
-    private afs: AngularFirestore,
-  ) { }
-
-  ngOnInit(): void {
-    this.auth.user.subscribe(user => {
-      if (!user) {
-        console.error('User object is falsy');
+  async ngOnInit(): Promise<void> {
+    onAuthStateChanged(this.auth, (user) => {
+      if (user) {
+        this.user = user;
+        const q = query(collection(this.firestore, `users/${this.user.uid}/events`), orderBy('dateTime', 'desc'));
+        onSnapshot(q, (querySnapshot) => {
+          this.teamEvents = [];
+          querySnapshot.forEach((doc) => {
+            this.teamEvents.push(doc.data() as TeamEvent);
+            this.isLoading = false;
+          });
+        });
+      } else {
+        console.error('User object is NULL - user not logged in.');
         this.isLoading = false;
         return;
       }
-      this.user = user;
-
-      // Uncomment to show all events
-      //const eventChanges = this.afs.collection<TeamEvent>(`events`, ref => ref.orderBy('dateTime', 'desc'))
-      const eventChanges = this.afs.collection<TeamEvent>(`users/${user.uid}/events`, ref => ref.orderBy('dateTime', 'desc'))
-        .valueChanges({ idField: 'id' });
-      eventChanges.subscribe(events => {
-        this.teamEvents = events;
-        this.isLoading = false;
-      });
-    })
+    });
   }
 
   teamEventDateTime(dateTime: Date | firebase.default.firestore.Timestamp) {
