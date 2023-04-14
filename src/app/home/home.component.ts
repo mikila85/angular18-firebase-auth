@@ -23,9 +23,11 @@ export class HomeComponent implements OnInit {
         onSnapshot(q, (querySnapshot) => {
           this.teamEvents = [];
           querySnapshot.forEach((doc) => {
-            this.teamEvents.push(doc.data() as TeamEvent);
-            this.isLoading = false;
+            var teamEvent = doc.data() as TeamEvent;
+            teamEvent.id = doc.id;
+            this.teamEvents.push(teamEvent);
           });
+          this.isLoading = false;
         });
       } else {
         console.error('User object is NULL - user not logged in.');

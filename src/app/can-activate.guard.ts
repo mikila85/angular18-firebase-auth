@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Injectable, inject } from '@angular/core';
+import { Auth, user } from '@angular/fire/auth';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -8,15 +8,16 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class CanActivateGuard implements CanActivate {
+  private auth: Auth = inject(Auth);
+  user$ = user(this.auth);
   constructor(
-    public afa: AngularFireAuth,
     private router: Router,
   ) { }
 
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    return this.afa.user.pipe(
+    return this.user$.pipe(
       map(user => {
         if (user) {
           return true;
