@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { Auth, User, onAuthStateChanged } from '@angular/fire/auth';
+import { CollectionReference, Firestore, addDoc, collection, collectionData, orderBy, query } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Message } from '../models/message';
 
@@ -11,23 +11,24 @@ import { Message } from '../models/message';
 })
 export class MessagesComponent implements OnInit {
   @Input() eventId: string | null = null;
-  user: firebase.default.User | null = null;
-  private messagesCollection: AngularFirestoreCollection<Message> | undefined;
-  messages: Observable<Message[]> | undefined;
+  private firestore: Firestore = inject(Firestore);
+  private auth: Auth = inject(Auth);
+  user: User | null = null;
+  private messagesCollection: CollectionReference | undefined;
+  messages$: Observable<Message[]> | undefined;
   text: string = "";
 
-  constructor(
-    private auth: AngularFireAuth,
-    private afs: AngularFirestore,
-  ) { }
-
   ngOnInit(): void {
-    this.auth.user.subscribe(user => {
+    onAuthStateChanged(this.auth, (user) => {
       this.user = user;
     });
-    this.messagesCollection = this.afs.collection<Message>(`events/${this.eventId}/messages`, ref =>
-      ref.orderBy('ts', 'desc'));
-    this.messages = this.messagesCollection.valueChanges();
+    if (this.eventId === null) {
+      console.error("eventId is NULL");
+      return;
+    }
+    this.messagesCollection = collection(this.firestore, 'events', this.eventId, 'messages');
+    const q = query(this.messagesCollection, orderBy('ts', 'desc'));
+    this.messages$ = collectionData(q) as Observable<Message[]>;
   }
 
   sendMessage() {
@@ -35,14 +36,13 @@ export class MessagesComponent implements OnInit {
       console.error("sendMessage: user or messages collection is falsy");
       return;
     }
-
-    this.messagesCollection.add({
+    addDoc(this.messagesCollection, {
       userId: this.user.uid,
       photoURL: this.user.photoURL,
       displayName: this.user.displayName,
       ts: new Date(),
       text: this.text
-    });
+    })
     this.text = "";
   }
 

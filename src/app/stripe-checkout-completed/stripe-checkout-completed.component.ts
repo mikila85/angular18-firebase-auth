@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { Component, inject } from '@angular/core';
+import { Firestore, doc, updateDoc } from '@angular/fire/firestore';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -8,12 +8,12 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./stripe-checkout-completed.component.css']
 })
 export class StripeCheckoutCompletedComponent {
+  private firestore: Firestore = inject(Firestore);
   eventId: string | null = null;
   userId: string | null = null;
   isSuccess: boolean = true;
 
   constructor(
-    private afs: AngularFirestore,
     private route: ActivatedRoute,
     private router: Router,
   ) { }
@@ -24,19 +24,22 @@ export class StripeCheckoutCompletedComponent {
     this.eventId = this.route.snapshot.paramMap.get('eventId');
     this.userId = this.route.snapshot.paramMap.get('userId');
     this.isSuccess = this.route.snapshot.paramMap.get('success') === 'success';
+    if (this.eventId === null || this.userId === null) {
+      console.error("eventId or userId is NULL");
+      this.router.navigate(['/']);
+    }
     if (this.isSuccess) {
-      this.afs.doc(`events/${this.eventId}/participants/${this.userId}`)
-        .update({
-          isPaid: true,
-          paidOn: new Date(),
-        })
-        .then(() => { this.router.navigate(['/event', { eventId: this.eventId }]) });
+      updateDoc(doc(this.firestore, 'events', this.eventId as string, 'participants', this.userId as string), {
+        isPaid: true,
+        paidOn: new Date(),
+      })
+        .then(() => { this.router.navigate([`/event/${this.eventId}`]) });
     } else {
       console.error(`Payment failed: eventId = ${this.eventId}, userId = ${this.userId}`);
     }
   }
 
   navigateToEvent() {
-    this.router.navigate(['/event', { eventId: this.eventId }]);
+    this.router.navigate([`/event/${this.eventId}`]);
   }
 }

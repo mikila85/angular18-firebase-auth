@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { Component, OnInit, inject } from '@angular/core';
+import { Auth, onAuthStateChanged } from '@angular/fire/auth';
+import { Firestore, doc, updateDoc } from '@angular/fire/firestore';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -9,12 +9,10 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./stripe-account-created.component.css']
 })
 export class StripeAccountCreatedComponent implements OnInit {
-  eventId: string | null = null;
-  accountId: string | null = null;
+  private firestore: Firestore = inject(Firestore);
+  private auth: Auth = inject(Auth);
 
   constructor(
-    private auth: AngularFireAuth,
-    private afs: AngularFirestore,
     private route: ActivatedRoute,
     private router: Router,
   ) { }
@@ -22,16 +20,15 @@ export class StripeAccountCreatedComponent implements OnInit {
   // update user doc in firebase with stripe account ID
   // navigate back to Event page 
   ngOnInit(): void {
-    this.eventId = this.route.snapshot.paramMap.get('eventId');
-    this.accountId = this.route.snapshot.paramMap.get('accountId');
-    this.auth.user.subscribe(user => {
+    const eventId = this.route.snapshot.paramMap.get('eventId');
+    const accountId = this.route.snapshot.paramMap.get('accountId');
+    onAuthStateChanged(this.auth, (user) => {
       if (!user) {
         console.error('User object is falsy');
         return;
       }
-      this.afs.doc(`users/${user.uid}`)
-        .update({ stripeAccountId: this.accountId })
-        .then(() => { this.router.navigate(['/event', { eventId: this.eventId }]) });
+      updateDoc(doc(this.firestore, `users/${user.uid}`), { stripeAccountId: accountId })
+        .then(() => { this.router.navigate(['/event', { eventId: eventId }]) });
     })
   }
 }
