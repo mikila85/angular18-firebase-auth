@@ -26,17 +26,17 @@
             </mat-form-field>
             <mat-form-field class="full-width">
                 <mat-label>Description</mat-label>
-                <textarea matInput name="eventDescription" [ngModel]="eventDescription"
+                <textarea matInput name="eventDescription" [ngModel]="teamEvent?.description"
                     (ngModelChange)="updateEvent({description: $event})"></textarea>
             </mat-form-field>
             <div fxLayout='row'>
-                <mat-slide-toggle [(ngModel)]="isLimitedAttendees"
+                <mat-slide-toggle [ngModel]="teamEvent?.isLimitedAttendees"
                     (ngModelChange)="updateEvent({isLimitedAttendees: $event})">
                     Attendee limit
                 </mat-slide-toggle>
-                <mat-form-field *ngIf="isLimitedAttendees">
+                <mat-form-field *ngIf="teamEvent?.isLimitedAttendees">
                     <mat-label>Max number</mat-label>
-                    <input matInput type="number" name="maxAttendees" [(ngModel)]="maxAttendees"
+                    <input matInput type="number" name="maxAttendees" [ngModel]="teamEvent?.maxAttendees"
                         (ngModelChange)="updateEvent({maxAttendees: $event})">
                 </mat-form-field>
             </div>
@@ -46,7 +46,7 @@
                 Team Allocations
             </mat-slide-toggle>
 -->
-            <div *ngIf="isTeamAllocations">
+            <div *ngIf="teamEvent?.isTeamAllocations">
                 <div fxLayout='row' fxLayoutAlign="stretch center" *ngFor="let team of teams; let i = index">
                     <button mat-flat-button fxFlex="50%" [matMenuTriggerFor]="teamColorMenu"
                         [matMenuTriggerData]="{index: i}" [style]="'background-color:'+team.color">
@@ -73,9 +73,10 @@
                 </mat-menu>
             </div>
 
-            <div [style]="isEventFee && isTestMode ? 'background-color:beige':''">
+            <div [style]="teamEvent?.isEventFee && teamEvent?.isTestMode ? 'background-color:beige':''">
                 <div fxLayout='row'>
-                    <mat-slide-toggle [(ngModel)]="isEventFee" (ngModelChange)="updateEvent({isEventFee: $event})">
+                    <mat-slide-toggle [ngModel]="teamEvent?.isEventFee"
+                        (ngModelChange)="updateEvent({isEventFee: $event})">
                         Event Fee
                     </mat-slide-toggle>
                     <!-- disable until test mode is implemented
@@ -88,7 +89,7 @@
                     -->
                 </div>
                 <mat-spinner style="margin:0 auto;" *ngIf="isStripeLoading"></mat-spinner>
-                <div *ngIf="isEventFee && !isStripeLoading">
+                <div *ngIf="teamEvent?.isEventFee && !isStripeLoading">
                     <a [href]="stripeUrl" mat-button>
                         <img src="https://images.ctfassets.net/fzn2n1nzq965/4M6d6BSWzlgsrJx8rdZb0I/733f37ef69b5ca1d3d33e127184f4ce4/Powered_by_Stripe.svg?q=80&amp;w=1082"
                             alt="Powered by Stripe" width="150" height="34" loading="lazy">
@@ -140,10 +141,11 @@
                             </mat-form-field>
                         </div>
                         <p>
-                            Application Fee: {{applicationFee/100 | currency}}<br />
-                            Estimated Stripe Fee: {{(stripePriceUnitAmount-eventFee*100-applicationFee)/100 |
-                            currency}}<br />
-                            Total payable: {{stripePriceUnitAmount/100 | currency}}
+                            Application Fee: {{(teamEvent?.applicationFee ?? 0)/100 | currency}}<br />
+                            Estimated Stripe Fee: {{(teamEvent?.stripePriceUnitAmount ??
+                            0)-eventFee*100-(teamEvent?.applicationFee ??
+                            0)/100 | currency}}<br />
+                            Total payable: {{(teamEvent?.stripePriceUnitAmount ?? 0)/100 | currency}}
                         </p>
                     </div>
                 </div>
@@ -151,12 +153,12 @@
         </div>
         <div *ngSwitchCase="false">
             <p>{{eventDate.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}</p>
-            <p>{{eventDescription}}</p>
+            <p>{{teamEvent?.description}}</p>
         </div>
         <mat-progress-bar *ngIf="isPriceLoading" mode="indeterminate"></mat-progress-bar>
-        <div *ngIf="isStripePrice && !isJoined">Fee {{stripePriceUnitAmount/100 | currency}} </div>
+        <div *ngIf="isStripePrice && !isJoined">Fee {{(teamEvent?.stripePriceUnitAmount ?? 0)/100 | currency}} </div>
         <div *ngIf="isStripePrice && isJoined && !isPaid" fxLayout="row" fxLayoutAlign="stretch center">
-            <span>Pay {{stripePriceUnitAmount/100 | currency}} </span>
+            <span>Pay {{(teamEvent?.stripePriceUnitAmount ?? 0)/100 | currency}} </span>
             <button mat-raised-button style="margin-left: 16px;" (click)="createStripeCheckoutSession()">
                 <mat-icon inline=true>shopping_cart</mat-icon>
                 Proceed to Checkout
@@ -208,7 +210,7 @@
             </ng-container>
             <ng-template #joinButton>
                 <ng-container
-                    *ngIf="!isLimitedAttendees || (maxAttendees != undefined && numberOfParticipants < maxAttendees);else waitlist">
+                    *ngIf="!teamEvent?.isLimitedAttendees || numberOfParticipants < (teamEvent?.maxAttendees ?? 9999);else waitlist">
                     <button mat-raised-button color="primary" (click)="joinEvent()">
                         <mat-icon inline=true>person_add</mat-icon>
                         JOIN

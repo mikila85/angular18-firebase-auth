@@ -30,21 +30,11 @@ export class EventComponent implements OnInit {
   eventDate: Date = new Date();
   eventTime: string = (new Date()).toTimeString().substring(0, 5);
   eventTitle: string = "New Event";
-  eventDescription: string = "";
-  eventIcon: string | null = null;
-  isLimitedAttendees: boolean = false;
-  isTeamAllocations: boolean = false;
   stripeUrl: string = "https://stripe.com";
-  isEventFee: boolean = false;
-  isTestMode: boolean = false;
+  //ToDo: investigate if it's possible to remove this variable and use teamEvent.eventFee instead
   eventFee: number = 0;
-  applicationFee: number = 0;
   isStripeAccount: boolean = false;
   isStripePrice: boolean = false;
-  stripeAccountId: string | undefined;
-  stripePriceUnitAmount: number = 0;
-  stripePriceId: string | undefined;
-  maxAttendees: number | undefined;
   teamColors = ['Red', 'White', 'Blue', 'Orange', 'Yellow', 'Green', 'Gray'];
   teams: { color: string, size: number }[] = [{ color: 'Red', size: 0 }]
   numberOfParticipants: number = 0;
@@ -136,33 +126,15 @@ export class EventComponent implements OnInit {
         if (this.teamEvent.title) {
           this.eventTitle = this.teamEvent.title;
         }
-        this.eventDescription = this.teamEvent.description;
-        this.eventIcon = this.teamEvent.icon;
-        this.isLimitedAttendees = this.teamEvent.isLimitedAttendees;
-        this.maxAttendees = this.teamEvent.maxAttendees;
-        this.isTeamAllocations = this.teamEvent.isTeamAllocations;
-        this.isEventFee = this.teamEvent.isEventFee
-        if (this.teamEvent.isTestMode) {
-          this.isTestMode = this.teamEvent.isTestMode
-        }
         this.isOwner = this.teamEvent.owner === user.uid;
 
-        this.stripeAccountId = this.teamEvent.stripeAccountId;
         if (this.isOwner && this.isStripeAccount && this.teamEvent.stripeAccountId !== this.user?.stripeAccountId) {
-          this.stripeAccountId = this.user?.stripeAccountId;
           updateDoc(this.teamEventRef as DocumentReference<DocumentData>, { stripeAccountId: this.user?.stripeAccountId });
         }
         if (this.teamEvent.eventFee) {
           this.eventFee = this.teamEvent.eventFee;
         }
-        if (this.teamEvent.applicationFee) {
-          this.applicationFee = this.teamEvent.applicationFee;
-        }
         this.isStripePrice = !!this.teamEvent.stripePriceId;
-        this.stripePriceId = this.teamEvent.stripePriceId;
-        if (this.teamEvent.stripePriceUnitAmount) {
-          this.stripePriceUnitAmount = this.teamEvent.stripePriceUnitAmount;
-        }
 
         this.getWaitlist();
         this.isLoading = false;
@@ -185,22 +157,23 @@ export class EventComponent implements OnInit {
 
     this.eventDate.setHours(Number(this.eventTime.substring(0, 2)));
     this.eventDate.setMinutes(Number(this.eventTime.substring(3, 5)));
-    // ToDo - use batch update
-    updateDoc(this.teamEventRef as DocumentReference<DocumentData>, { dateTime: this.eventDate });
-    //ToDo - refactor userEventRef to be a property
-    updateDoc(doc(this.firestore, 'users', this.user?.uid as string, 'events', this.eventId as string), { dateTime: this.eventDate });
+    const batch = writeBatch(this.firestore);
+    batch.update(this.teamEventRef as DocumentReference<DocumentData>, { dateTime: this.eventDate });
+    batch.update(doc(this.firestore, 'users', this.user?.uid as string, 'events', this.eventId as string), { dateTime: this.eventDate });
+    batch.commit();
   }
 
   updateEventTitle(eventTitle: string) {
-    updateDoc(this.teamEventRef as DocumentReference<DocumentData>, { title: eventTitle });
-    //ToDo - refactor userEventRef to be a property
-    updateDoc(doc(this.firestore, 'users', this.user?.uid as string, 'events', this.eventId as string), { title: eventTitle });
+    const batch = writeBatch(this.firestore);
+    batch.update(this.teamEventRef as DocumentReference<DocumentData>, { title: eventTitle });
+    batch.update(doc(this.firestore, 'users', this.user?.uid as string, 'events', this.eventId as string), { title: eventTitle });
+    batch.commit();
   }
 
   numberOfAttendees(): string {
     var attendeesInfo = this.numberOfParticipants.toString();
-    if (this.isLimitedAttendees) {
-      attendeesInfo += `/${this.maxAttendees}`;
+    if (this.teamEvent?.isLimitedAttendees) {
+      attendeesInfo += `/${this.teamEvent.maxAttendees}`;
     }
     return attendeesInfo;
   }
@@ -235,7 +208,7 @@ export class EventComponent implements OnInit {
 
     batch.set(doc(this.firestore, 'users', user.uid, 'events', this.eventId as string), {
       dateTime: this.eventDate,
-      icon: this.eventIcon,
+      icon: this.teamEvent?.icon,
       title: this.eventTitle
     });
     batch.commit();
@@ -258,7 +231,7 @@ export class EventComponent implements OnInit {
 
       batch.set(doc(this.firestore, 'users', this.user?.uid as string, 'events', this.eventId as string), {
         dateTime: this.eventDate,
-        icon: this.eventIcon,
+        icon: this.teamEvent?.icon,
         title: this.eventTitle
       });
     }
@@ -304,26 +277,30 @@ export class EventComponent implements OnInit {
     let newEventDate = new Date();
     newEventDate.setHours(this.eventDate.getHours());
     newEventDate.setMinutes(this.eventDate.getMinutes());
+    if (!this.teamEvent) {
+      console.error("duplicateEvent: teamEvent object is falsy");
+      return;
+    }
     var duplicateEvent: TeamEvent = {
       title: this.eventTitle,
-      description: this.eventDescription ? this.eventDescription : "",
+      description: this.teamEvent.description,
       dateTime: newEventDate,
       owner: this.user.uid,
       icon: this.user.photoURL,
-      isLimitedAttendees: this.isLimitedAttendees,
-      isTeamAllocations: this.isTeamAllocations,
-      isEventFee: this.isEventFee,
+      isLimitedAttendees: this.teamEvent.isLimitedAttendees,
+      isTeamAllocations: this.teamEvent.isTeamAllocations,
+      isEventFee: this.teamEvent.isEventFee,
       eventFee: this.eventFee,
-      applicationFee: this.applicationFee,
-      maxAttendees: this.maxAttendees,
-      stripePriceId: this.stripePriceId,
-      stripePriceUnitAmount: this.stripePriceUnitAmount,
+      applicationFee: this.teamEvent.applicationFee,
+      maxAttendees: this.teamEvent.maxAttendees,
+      stripePriceId: this.teamEvent.stripePriceId,
+      stripePriceUnitAmount: this.teamEvent.stripePriceUnitAmount,
     };
-    if (this.isTestMode) {
-      duplicateEvent.isTestMode = this.isTestMode;
+    if (this.teamEvent.isTestMode) {
+      duplicateEvent.isTestMode = this.teamEvent.isTestMode;
     }
-    if (this.maxAttendees) {
-      duplicateEvent.maxAttendees = this.maxAttendees;
+    if (this.teamEvent.maxAttendees) {
+      duplicateEvent.maxAttendees = this.teamEvent.maxAttendees;
     }
 
     const newEventId = doc(collection(this.firestore, 'events')).id;
@@ -356,7 +333,7 @@ export class EventComponent implements OnInit {
     this.isStripeLoading = true;
     const createAccount = httpsCallableData<unknown, StripeAccountLink>(this.functions, 'createStripeConnectedAccount');
     const createAccountData = {
-      isTestMode: this.isTestMode,
+      isTestMode: this.teamEvent?.isTestMode,
       accountType: 'standard',
       email: this.user?.email,
       businessProfileUrl: `https://team-bldr.web.app/profile/${this.user?.uid}`,
@@ -371,7 +348,7 @@ export class EventComponent implements OnInit {
 
   async getStripeConnectedAccount(stripeAccountId: string) {
     const getAccount = httpsCallableData<unknown, Stripe.Account>(this.functions, 'getStripeConnectedAccount');
-    const account = await firstValueFrom(getAccount({ isTestMode: this.isTestMode, id: stripeAccountId }));
+    const account = await firstValueFrom(getAccount({ isTestMode: this.teamEvent?.isTestMode, id: stripeAccountId }));
     return account;
   }
 
@@ -404,20 +381,13 @@ export class EventComponent implements OnInit {
         name: this.eventTitle
       }
     }
-    createStripePrice({ isTestMode: this.isTestMode, stripeAccount: this.user?.stripeAccountId, newPrice }).subscribe(stripePrice => {
-      this.stripePriceId = stripePrice.id;
-      if (stripePrice.unit_amount) {
-        this.stripePriceUnitAmount = stripePrice.unit_amount;
-      } else {
-        this.stripePriceUnitAmount = 0;
-      }
+    createStripePrice({ isTestMode: this.teamEvent?.isTestMode, stripeAccount: this.user?.stripeAccountId, newPrice }).subscribe(stripePrice => {
       updateDoc(this.teamEventRef as DocumentReference<TeamEvent>, {
         stripePriceId: stripePrice.id,
-        stripePriceUnitAmount: this.stripePriceUnitAmount,
+        stripePriceUnitAmount: stripePrice.unit_amount ?? 0,
         eventFee: price,
         applicationFee: applicationFees,
       }).then(() => {
-        this.applicationFee = applicationFees;
         this.isPriceLoading = false;
       })
     })
@@ -429,17 +399,17 @@ export class EventComponent implements OnInit {
 
     const returnUrl = `${window.location.origin}/stripe-payment/${this.eventId}/${this.user?.uid}/`
     const checkoutData = {
-      isTestMode: this.isTestMode,
+      isTestMode: this.teamEvent?.isTestMode,
       payment: {
         mode: 'payment',
-        line_items: [{ price: this.stripePriceId, quantity: 1 }],
+        line_items: [{ price: this.teamEvent?.stripePriceId, quantity: 1 }],
         payment_intent_data: {
-          application_fee_amount: this.applicationFee,
+          application_fee_amount: this.teamEvent?.applicationFee,
         },
         success_url: returnUrl + 'success',
         cancel_url: returnUrl + 'cancel',
       },
-      connectedAccountId: this.stripeAccountId
+      connectedAccountId: this.teamEvent?.stripeAccountId
     }
     stripeCheckout(checkoutData).subscribe(r => {
       this.isPriceLoading = false;
