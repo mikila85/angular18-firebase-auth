@@ -1,16 +1,13 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, OnInit } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
-import { Timestamp } from '@angular/fire/firestore';
+import { Component, OnInit, inject } from '@angular/core';
+import { Auth, onAuthStateChanged } from '@angular/fire/auth';
+import { DocumentData, DocumentReference, Firestore, Timestamp, collection, deleteDoc, doc, getDoc, limit, onSnapshot, orderBy, query, updateDoc, writeBatch } from '@angular/fire/firestore';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, firstValueFrom, take } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { Stripe } from 'stripe';
-import { Message } from '../models/message';
 import { Participant } from '../models/participant.model';
 import { StripeAccountLink } from '../models/stripe-account-link';
-import { TeamEventBrief } from '../models/team-event-brief.model';
 import { TeamEvent } from '../models/team-event.model';
 import { TeamUser } from '../models/team-user';
 import { TeamUserBrief } from '../models/team-user-brief';
@@ -22,10 +19,12 @@ import { TeamUserBrief } from '../models/team-user-brief';
 })
 export class EventComponent implements OnInit {
   static readonly applicationFeePercentage = 5;
+  private auth: Auth = inject(Auth);
+  private firestore: Firestore = inject(Firestore);
   selectedTabIndex: number = 0;
   user: TeamUser | null = null;
-  teamEventDoc: AngularFirestoreDocument<TeamEvent> | undefined;
-  teamEvent: Observable<TeamEvent | undefined> | undefined;
+  teamEventRef: DocumentReference<DocumentData> | undefined;
+  teamEvent: TeamEvent | undefined;
   eventId: string | null = null;
   minDate: Date = new Date();
   eventDate: Date = new Date();
@@ -58,12 +57,10 @@ export class EventComponent implements OnInit {
   isWaitlist = false;
   isPaid: boolean | undefined = false;
   paidOn: Date | undefined = undefined;
-  lastReadMessageOn: firebase.default.firestore.Timestamp = new Timestamp(0, 0);
+  lastReadMessageOn: Timestamp = new Timestamp(0, 0);
   isUnreadMessage: boolean = false;
 
   constructor(
-    private auth: AngularFireAuth,
-    private afs: AngularFirestore,
     private route: ActivatedRoute,
     private router: Router,
     private readonly functions: Functions,
@@ -77,98 +74,99 @@ export class EventComponent implements OnInit {
       return;
     }
     this.selectedTabIndex = Number(localStorage.getItem('selectedTabIndex'));
-    this.auth.user.subscribe(async user => {
+    onAuthStateChanged(this.auth, async (user) => {
       if (!user) {
         console.error('User object is falsy');
         return;
       }
       this.user = Object.assign(user);
-      this.afs.doc<TeamUser>(`users/${user.uid}`).valueChanges().subscribe(async u => {
-        if (!u || !this.user) {
-          console.error("ngOnInit userDoc.subscribe: returned falsy user");
-          return;
-        }
-        this.user.isStripeAccountEnabled = u.isStripeAccountEnabled;
-        this.user.isTester = u.isTester;
-        if (u.stripeAccountId) {
-          this.user.stripeAccountId = u.stripeAccountId;
-          this.stripeUrl = "https://dashboard.stripe.com";
-          this.isStripeAccount = true;
-          if (!u.isStripeAccountEnabled) {
-            const account = await this.getStripeConnectedAccount(u.stripeAccountId);
-            if (account.charges_enabled && account.payouts_enabled) {
-              this.afs.doc(`users/${user.uid}`).update({ isStripeAccountEnabled: true });
-            }
+      const userSnapshot = await getDoc(doc(this.firestore, `users/${user.uid}`));
+      const userDoc = userSnapshot.data() as TeamUser;
+      if (!userDoc || !this.user) {
+        console.error("ngOnInit userDoc.subscribe: returned falsy user");
+        return;
+      }
+      this.user.isStripeAccountEnabled = userDoc.isStripeAccountEnabled;
+      this.user.isTester = userDoc.isTester;
+      if (userDoc.stripeAccountId) {
+        this.user.stripeAccountId = userDoc.stripeAccountId;
+        this.stripeUrl = "https://dashboard.stripe.com";
+        this.isStripeAccount = true;
+        if (!userDoc.isStripeAccountEnabled) {
+          const account = await this.getStripeConnectedAccount(userDoc.stripeAccountId);
+          if (account.charges_enabled && account.payouts_enabled) {
+            updateDoc(doc(this.firestore, `users/${user.uid}`), { isStripeAccountEnabled: true });
           }
         }
-      });
+      }
 
-      this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
-      this.teamEvent = this.teamEventDoc.valueChanges({ idField: 'id' });
-      const participantSnapshot = await firstValueFrom(this.afs.doc<Participant>(`events/${this.eventId}/participants/${this.user?.uid}`).get());
-      this.isJoined = participantSnapshot.exists;
-      if (this.isJoined) {
-        const participantData = participantSnapshot.data();
-        if (!participantData) {
-          console.error("ngOnInit participantSnapshot.data() returned falsy participantData");
+      this.teamEventRef = doc(this.firestore, 'events', this.eventId as string);
+      onSnapshot(this.teamEventRef, async (eventSnapshot) => {
+        if (!eventSnapshot.exists()) {
+          console.error('Event does not exist');
           return;
         }
-        this.isPaid = participantData.isPaid;
-        this.paidOn = participantData.paidOn?.toDate();
-        this.lastReadMessageOn = participantData.lastReadMessageOn ? participantData.lastReadMessageOn : new Timestamp(0, 0);
-        this.afs.collection<Message>(`events/${this.eventId}/messages`, ref => ref.orderBy('ts', 'desc').limit(1))
-          .valueChanges().subscribe(messages => {
-            if (messages[0].ts > this.lastReadMessageOn) {
+        this.teamEvent = eventSnapshot.data() as TeamEvent;
+        this.teamEvent.id = eventSnapshot.id;
+        const participantSnapshot = await getDoc(doc(this.firestore, `events/${this.eventId}/participants/${this.user?.uid}`));
+        this.isJoined = participantSnapshot.exists();
+        if (this.isJoined) {
+          const participantData = participantSnapshot.data() as Participant;
+          if (!participantData) {
+            console.error("ngOnInit participantSnapshot.data() returned falsy participantData");
+            return;
+          }
+          this.isPaid = participantData.isPaid;
+          this.paidOn = participantData.paidOn?.toDate();
+          this.lastReadMessageOn = participantData.lastReadMessageOn ? participantData.lastReadMessageOn : new Timestamp(0, 0);
+          const q = query(collection(this.firestore, 'events', this.eventId as string, 'messages'), orderBy('ts', 'desc'), limit(1));
+          onSnapshot(q, (messageSnapshot) => {
+            if (messageSnapshot.docs[0].data()['ts'] > this.lastReadMessageOn) {
               this.isUnreadMessage = !this.isMessagesTabOpen(this.selectedTabIndex);
             }
           });
-      }
-      this.afs.doc(`events/${this.eventId}/waitlist/${this.user?.uid}`)
-        .get().subscribe(p => {
-          this.isWaitlist = p.exists;
+        }
+
+        onSnapshot(doc(this.firestore, 'events', this.eventId as string, 'waitlist', this.user?.uid as string), (waitlistSnapshot) => {
+          this.isWaitlist = waitlistSnapshot.exists();
         });
 
-      this.teamEvent?.subscribe(te => {
-        if (!te) {
-          console.error("ngOnInit teamEvent.subscribe: returned falsy team event")
-          return
-        }
-        this.eventDate = (te.dateTime as firebase.default.firestore.Timestamp).toDate();
+        this.eventDate = (this.teamEvent.dateTime as Timestamp).toDate();
         this.eventTime = this.eventDate.toLocaleString("en-AU", { hour12: false, timeStyle: "short" });
-        if (te.title) {
-          this.eventTitle = te.title;
+        if (this.teamEvent.title) {
+          this.eventTitle = this.teamEvent.title;
         }
-        this.eventDescription = te.description;
-        this.eventIcon = te.icon;
-        this.isLimitedAttendees = te.isLimitedAttendees;
-        this.maxAttendees = te.maxAttendees;
-        this.isTeamAllocations = te.isTeamAllocations;
-        this.isEventFee = te.isEventFee
-        if (te.isTestMode) {
-          this.isTestMode = te.isTestMode
+        this.eventDescription = this.teamEvent.description;
+        this.eventIcon = this.teamEvent.icon;
+        this.isLimitedAttendees = this.teamEvent.isLimitedAttendees;
+        this.maxAttendees = this.teamEvent.maxAttendees;
+        this.isTeamAllocations = this.teamEvent.isTeamAllocations;
+        this.isEventFee = this.teamEvent.isEventFee
+        if (this.teamEvent.isTestMode) {
+          this.isTestMode = this.teamEvent.isTestMode
         }
-        this.isOwner = te.owner === user.uid;
+        this.isOwner = this.teamEvent.owner === user.uid;
 
-        this.stripeAccountId = te.stripeAccountId;
-        if (this.isOwner && this.isStripeAccount && te.stripeAccountId !== this.user?.stripeAccountId) {
+        this.stripeAccountId = this.teamEvent.stripeAccountId;
+        if (this.isOwner && this.isStripeAccount && this.teamEvent.stripeAccountId !== this.user?.stripeAccountId) {
           this.stripeAccountId = this.user?.stripeAccountId;
-          this.teamEventDoc?.update({ stripeAccountId: this.user?.stripeAccountId });
+          updateDoc(this.teamEventRef as DocumentReference<DocumentData>, { stripeAccountId: this.user?.stripeAccountId });
         }
-        if (te.eventFee) {
-          this.eventFee = te.eventFee;
+        if (this.teamEvent.eventFee) {
+          this.eventFee = this.teamEvent.eventFee;
         }
-        if (te.applicationFee) {
-          this.applicationFee = te.applicationFee;
+        if (this.teamEvent.applicationFee) {
+          this.applicationFee = this.teamEvent.applicationFee;
         }
-        this.isStripePrice = !!te.stripePriceId;
-        this.stripePriceId = te.stripePriceId;
-        if (te.stripePriceUnitAmount) {
-          this.stripePriceUnitAmount = te.stripePriceUnitAmount;
+        this.isStripePrice = !!this.teamEvent.stripePriceId;
+        this.stripePriceId = this.teamEvent.stripePriceId;
+        if (this.teamEvent.stripePriceUnitAmount) {
+          this.stripePriceUnitAmount = this.teamEvent.stripePriceUnitAmount;
         }
+
+        this.getWaitlist();
         this.isLoading = false;
       });
-
-      this.getWaitlist();
     });
   }
 
@@ -187,13 +185,16 @@ export class EventComponent implements OnInit {
 
     this.eventDate.setHours(Number(this.eventTime.substring(0, 2)));
     this.eventDate.setMinutes(Number(this.eventTime.substring(3, 5)));
-    this.teamEventDoc?.update({ dateTime: this.eventDate });
-    this.afs.doc(`users/${this.user?.uid}/events/${this.eventId}`).update({ dateTime: this.eventDate });
+    // ToDo - use batch update
+    updateDoc(this.teamEventRef as DocumentReference<DocumentData>, { dateTime: this.eventDate });
+    //ToDo - refactor userEventRef to be a property
+    updateDoc(doc(this.firestore, 'users', this.user?.uid as string, 'events', this.eventId as string), { dateTime: this.eventDate });
   }
 
   updateEventTitle(eventTitle: string) {
-    this.teamEventDoc?.update({ title: eventTitle });
-    this.afs.doc(`users/${this.user?.uid}/events/${this.eventId}`).update({ title: eventTitle });
+    updateDoc(this.teamEventRef as DocumentReference<DocumentData>, { title: eventTitle });
+    //ToDo - refactor userEventRef to be a property
+    updateDoc(doc(this.firestore, 'users', this.user?.uid as string, 'events', this.eventId as string), { title: eventTitle });
   }
 
   numberOfAttendees(): string {
@@ -211,36 +212,28 @@ export class EventComponent implements OnInit {
       return;
     }
     if (this.isJoined) {
-      const batch = this.afs.firestore.batch();
-      batch.delete(this.afs.doc(`events/${this.eventId}/participants/${this.user?.uid}`).ref);
+      const batch = writeBatch(this.firestore);
+      batch.delete(doc(this.firestore, 'events', this.eventId as string, 'participants', this.user?.uid as string));
       if (!this.isOwner) {
-        batch.delete(this.afs.doc(`users/${this.user?.uid}/events/${this.eventId}`).ref);
+        batch.delete(doc(this.firestore, 'users', this.user?.uid as string, 'events', this.eventId as string));
       }
       batch.commit();
       this.promoteNextPersonOnWaitlist();
     } else {
-      this.teamEvent?.subscribe(teamEvent => {
-        if (!teamEvent) {
-          console.error("joinEvent: teamEvent is falsy")
-          return
-        }
-        this.registerParticipant(<TeamUserBrief>this.user);
-      })
+      this.registerParticipant(<TeamUserBrief>this.user);
     }
     this.isJoined = !this.isJoined;
   }
 
   private registerParticipant(user: TeamUserBrief) {
-    const batch = this.afs.firestore.batch();
-    batch.set(this.afs.collection(`events/${this.eventId}/participants`)
-      .doc(user.uid).ref, {
+    const batch = writeBatch(this.firestore);
+    batch.set(doc(this.firestore, 'events', this.eventId as string, 'participants', user.uid), {
       uid: user.uid,
       displayName: user.displayName,
       photoURL: user.photoURL
     });
 
-    batch.set(this.afs.collection<TeamEventBrief>(`users/${this.user?.uid}/events`)
-      .doc(this.eventId ? this.eventId : undefined).ref, {
+    batch.set(doc(this.firestore, 'users', user.uid, 'events', this.eventId as string), {
       dateTime: this.eventDate,
       icon: this.eventIcon,
       title: this.eventTitle
@@ -249,52 +242,44 @@ export class EventComponent implements OnInit {
   }
 
   joinWaitlist(): void {
+    const batch = writeBatch(this.firestore);
     if (this.isWaitlist) {
-      const batch = this.afs.firestore.batch();
-      batch.delete(this.afs.doc(`events/${this.eventId}/waitlist/${this.user?.uid}`).ref);
+      batch.delete(doc(this.firestore, 'events', this.eventId as string, 'waitlist', this.user?.uid as string));
       if (!this.isOwner) {
-        batch.delete(this.afs.doc(`users/${this.user?.uid}/events/${this.eventId}`).ref);
+        batch.delete(doc(this.firestore, 'users', this.user?.uid as string, 'events', this.eventId as string));
       }
-      batch.commit();
     } else {
-      const batch = this.afs.firestore.batch();
-      batch.set(this.afs.collection(`events/${this.eventId}/waitlist`)
-        .doc(this.user?.uid).ref, {
+      batch.set(doc(this.firestore, 'events', this.eventId as string, 'waitlist', this.user?.uid as string), {
         uid: this.user?.uid,
         displayName: this.user?.displayName,
         photoURL: this.user?.photoURL,
         ts: new Date()
       });
 
-      batch.set(this.afs.collection<TeamEventBrief>(`users/${this.user?.uid}/events`)
-        .doc(this.eventId ? this.eventId : undefined).ref, {
+      batch.set(doc(this.firestore, 'users', this.user?.uid as string, 'events', this.eventId as string), {
         dateTime: this.eventDate,
         icon: this.eventIcon,
         title: this.eventTitle
       });
-
-      batch.commit()
-        .then(result => console.info("batch.commit() succeeded:", result))
-        .catch(error => console.error("batch.commit() failed:", error))
     }
+    batch.commit()
     this.isWaitlist = !this.isWaitlist;
   }
 
   promoteNextPersonOnWaitlist() {
-    this.afs.collection<TeamUserBrief>(`events/${this.eventId}/waitlist`, ref => ref.orderBy('ts', 'asc'))
-      .valueChanges({ idField: 'uid' })
-      .pipe(take(1)).subscribe(firstInWaitlist => {
-        if (firstInWaitlist.length > 0) {
-          this.registerParticipant(firstInWaitlist[0]);
-          this.afs.doc<TeamUserBrief>(`events/${this.eventId}/waitlist/${firstInWaitlist[0].uid}`).delete();
-        }
-      });
+    const q = query(collection(this.firestore, 'events', this.eventId as string, 'waitlist'), orderBy('ts', 'asc'), limit(1));
+    onSnapshot(q, (firstInWaitlist) => {
+      if (!firstInWaitlist.empty) {
+        this.registerParticipant(firstInWaitlist.docs[0].data() as TeamUserBrief);
+        deleteDoc(doc(this.firestore, 'events', this.eventId as string, 'waitlist', firstInWaitlist.docs[0].data()['uid']));
+      }
+    });
   }
 
   getWaitlist() {
-    this.afs.collection<TeamUserBrief>(`/events/${this.eventId}/waitlist`)
-      .valueChanges()
-      .subscribe((w) => this.waitlist = w)
+    onSnapshot(collection(this.firestore, `events/${this.eventId}/waitlist`), (querySnapshot) => {
+      this.waitlist = querySnapshot.docs.map(doc => doc.data() as TeamUserBrief);
+    });
   }
 
   copyEventInvite() {
@@ -305,6 +290,10 @@ export class EventComponent implements OnInit {
     })}\n${eventUrl}`;
 
     this.clipboard.copy(message);
+  }
+
+  updateEvent(data: any) {
+    updateDoc(this.teamEventRef as DocumentReference<DocumentData>, data)
   }
 
   duplicateEvent() {
@@ -336,30 +325,30 @@ export class EventComponent implements OnInit {
     if (this.maxAttendees) {
       duplicateEvent.maxAttendees = this.maxAttendees;
     }
-    this.afs.collection<TeamEvent>('events').add(duplicateEvent).then(ref => {
-      if (!this.user) {
-        console.error("duplicateEvent: user object is falsy");
-        return;
-      }
-      this.afs.doc<TeamEventBrief>(`users/${this.user.uid}/events/${ref.id}`).set({
-        dateTime: newEventDate,
-        icon: this.user.photoURL,
-        title: this.eventTitle
-      });
-      this.router.navigate([`event/${ref.id}`]).then(() => {
+
+    const newEventId = doc(collection(this.firestore, 'events')).id;
+    const batch = writeBatch(this.firestore);
+    batch.set(doc(this.firestore, 'events', newEventId), duplicateEvent);
+    batch.set(doc(this.firestore, 'users', this.user?.uid as string, 'events', newEventId), {
+      dateTime: newEventDate,
+      icon: this.user.photoURL,
+      title: this.eventTitle
+    });
+    batch.commit().then(() => {
+      this.router.navigate([`event/${newEventId}`]).then(() => {
         window.location.reload();
-      });;
+      });
     })
   }
 
   deleteEvent(): void {
-    if (!this.teamEventDoc) {
+    if (!this.teamEventRef) {
       console.error("deleteEvent: falsy teamEventDoc");
       return;
     }
-    const batch = this.afs.firestore.batch();
-    batch.delete(this.teamEventDoc.ref)
-    batch.delete(this.afs.doc(`users/${this.user?.uid}/events/${this.eventId}`).ref)
+    const batch = writeBatch(this.firestore);
+    batch.delete(this.teamEventRef)
+    batch.delete(doc(this.firestore, 'users', this.user?.uid as string, 'events', this.eventId as string));
     batch.commit().then(() => { this.router.navigate([`/`]) });
   }
 
@@ -422,7 +411,7 @@ export class EventComponent implements OnInit {
       } else {
         this.stripePriceUnitAmount = 0;
       }
-      this.teamEventDoc?.update({
+      updateDoc(this.teamEventRef as DocumentReference<TeamEvent>, {
         stripePriceId: stripePrice.id,
         stripePriceUnitAmount: this.stripePriceUnitAmount,
         eventFee: price,
@@ -467,7 +456,7 @@ export class EventComponent implements OnInit {
     if (this.isMessagesTabOpen(tabIndex)) {
       this.isUnreadMessage = false;
       this.lastReadMessageOn = Timestamp.now();
-      this.afs.doc(`events/${this.eventId}/participants/${this.user?.uid}`).update({ lastReadMessageOn: this.lastReadMessageOn });
+      updateDoc(doc(this.firestore, 'events', this.eventId as string, 'participants', this.user?.uid as string), { lastReadMessageOn: this.lastReadMessageOn });
     }
     this.selectedTabIndex = tabIndex;
     localStorage.setItem('selectedTabIndex', this.selectedTabIndex.toString());

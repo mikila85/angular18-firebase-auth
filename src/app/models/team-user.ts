@@ -1,4 +1,6 @@
-export interface TeamUser extends firebase.default.User {
+import { User } from "@angular/fire/auth";
+
+export interface TeamUser extends User {
     uid: string;
     isTester?: boolean;
     stripeAccountId?: string;

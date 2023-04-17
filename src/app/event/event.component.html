@@ -21,23 +21,23 @@
             </div>
             <mat-form-field class="full-width">
                 <mat-label>Title</mat-label>
-                <input matInput name="eventTitle" [ngModel]="(teamEvent | async)?.title"
+                <input matInput name="eventTitle" [ngModel]="teamEvent?.title"
                     (ngModelChange)="updateEventTitle($event)">
             </mat-form-field>
             <mat-form-field class="full-width">
                 <mat-label>Description</mat-label>
                 <textarea matInput name="eventDescription" [ngModel]="eventDescription"
-                    (ngModelChange)="teamEventDoc?.update({description: $event})"></textarea>
+                    (ngModelChange)="updateEvent({description: $event})"></textarea>
             </mat-form-field>
             <div fxLayout='row'>
                 <mat-slide-toggle [(ngModel)]="isLimitedAttendees"
-                    (ngModelChange)="teamEventDoc?.update({isLimitedAttendees: $event})">
+                    (ngModelChange)="updateEvent({isLimitedAttendees: $event})">
                     Attendee limit
                 </mat-slide-toggle>
                 <mat-form-field *ngIf="isLimitedAttendees">
                     <mat-label>Max number</mat-label>
                     <input matInput type="number" name="maxAttendees" [(ngModel)]="maxAttendees"
-                        (ngModelChange)="teamEventDoc?.update({maxAttendees: $event})">
+                        (ngModelChange)="updateEvent({maxAttendees: $event})">
                 </mat-form-field>
             </div>
 
@@ -75,8 +75,7 @@
 
             <div [style]="isEventFee && isTestMode ? 'background-color:beige':''">
                 <div fxLayout='row'>
-                    <mat-slide-toggle [(ngModel)]="isEventFee"
-                        (ngModelChange)="teamEventDoc?.update({isEventFee: $event})">
+                    <mat-slide-toggle [(ngModel)]="isEventFee" (ngModelChange)="updateEvent({isEventFee: $event})">
                         Event Fee
                     </mat-slide-toggle>
                     <!-- disable until test mode is implemented
