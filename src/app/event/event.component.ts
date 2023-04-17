@@ -281,27 +281,8 @@ export class EventComponent implements OnInit {
       console.error("duplicateEvent: teamEvent object is falsy");
       return;
     }
-    var duplicateEvent: TeamEvent = {
-      title: this.eventTitle,
-      description: this.teamEvent.description,
-      dateTime: newEventDate,
-      owner: this.user.uid,
-      icon: this.user.photoURL,
-      isLimitedAttendees: this.teamEvent.isLimitedAttendees,
-      isTeamAllocations: this.teamEvent.isTeamAllocations,
-      isEventFee: this.teamEvent.isEventFee,
-      eventFee: this.eventFee,
-      applicationFee: this.teamEvent.applicationFee,
-      maxAttendees: this.teamEvent.maxAttendees,
-      stripePriceId: this.teamEvent.stripePriceId,
-      stripePriceUnitAmount: this.teamEvent.stripePriceUnitAmount,
-    };
-    if (this.teamEvent.isTestMode) {
-      duplicateEvent.isTestMode = this.teamEvent.isTestMode;
-    }
-    if (this.teamEvent.maxAttendees) {
-      duplicateEvent.maxAttendees = this.teamEvent.maxAttendees;
-    }
+    var duplicateEvent: TeamEvent = Object.assign(this.teamEvent);
+    duplicateEvent.dateTime = newEventDate;
 
     const newEventId = doc(collection(this.firestore, 'events')).id;
     const batch = writeBatch(this.firestore);

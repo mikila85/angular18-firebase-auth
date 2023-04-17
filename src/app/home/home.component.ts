@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Auth, User, onAuthStateChanged } from '@angular/fire/auth';
-import { Firestore, collection, doc, onSnapshot, orderBy, query, writeBatch } from '@angular/fire/firestore';
+import { Firestore, Timestamp, collection, doc, onSnapshot, orderBy, query, writeBatch } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { TeamEvent } from '../models/team-event.model';
 
@@ -74,7 +74,7 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  teamEventDateTime(dateTime: Date | firebase.default.firestore.Timestamp) {
-    return (<firebase.default.firestore.Timestamp>dateTime)?.toDate();
+  teamEventDateTime(dateTime: Date | Timestamp) {
+    return (<Timestamp>dateTime)?.toDate();
   }
 }

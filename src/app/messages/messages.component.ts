@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { Auth, User, onAuthStateChanged } from '@angular/fire/auth';
-import { CollectionReference, Firestore, addDoc, collection, collectionData, orderBy, query } from '@angular/fire/firestore';
+import { CollectionReference, Firestore, Timestamp, addDoc, collection, collectionData, orderBy, query } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Message } from '../models/message';
 
@@ -46,8 +46,8 @@ export class MessagesComponent implements OnInit {
     this.text = "";
   }
 
-  messageDateTime(dateTime: Date | firebase.default.firestore.Timestamp) {
-    return (<firebase.default.firestore.Timestamp>dateTime)?.toDate();
+  messageDateTime(dateTime: Date | Timestamp) {
+    return (<Timestamp>dateTime)?.toDate();
   }
 
 }
