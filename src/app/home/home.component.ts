@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Auth, User, onAuthStateChanged } from '@angular/fire/auth';
-import { Firestore, collection, onSnapshot, orderBy, query } from '@angular/fire/firestore';
+import { Firestore, collection, doc, onSnapshot, orderBy, query, writeBatch } from '@angular/fire/firestore';
+import { Router } from '@angular/router';
 import { TeamEvent } from '../models/team-event.model';
 
 @Component({
@@ -14,6 +15,10 @@ export class HomeComponent implements OnInit {
   private auth: Auth = inject(Auth);
   user: User | null = null;
   teamEvents: TeamEvent[] = [];
+
+  constructor(
+    private router: Router,
+  ) { }
 
   async ngOnInit(): Promise<void> {
     onAuthStateChanged(this.auth, (user) => {
@@ -34,6 +39,38 @@ export class HomeComponent implements OnInit {
         this.isLoading = false;
         return;
       }
+    });
+  }
+
+  createNewEvent(): void {
+    if (!this.user) {
+      console.error('User object is falsy');
+      return;
+    }
+    const eventId = doc(collection(this.firestore, 'events')).id;
+    const batch = writeBatch(this.firestore);
+    const newEvent: TeamEvent = {
+      owner: this.user.uid,
+      dateTime: new Date(),
+      icon: this.user.photoURL,
+      isLimitedAttendees: false,
+      isEventFee: false,
+      isTeamAllocations: false,
+      description: '',
+    }
+    /* disable until test mode is implemented
+    if (this.user?.isTester) {
+      newEvent.isTestMode = true;
+    }
+    */
+
+    batch.set(doc(collection(this.firestore, 'events'), eventId), newEvent);
+    batch.set(doc(collection(this.firestore, 'users', this.user.uid, 'events'), eventId), {
+      dateTime: newEvent.dateTime,
+      icon: this.user.photoURL,
+    });
+    batch.commit().then(() => {
+      this.router.navigate([`event/${eventId}`]);
     });
   }
 

@@ -16,7 +16,6 @@ const routes: Routes = [
   { path: 'profile', component: UserProfileComponent, canActivate: [CanActivateGuard] },
   { path: 'profile/:userId', component: UserProfileViewComponent, canActivate: [CanActivateGuard] },
   { path: 'event/:eventId', component: EventComponent, canActivate: [CanActivateGuard] },
-  { path: 'event', component: EventComponent, canActivate: [CanActivateGuard] },
   { path: 'stripe/:eventId/:accountId', component: StripeAccountCreatedComponent, canActivate: [CanActivateGuard] },
   { path: 'stripe-payment/:eventId/:userId/:success', component: StripeCheckoutCompletedComponent, canActivate: [CanActivateGuard] },
   { path: '', component: HomeComponent }

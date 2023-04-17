@@ -5,7 +5,7 @@ import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat
 import { Timestamp } from '@angular/fire/firestore';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, take } from 'rxjs';
+import { Observable, firstValueFrom, take } from 'rxjs';
 import { Stripe } from 'stripe';
 import { Message } from '../models/message';
 import { Participant } from '../models/participant.model';
@@ -53,7 +53,6 @@ export class EventComponent implements OnInit {
   isLoading = true;
   isStripeLoading = false;
   isPriceLoading = false;
-  isNewEvent = true;
   isOwner = false;
   isJoined = false;
   isWaitlist = false;
@@ -73,14 +72,18 @@ export class EventComponent implements OnInit {
 
   ngOnInit(): void {
     this.eventId = this.route.snapshot.paramMap.get('eventId');
+    if (!this.eventId) {
+      console.error('Event ID is falsy');
+      return;
+    }
     this.selectedTabIndex = Number(localStorage.getItem('selectedTabIndex'));
-    this.auth.user.subscribe(user => {
+    this.auth.user.subscribe(async user => {
       if (!user) {
         console.error('User object is falsy');
         return;
       }
       this.user = Object.assign(user);
-      this.afs.doc<TeamUser>(`users/${user.uid}`).valueChanges().subscribe(u => {
+      this.afs.doc<TeamUser>(`users/${user.uid}`).valueChanges().subscribe(async u => {
         if (!u || !this.user) {
           console.error("ngOnInit userDoc.subscribe: returned falsy user");
           return;
@@ -92,45 +95,39 @@ export class EventComponent implements OnInit {
           this.stripeUrl = "https://dashboard.stripe.com";
           this.isStripeAccount = true;
           if (!u.isStripeAccountEnabled) {
-            this.getStripeConnectedAccount(u.stripeAccountId).subscribe((account) => {
-              if (account.charges_enabled && account.payouts_enabled) {
-                this.afs.doc(`users/${user.uid}`).update({ isStripeAccountEnabled: true });
-              }
-            })
+            const account = await this.getStripeConnectedAccount(u.stripeAccountId);
+            if (account.charges_enabled && account.payouts_enabled) {
+              this.afs.doc(`users/${user.uid}`).update({ isStripeAccountEnabled: true });
+            }
           }
         }
       });
 
-      if (this.eventId) { // Existing event        
-        this.isNewEvent = false;
-        this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
-        this.teamEvent = this.teamEventDoc.valueChanges({ idField: 'id' });
-        this.afs.doc<Participant>(`events/${this.eventId}/participants/${this.user?.uid}`)
-          .get().subscribe(p => {
-            this.isJoined = p.exists;
-            const participantData = p.data();
-            if (!participantData) {
-              console.error("ngOnInit participantDoc.subscribe: returned falsy participant");
-              return;
+      this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
+      this.teamEvent = this.teamEventDoc.valueChanges({ idField: 'id' });
+      const participantSnapshot = await firstValueFrom(this.afs.doc<Participant>(`events/${this.eventId}/participants/${this.user?.uid}`).get());
+      this.isJoined = participantSnapshot.exists;
+      if (this.isJoined) {
+        const participantData = participantSnapshot.data();
+        if (!participantData) {
+          console.error("ngOnInit participantSnapshot.data() returned falsy participantData");
+          return;
+        }
+        this.isPaid = participantData.isPaid;
+        this.paidOn = participantData.paidOn?.toDate();
+        this.lastReadMessageOn = participantData.lastReadMessageOn ? participantData.lastReadMessageOn : new Timestamp(0, 0);
+        this.afs.collection<Message>(`events/${this.eventId}/messages`, ref => ref.orderBy('ts', 'desc').limit(1))
+          .valueChanges().subscribe(messages => {
+            if (messages[0].ts > this.lastReadMessageOn) {
+              this.isUnreadMessage = !this.isMessagesTabOpen(this.selectedTabIndex);
             }
-            this.isPaid = participantData.isPaid;
-            this.paidOn = participantData.paidOn?.toDate();
-            this.lastReadMessageOn = participantData.lastReadMessageOn ? participantData.lastReadMessageOn : new Timestamp(0, 0);
-            this.afs.collection<Message>(`events/${this.eventId}/messages`, ref => ref.orderBy('ts', 'desc').limit(1))
-              .valueChanges().subscribe(messages => {
-                if (messages[0].ts > this.lastReadMessageOn) {
-                  this.isUnreadMessage = !this.isMessagesTabOpen(this.selectedTabIndex);
-                }
-              });
-          });
-        this.afs.doc(`events/${this.eventId}/waitlist/${this.user?.uid}`)
-          .get().subscribe(p => {
-            this.isWaitlist = p.exists;
           });
       }
-      else { // New event
-        this.createNewEvent();
-      }
+      this.afs.doc(`events/${this.eventId}/waitlist/${this.user?.uid}`)
+        .get().subscribe(p => {
+          this.isWaitlist = p.exists;
+        });
+
       this.teamEvent?.subscribe(te => {
         if (!te) {
           console.error("ngOnInit teamEvent.subscribe: returned falsy team event")
@@ -175,44 +172,6 @@ export class EventComponent implements OnInit {
     });
   }
 
-  createNewEvent(): void {
-    if (!this.user) {
-      console.error('User object is falsy');
-      return;
-    }
-    this.isOwner = true;
-    const batch = this.afs.firestore.batch();
-    this.eventId = this.afs.createId();
-
-    var newEvent: TeamEvent = {
-      owner: this.user.uid,
-      dateTime: this.eventDate,
-      icon: this.user.photoURL,
-      isLimitedAttendees: false,
-      isEventFee: false,
-      isTeamAllocations: false,
-      description: '',
-    }
-    /* disable until test mode is implemented
-    if (this.user?.isTester) {
-      newEvent.isTestMode = true;
-    }
-    */
-    batch.set(this.afs.doc(`events/${this.eventId}`).ref, newEvent);
-
-    batch.set(this.afs.doc<TeamEventBrief>(`users/${this.user.uid}/events/${this.eventId}`).ref, {
-      dateTime: this.eventDate,
-      icon: this.user.photoURL,
-      title: this.eventTitle
-    });
-
-    batch.commit().then(() => {
-      this.teamEventDoc = this.afs.doc<TeamEvent>(`events/${this.eventId}`);
-      this.teamEvent = this.teamEventDoc.valueChanges();
-      this.isLoading = false;
-    });
-
-  }
   updateEventDate(date: Date): void {
     this.eventDate = date;
     this.updateEventDateTime();
@@ -340,9 +299,6 @@ export class EventComponent implements OnInit {
 
   copyEventInvite() {
     var eventUrl = window.location.href;
-    if (this.isNewEvent) {
-      eventUrl += `/${this.eventId}`;
-    }
     var message = `${this.eventTitle}\n${this.eventDate.toLocaleString(`en-AU`, {
       dateStyle: "full",
       timeStyle: "short"
@@ -424,9 +380,10 @@ export class EventComponent implements OnInit {
     })
   }
 
-  getStripeConnectedAccount(stripeAccountId: string) {
+  async getStripeConnectedAccount(stripeAccountId: string) {
     const getAccount = httpsCallableData<unknown, Stripe.Account>(this.functions, 'getStripeConnectedAccount');
-    return getAccount({ isTestMode: this.isTestMode, id: stripeAccountId });
+    const account = await firstValueFrom(getAccount({ isTestMode: this.isTestMode, id: stripeAccountId }));
+    return account;
   }
 
   /** The sample computation based on the following values:
@@ -434,12 +391,12 @@ export class EventComponent implements OnInit {
     $0.50 = Application fee
     1.75% or 0.0175 = Stripe fixed percentage fee (Domestic card)
     $0.30 = Stripe fixed fee
-  
+   
     Step 1: $10.00 + $0.30 = $10.30
     Step 2: 1 - 0.0175 = 0.9825
     Step 3: $10.30 / 0.9825 = $10.48
     Step 4: $10.48 + $0.50 = $11.98 Total amount to be charged
-  
+   
     After getting the Total charge, you can already follow the Flow of funds in this link:
     https://stripe.com/docs/connect/destination-charges#flow-of-funds-app-fee
   */

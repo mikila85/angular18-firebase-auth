@@ -1,6 +1,6 @@
 <mat-card *ngIf="user">
     <mat-card-actions align="end">
-        <button mat-raised-button color="accent" routerLink="/event">
+        <button mat-raised-button color="accent" (click)="createNewEvent()">
             <mat-icon inline=true>add_circle</mat-icon>
             Create New Event
         </button>
@@ -12,7 +12,9 @@
 <mat-nav-list>
     <a mat-list-item [routerLink]="['/event/'+teamEvent.id]" *ngFor="let teamEvent of teamEvents">
         <img matListItemAvatar [src]="teamEvent.icon" referrerpolicy="no-referrer" [alt]="teamEvent.title">
-        <h3 matListItemTitle>{{teamEvent.title}}</h3>
+        <h3 matListItemTitle [style]="teamEvent.title ? '' : 'font-style: italic;'">
+            {{teamEvent.title ? teamEvent.title : "New Event"}}
+        </h3>
         <p matListItemLine>
             {{teamEventDateTime(teamEvent.dateTime) | date:'fullDate'}} at
             {{teamEventDateTime(teamEvent.dateTime) | date:'shortTime'}}
