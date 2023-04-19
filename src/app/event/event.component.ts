@@ -1,7 +1,7 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit, inject } from '@angular/core';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
-import { DocumentData, DocumentReference, Firestore, Timestamp, collection, deleteDoc, doc, getDoc, limit, onSnapshot, orderBy, query, updateDoc, writeBatch } from '@angular/fire/firestore';
+import { DocumentData, DocumentReference, Firestore, Timestamp, collection, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query, updateDoc, writeBatch } from '@angular/fire/firestore';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -98,24 +98,25 @@ export class EventComponent implements OnInit {
         }
         this.teamEvent = eventSnapshot.data() as TeamEvent;
         this.teamEvent.id = eventSnapshot.id;
-        const participantSnapshot = await getDoc(doc(this.firestore, `events/${this.eventId}/participants/${this.user?.uid}`));
-        this.isJoined = participantSnapshot.exists();
-        if (this.isJoined) {
-          const participantData = participantSnapshot.data() as Participant;
-          if (!participantData) {
-            console.error("ngOnInit participantSnapshot.data() returned falsy participantData");
-            return;
-          }
-          this.isPaid = participantData.isPaid;
-          this.paidOn = participantData.paidOn?.toDate();
-          this.lastReadMessageOn = participantData.lastReadMessageOn ? participantData.lastReadMessageOn : new Timestamp(0, 0);
-          const q = query(collection(this.firestore, 'events', this.eventId as string, 'messages'), orderBy('ts', 'desc'), limit(1));
-          onSnapshot(q, (messageSnapshot) => {
-            if (messageSnapshot.docs[0].data()['ts'] > this.lastReadMessageOn) {
-              this.isUnreadMessage = !this.isMessagesTabOpen(this.selectedTabIndex);
+        onSnapshot(doc(this.firestore, `events/${this.eventId}/participants/${this.user?.uid}`), (participantSnapshot) => {
+          this.isJoined = participantSnapshot.exists();
+          if (this.isJoined) {
+            const participantData = participantSnapshot.data() as Participant;
+            if (!participantData) {
+              console.error("ngOnInit participantSnapshot.data() returned falsy participantData");
+              return;
             }
-          });
-        }
+            this.isPaid = participantData.isPaid;
+            this.paidOn = participantData.paidOn?.toDate();
+            this.lastReadMessageOn = participantData.lastReadMessageOn ? participantData.lastReadMessageOn : new Timestamp(0, 0);
+            const q = query(collection(this.firestore, 'events', this.eventId as string, 'messages'), orderBy('ts', 'desc'), limit(1));
+            onSnapshot(q, (messageSnapshot) => {
+              if (messageSnapshot.docs[0].data()['ts'] > this.lastReadMessageOn) {
+                this.isUnreadMessage = !this.isMessagesTabOpen(this.selectedTabIndex);
+              }
+            });
+          }
+        });
 
         onSnapshot(doc(this.firestore, 'events', this.eventId as string, 'waitlist', this.user?.uid as string), (waitlistSnapshot) => {
           this.isWaitlist = waitlistSnapshot.exists();
@@ -198,20 +199,26 @@ export class EventComponent implements OnInit {
     this.isJoined = !this.isJoined;
   }
 
-  private registerParticipant(user: TeamUserBrief) {
+  private registerParticipant(user: TeamUserBrief, removeFromWaitlist: boolean = false) {
     const batch = writeBatch(this.firestore);
     batch.set(doc(this.firestore, 'events', this.eventId as string, 'participants', user.uid), {
       uid: user.uid,
       displayName: user.displayName,
       photoURL: user.photoURL
     });
-
-    batch.set(doc(this.firestore, 'users', user.uid, 'events', this.eventId as string), {
-      dateTime: this.eventDate,
-      icon: this.teamEvent?.icon,
-      title: this.eventTitle
+    if (removeFromWaitlist) {
+      batch.delete(doc(this.firestore, 'events', this.eventId as string, 'waitlist', user.uid));
+    } else {
+      batch.set(doc(this.firestore, 'users', user.uid, 'events', this.eventId as string), {
+        dateTime: this.eventDate,
+        icon: this.teamEvent?.icon,
+        title: this.eventTitle
+      });
+    }
+    batch.commit().catch((error) => {
+      console.log(error);
     });
-    batch.commit();
+
   }
 
   joinWaitlist(): void {
@@ -235,16 +242,17 @@ export class EventComponent implements OnInit {
         title: this.eventTitle
       });
     }
-    batch.commit()
+    batch.commit().catch((error) => {
+      console.log(error);
+    });
     this.isWaitlist = !this.isWaitlist;
   }
 
   promoteNextPersonOnWaitlist() {
     const q = query(collection(this.firestore, 'events', this.eventId as string, 'waitlist'), orderBy('ts', 'asc'), limit(1));
-    onSnapshot(q, (firstInWaitlist) => {
+    getDocs(q).then((firstInWaitlist) => {
       if (!firstInWaitlist.empty) {
-        this.registerParticipant(firstInWaitlist.docs[0].data() as TeamUserBrief);
-        deleteDoc(doc(this.firestore, 'events', this.eventId as string, 'waitlist', firstInWaitlist.docs[0].data()['uid']));
+        this.registerParticipant(firstInWaitlist.docs[0].data() as TeamUserBrief, true);
       }
     });
   }
