@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Auth, AuthProvider, FacebookAuthProvider, GoogleAuthProvider, OAuthProvider, signInWithPopup } from '@angular/fire/auth';
+import { Auth, AuthProvider, FacebookAuthProvider, GoogleAuthProvider, OAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from '@angular/fire/auth';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,10 +11,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class LoginComponent {
   private auth: Auth = inject(Auth);
+  public name: string = '';
   public email: string = '';
   public password: string = '';
   public passwordInputType: string = 'password';
   public isForgotPassword: boolean = false;
+  public isSignUp: boolean = false;
+  public isNewEmailAccount: boolean = false;
 
   constructor(
     private iconRegistry: MatIconRegistry,
@@ -45,8 +48,26 @@ export class LoginComponent {
     });
   }
 
-  signInWithPassword() {
+  signUpWithPassword() {
+    createUserWithEmailAndPassword(this.auth, this.email, this.password).then((userCredential) => {
+      const user = userCredential.user;
+      this.onSuccess(user);
+    }).catch((error) => {
+      console.log(error);
+      //ToDo: Show error message in toast
+      console.log(error.message);
+    });
+  }
 
+  signInWithPassword() {
+    signInWithEmailAndPassword(this.auth, this.email, this.password).then((userCredential) => {
+      const user = userCredential.user;
+      this.onSuccess(user);
+    }).catch((error) => {
+      console.log(error);
+      //ToDo: Show error message in toast
+      console.log(error.message);
+    });
   }
 
   onSuccess(user: any): void {

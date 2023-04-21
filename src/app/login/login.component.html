@@ -1,27 +1,39 @@
 <mat-card>
     <mat-card-header>
-        <mat-card-title>Log in</mat-card-title>
+        <mat-card-title>{{isSignUp ? 'Sign up' : 'Log in'}}</mat-card-title>
         <mat-card-subtitle>using your existing provider</mat-card-subtitle>
     </mat-card-header>
-    <mat-card-content>
-        <div fxLayout="column" fxLayoutAlign="center">
-            <button mat-raised-button class="login-button" (click)="loginWithProvider('google')">
-                <mat-icon svgIcon="google" inline=true></mat-icon>
-                Log in with Google
+    <mat-card-content fxLayout="column" fxLayoutAlign="center">
+        <button mat-raised-button class="login-button" (click)="loginWithProvider('google')">
+            <mat-icon svgIcon="google" inline=true></mat-icon>
+            Continue with Google
+        </button>
+        <button mat-raised-button class="login-button" (click)="loginWithProvider('facebook')">
+            <mat-icon svgIcon="facebook" inline=true></mat-icon>
+            Continue with Facebook
+        </button>
+        <button mat-raised-button class="login-button" (click)="loginWithProvider('microsoft')">
+            <mat-icon svgIcon="microsoft" inline=true></mat-icon>
+            Continue with Microsoft
+        </button>
+    </mat-card-content>
+    <mat-card-content *ngIf="isSignUp" fxLayout="column" fxLayoutAlign="center">
+        <button mat-raised-button class="login-button" (click)="isNewEmailAccount = true">
+            <mat-icon inline=true>mail</mat-icon>
+            Sign up with email
+        </button>
+        <section fxLayoutAlign="center">
+            <div class="section-label">Already have an account?</div>
+            <button mat-button (click)="isNewEmailAccount=false; isSignUp = false">
+                Log In
             </button>
-            <button mat-raised-button class="login-button" (click)="loginWithProvider('facebook')">
-                <mat-icon svgIcon="facebook" inline=true></mat-icon>
-                Log in with Facebook
-            </button>
-            <button mat-raised-button class="login-button" (click)="loginWithProvider('microsoft')">
-                <mat-icon svgIcon="microsoft" inline=true></mat-icon>
-                Log in with Microsoft
-            </button>
-        </div>
+        </section>
     </mat-card-content>
 </mat-card>
 <mat-divider></mat-divider>
-<mat-card>
+
+<!--Sign In With Password-->
+<mat-card *ngIf="!isNewEmailAccount && !isSignUp">
     <mat-card-header>
         <mat-card-title>Or</mat-card-title>
         <mat-card-subtitle>with your password</mat-card-subtitle>
@@ -29,6 +41,78 @@
     <mat-card-content>
         <form (ngSubmit)="signInWithPassword()" #signInForm="ngForm">
             <div fxLayout="column" fxLayoutAlign="center">
+                <mat-form-field>
+                    <mat-label>Email</mat-label>
+                    <input matInput required autocomplete="username" type="text" id="emailCtrl" name="emailCtrl"
+                        [(ngModel)]="email" #emailCtrl="ngModel">
+                    <mat-icon matSuffix>email</mat-icon>
+                    <div *ngIf="emailCtrl.invalid && (emailCtrl.dirty || emailCtrl.touched)">
+                        <mat-error *ngIf="emailCtrl.errors?.['required']">
+                            Email is required
+                        </mat-error>
+                        <mat-error *ngIf="emailCtrl.errors?.['pattern']">
+                            Please enter a valid email address
+                        </mat-error>
+                    </div>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Password</mat-label>
+                    <input matInput required autocomplete="current-password" [type]="passwordInputType"
+                        id="passwordCtrl" name="passwordCtrl" [(ngModel)]="password" #passwordCtrl="ngModel">
+                    <button *ngIf="passwordInputType==='password'" matSuffix mat-icon-button
+                        (click)="passwordInputType='text'">
+                        <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button *ngIf="passwordInputType==='text'" matSuffix mat-icon-button
+                        (click)="passwordInputType='password'">
+                        <mat-icon>visibility_off</mat-icon>
+                    </button>
+                    <mat-icon matSuffix>lock</mat-icon>
+                    <div *ngIf="passwordCtrl.invalid && (passwordCtrl.dirty || passwordCtrl.touched)">
+                        <mat-error *ngIf="passwordCtrl.errors?.['required']">
+                            Password is required
+                        </mat-error>
+                    </div>
+                </mat-form-field>
+
+                <button [disabled]="!signInForm.form.valid" mat-raised-button type="submit" color="primary">
+                    LOGIN
+                </button>
+                <div fxLayoutAlign="center">
+                    <button (click)="isForgotPassword=true" mat-button>
+                        Forgot Password?
+                    </button>
+                </div>
+                <section fxLayoutAlign="center">
+                    <div class="section-label">Not a member yet?</div>
+                    <button mat-button (click)="isSignUp = true">
+                        Sign up
+                    </button>
+                </section>
+            </div>
+        </form>
+    </mat-card-content>
+</mat-card>
+
+<!--Create New Account-->
+<mat-card *ngIf="isNewEmailAccount">
+    <mat-card-header>
+        <mat-card-title>Create New Account</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <form (ngSubmit)="signUpWithPassword()" #signInForm="ngForm">
+            <div fxLayout="column" fxLayoutAlign="center">
+                <mat-form-field>
+                    <mat-label>Name</mat-label>
+                    <input matInput required autocomplete="name" type="text" id="nameCtrl" name="nameCtrl"
+                        [(ngModel)]="name" #nameCtrl="ngModel">
+                    <mat-icon matSuffix>person</mat-icon>
+                    <div *ngIf="nameCtrl.invalid && (nameCtrl.dirty || nameCtrl.touched)">
+                        <mat-error *ngIf="nameCtrl.errors?.['required']">
+                            Your name is required
+                        </mat-error>
+                    </div>
+                </mat-form-field>
                 <mat-form-field>
                     <mat-label>Email</mat-label>
                     <input matInput required autocomplete="username" type="text" id="emailCtrl" name="emailCtrl"
@@ -65,19 +149,8 @@
                 </mat-form-field>
 
                 <button [disabled]="!signInForm.form.valid" mat-raised-button type="submit" color="primary">
-                    LOGIN
+                    SIGN UP
                 </button>
-                <div fxLayoutAlign="center">
-                    <button (click)="isForgotPassword=true" mat-button>
-                        Forgot Password?
-                    </button>
-                </div>
-                <section fxLayoutAlign="center">
-                    <div class="section-label">Not a member yet?</div>
-                    <button mat-button>
-                        Sign up
-                    </button>
-                </section>
             </div>
         </form>
     </mat-card-content>
