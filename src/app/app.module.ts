@@ -11,7 +11,6 @@ import { getMessaging, provideMessaging } from '@angular/fire/messaging';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
 import { environment } from '../environments/environment';
 import { AboutComponent } from './about/about.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -84,12 +83,6 @@ import { UserProfileViewComponent } from './user-profile-view/user-profile-view.
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000'
-    }),
-    NgxAuthFirebaseUIModule.forRoot(environment.firebase, undefined, {
-      enableEmailVerification: true,
-      toastMessageOnAuthSuccess: false,
-      authGuardFallbackURL: '/login',
-      authGuardLoggedInURL: '/'
     }),
     ClipboardModule,
     MatToolbarModule,

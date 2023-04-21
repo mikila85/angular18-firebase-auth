@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { User } from '@angular/fire/auth';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 
 @Component({
@@ -7,7 +8,7 @@ import { Functions, httpsCallableData } from '@angular/fire/functions';
   styleUrls: ['./stripe-payment.component.css']
 })
 export class StripePaymentComponent {
-  @Input() user: firebase.default.User | null = null;
+  @Input() user: User | null = null;
 
   constructor(
     private readonly functions: Functions

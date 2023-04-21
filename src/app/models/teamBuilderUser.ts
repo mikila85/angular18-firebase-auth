@@ -1,4 +1,6 @@
-export interface TeamBuilderUser extends firebase.default.User {
+import { User } from "@angular/fire/auth";
+
+export interface TeamBuilderUser extends User {
     info: string;
     fcmToken: string;
 }

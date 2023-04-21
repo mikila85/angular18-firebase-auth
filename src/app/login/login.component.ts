@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthProvider } from 'ngx-auth-firebaseui';
 
 @Component({
   selector: 'app-login',
@@ -8,7 +7,6 @@ import { AuthProvider } from 'ngx-auth-firebaseui';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  providers = [AuthProvider.Google, AuthProvider.Facebook, AuthProvider.Microsoft];
 
   constructor(
     private router: Router,

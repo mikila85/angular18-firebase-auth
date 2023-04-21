@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { Router } from '@angular/router';
-import { LinkMenuItem } from 'ngx-auth-firebaseui';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +10,7 @@ import { LinkMenuItem } from 'ngx-auth-firebaseui';
 export class AppComponent {
   private auth: Auth = inject(Auth);
   showSignInButton: boolean = false;
+  /* ToDo
   avatarLinks: LinkMenuItem[] = [
     { icon: 'account_circle', text: 'Profile', callback: () => { this.router.navigate(['profile']); } },
     { icon: 'info', text: 'About the app', callback: () => { this.router.navigate(['about']); } },
@@ -20,7 +20,7 @@ export class AppComponent {
       }
     },
   ];
-
+*/
   constructor(private router: Router) { }
 
   async ngOnInit(): Promise<void> {
