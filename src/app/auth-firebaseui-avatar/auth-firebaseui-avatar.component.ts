@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject } from "@angular/core";
 import { Auth, User, onAuthStateChanged, signOut } from '@angular/fire/auth';
-import { MatDialog } from "@angular/material/dialog";
 
 export interface LinkMenuItem {
   text: string;
@@ -46,8 +45,6 @@ export class AuthFirebaseuiAvatarComponent implements OnInit {
   private auth: Auth = inject(Auth);
   user: User | null = null;
   displayNameInitials: string | null = null;
-
-  constructor(public dialog: MatDialog) { }
 
   ngOnInit() {
     onAuthStateChanged(this.auth, (user) => {

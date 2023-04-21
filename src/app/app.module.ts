@@ -1,3 +1,4 @@
+import { HttpClientModule } from '@angular/common/http';
 import { isDevMode, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -24,6 +25,7 @@ import { MessagesComponent } from './messages/messages.component';
 import { StripeAccountCreatedComponent } from './stripe-account-created/stripe-account-created.component';
 import { StripeCheckoutCompletedComponent } from './stripe-checkout-completed/stripe-checkout-completed.component';
 import { StripePaymentComponent } from './stripe-payment/stripe-payment.component';
+import { UserProfileViewComponent } from './user-profile-view/user-profile-view.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 
 import { ClipboardModule } from '@angular/cdk/clipboard';
@@ -32,6 +34,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
@@ -42,7 +45,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { UserProfileViewComponent } from './user-profile-view/user-profile-view.component';
 
 @NgModule({
   declarations: [
@@ -65,6 +67,7 @@ import { UserProfileViewComponent } from './user-profile-view/user-profile-view.
     AppRoutingModule,
     BrowserAnimationsModule,
     FlexLayoutModule,
+    HttpClientModule,
     FormsModule,
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAnalytics(() => getAnalytics()),
@@ -99,7 +102,8 @@ import { UserProfileViewComponent } from './user-profile-view/user-profile-view.
     MatMenuModule,
     MatSlideToggleModule,
     MatTooltipModule,
-    MatBadgeModule
+    MatBadgeModule,
+    MatDividerModule
   ],
   providers: [
     ScreenTrackingService, UserTrackingService,

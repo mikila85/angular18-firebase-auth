@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Auth, AuthProvider, FacebookAuthProvider, GoogleAuthProvider, OAuthProvider, signInWithPopup } from '@angular/fire/auth';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -7,11 +10,44 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
+  private auth: Auth = inject(Auth);
+  public email: string = '';
+  public password: string = '';
+  public passwordInputType: string = 'password';
+  public isForgotPassword: boolean = false;
 
   constructor(
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
     private router: Router,
     private route: ActivatedRoute,
-  ) { }
+  ) {
+    this.iconRegistry
+      .addSvgIcon('google', this.sanitizer.bypassSecurityTrustResourceUrl('/assets/mdi/google.svg'))
+      .addSvgIcon('facebook', this.sanitizer.bypassSecurityTrustResourceUrl('/assets/mdi/facebook.svg'))
+      .addSvgIcon('microsoft', this.sanitizer.bypassSecurityTrustResourceUrl('/assets/mdi/microsoft.svg'));
+  }
+
+  loginWithProvider(providerName: 'google' | 'facebook' | 'microsoft'): void {
+    var provider: AuthProvider;
+    switch (providerName) {
+      case 'google': provider = new GoogleAuthProvider(); break;
+      case 'facebook': provider = new FacebookAuthProvider(); break;
+      case 'microsoft': provider = new OAuthProvider('microsoft.com'); break;
+    }
+    signInWithPopup(this.auth, provider).then((result) => {
+      const user = result.user;
+      this.onSuccess(user);
+    }).catch((error) => {
+      console.log(error);
+      //ToDo: Show error message in toast
+      console.log(error.message);
+    });
+  }
+
+  signInWithPassword() {
+
+  }
 
   onSuccess(user: any): void {
     this.route.queryParams.subscribe(params => {
