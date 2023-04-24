@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Auth, AuthProvider, FacebookAuthProvider, GoogleAuthProvider, OAuthProvider, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup } from '@angular/fire/auth';
+import { Auth, AuthProvider, FacebookAuthProvider, GoogleAuthProvider, OAuthProvider, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, updateProfile } from '@angular/fire/auth';
 import { Firestore, doc, getDoc, setDoc, updateDoc } from '@angular/fire/firestore';
 import { MatIconRegistry } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -56,6 +56,7 @@ export class LoginComponent {
   signUpWithPassword() {
     createUserWithEmailAndPassword(this.auth, this.email, this.password).then((userCredential) => {
       const user = userCredential.user;
+      updateProfile(user, { displayName: this.name });
       this.onSuccess(user);
     }).catch((error) => {
       console.log(error);
@@ -71,7 +72,9 @@ export class LoginComponent {
     }).catch((error) => {
       console.log(error);
       //ToDo: Show error message in toast
-      console.log(error.message);
+      this.snackBar.open(error.message, 'OK', {
+        duration: 5000
+      });
     });
   }
 
