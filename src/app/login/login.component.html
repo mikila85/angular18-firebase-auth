@@ -33,7 +33,7 @@
 <mat-divider></mat-divider>
 
 <!--Sign In With Password-->
-<mat-card *ngIf="!isNewEmailAccount && !isSignUp">
+<mat-card *ngIf="!isNewEmailAccount && !isSignUp && !isResetPassword">
     <mat-card-header>
         <mat-card-title>Or</mat-card-title>
         <mat-card-subtitle>with your password</mat-card-subtitle>
@@ -79,7 +79,7 @@
                     LOGIN
                 </button>
                 <div fxLayoutAlign="center">
-                    <button (click)="isForgotPassword=true" mat-button>
+                    <button (click)="isResetPassword=true" mat-button>
                         Forgot Password?
                     </button>
                 </div>
@@ -150,6 +150,40 @@
 
                 <button [disabled]="!signInForm.form.valid" mat-raised-button type="submit" color="primary">
                     SIGN UP
+                </button>
+            </div>
+        </form>
+    </mat-card-content>
+</mat-card>
+
+<!--Reset Password-->
+<mat-card *ngIf="isResetPassword">
+    <mat-card-header>
+        <mat-card-title>Forgot password?</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <p>
+            Enter the email associated with your account to receive a secure link to reset your password.
+        </p>
+        <form (ngSubmit)="resetPassword()" #passwordResetForm="ngForm">
+            <div fxLayout="column" fxLayoutAlign="center">
+                <mat-form-field>
+                    <mat-label>Email</mat-label>
+                    <input matInput required autocomplete="username" type="text" id="emailCtrl" name="emailCtrl"
+                        [(ngModel)]="email" #emailCtrl="ngModel">
+                    <mat-icon matSuffix>email</mat-icon>
+                    <div *ngIf="emailCtrl.invalid && (emailCtrl.dirty || emailCtrl.touched)">
+                        <mat-error *ngIf="emailCtrl.errors?.['required']">
+                            Email is required
+                        </mat-error>
+                        <mat-error *ngIf="emailCtrl.errors?.['pattern']">
+                            Please enter a valid email address
+                        </mat-error>
+                    </div>
+                </mat-form-field>
+
+                <button [disabled]="!passwordResetForm.form.valid" mat-raised-button type="submit" color="primary">
+                    Send reset link
                 </button>
             </div>
         </form>

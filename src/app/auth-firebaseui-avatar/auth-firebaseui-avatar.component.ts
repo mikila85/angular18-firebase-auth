@@ -48,10 +48,12 @@ export class AuthFirebaseuiAvatarComponent implements OnInit {
 
   ngOnInit() {
     onAuthStateChanged(this.auth, (user) => {
+      if (!user) {
+        return;
+      }
       this.user = user;
-      this.displayNameInitials = user
-        ? this.getDisplayNameInitials(user.displayName)
-        : null;
+      this.displayNameInitials = user.displayName ? this.getDisplayNameInitials(user.displayName)
+        : user.email ? user.email[0].toUpperCase() : null;
     });
   }
 

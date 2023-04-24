@@ -1,8 +1,11 @@
 import { Component, inject } from '@angular/core';
-import { Auth, AuthProvider, FacebookAuthProvider, GoogleAuthProvider, OAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from '@angular/fire/auth';
+import { Auth, AuthProvider, FacebookAuthProvider, GoogleAuthProvider, OAuthProvider, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup } from '@angular/fire/auth';
+import { Firestore, doc, getDoc, setDoc, updateDoc } from '@angular/fire/firestore';
 import { MatIconRegistry } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TeamUser } from '../models/team-user';
 
 @Component({
   selector: 'app-login',
@@ -11,19 +14,21 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class LoginComponent {
   private auth: Auth = inject(Auth);
+  private firestore: Firestore = inject(Firestore);
   public name: string = '';
   public email: string = '';
   public password: string = '';
   public passwordInputType: string = 'password';
-  public isForgotPassword: boolean = false;
   public isSignUp: boolean = false;
   public isNewEmailAccount: boolean = false;
+  public isResetPassword: boolean = false;
 
   constructor(
     private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
     private router: Router,
     private route: ActivatedRoute,
+    private snackBar: MatSnackBar
   ) {
     this.iconRegistry
       .addSvgIcon('google', this.sanitizer.bypassSecurityTrustResourceUrl('/assets/mdi/google.svg'))
@@ -70,7 +75,37 @@ export class LoginComponent {
     });
   }
 
+  /**
+   * Reset the password via email
+   * @param email - the email to reset
+   */
+  public resetPassword() {
+    const message = "Password reset email sent. Check your inbox.";
+    console.log(message);
+    this.snackBar.open(message, 'OK', {
+      duration: 5000
+    });
+    sendPasswordResetEmail(this.auth, this.email);
+    this.isResetPassword = false;
+  }
+
   onSuccess(user: any): void {
+    const dbUserRef = doc(this.firestore, 'users', user.uid);
+    getDoc(dbUserRef).then((doc) => {
+      if (doc.exists()) {
+        const dbUser = doc.data() as TeamUser;
+        if (!dbUser.photoURL) {
+          updateDoc(dbUserRef, { photoURL: user.photoURL });
+        }
+      } else {
+        setDoc(dbUserRef, {
+          uid: user.uid,
+          displayName: user.displayName ?? this.name,
+          email: user.email ?? this.email,
+          photoURL: user.photoURL
+        });
+      }
+    });
     this.route.queryParams.subscribe(params => {
       const redirectUrl = params['redirectUrl'];
       if (redirectUrl) {
