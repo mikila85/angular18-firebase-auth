@@ -34,7 +34,7 @@
                     (ngModelChange)="updateEvent({isLimitedAttendees: $event})" data-cy="attendeeLimitToggle">
                     Attendee limit
                 </mat-slide-toggle>
-                <mat-form-field *ngIf="teamEvent?.isLimitedAttendees">
+                <mat-form-field *ngIf="teamEvent?.isLimitedAttendees" data-cy="maxAttendeesField">
                     <mat-label>Max number</mat-label>
                     <input matInput type="number" name="maxAttendees" [ngModel]="teamEvent?.maxAttendees"
                         (ngModelChange)="updateEvent({maxAttendees: $event})" data-cy="maxAttendees">
@@ -181,7 +181,7 @@
                     <mat-icon inline=true>{{isJoined ? "person_remove" : "person_add"}}</mat-icon>
                     {{isJoined ? "LEAVE" : "JOIN"}}
                 </button>
-                <button mat-raised-button (click)="copyEventInvite()">
+                <button mat-raised-button (click)="copyEventInvite()" data-cy="eventInviteBtn">
                     <mat-icon inline=true>content_copy</mat-icon>
                     INVITE
                 </button>
@@ -228,7 +228,7 @@
 </mat-card>
 
 <mat-tab-group [selectedIndex]="selectedTabIndex" (selectedIndexChange)="storeSelectedTabIndex($event)">
-    <mat-tab>
+    <mat-tab data-cy="attendeesTab">
         <ng-template mat-tab-label>
             <mat-icon class="mat-tab-icon">groups</mat-icon>
             <span data-cy="attendeesTabTitle">Attendees {{numberOfAttendees()}}</span>
@@ -236,7 +236,7 @@
         <app-event-participants [eventId]="eventId"
             (numberOfParticipantsEvent)="numberOfParticipants = $event"></app-event-participants>
     </mat-tab>
-    <mat-tab *ngIf="waitlist.length > 0">
+    <mat-tab *ngIf="waitlist.length > 0" data-cy="waitlistTab">
         <ng-template mat-tab-label>
             <mat-icon class="mat-tab-icon">hourglass_empty</mat-icon>
             Waitlist {{waitlist.length}}
@@ -252,7 +252,8 @@
     <mat-tab label="Messages" hidden>
         <ng-template mat-tab-label>
             <mat-icon class="mat-tab-icon">forum</mat-icon>
-            <span matBadge="#" matBadgeColor="warn" [matBadgeHidden]="!isUnreadMessage">Messages</span>
+            <span matBadge="#" matBadgeColor="warn" [matBadgeHidden]="!isUnreadMessage"
+                data-cy="messagesTabTitle">Messages</span>
         </ng-template>
         <app-messages [eventId]="eventId"></app-messages>
     </mat-tab>
