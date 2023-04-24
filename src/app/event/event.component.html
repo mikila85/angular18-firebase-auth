@@ -22,22 +22,22 @@
             <mat-form-field class="full-width">
                 <mat-label>Title</mat-label>
                 <input matInput name="eventTitle" [ngModel]="teamEvent?.title"
-                    (ngModelChange)="updateEventTitle($event)">
+                    (ngModelChange)="updateEventTitle($event)" data-cy="eventTitle">
             </mat-form-field>
             <mat-form-field class="full-width">
                 <mat-label>Description</mat-label>
                 <textarea matInput name="eventDescription" [ngModel]="teamEvent?.description"
-                    (ngModelChange)="updateEvent({description: $event})"></textarea>
+                    (ngModelChange)="updateEvent({description: $event})" data-cy="eventDescription"></textarea>
             </mat-form-field>
             <div fxLayout='row'>
                 <mat-slide-toggle [ngModel]="teamEvent?.isLimitedAttendees"
-                    (ngModelChange)="updateEvent({isLimitedAttendees: $event})">
+                    (ngModelChange)="updateEvent({isLimitedAttendees: $event})" data-cy="attendeeLimitToggle">
                     Attendee limit
                 </mat-slide-toggle>
                 <mat-form-field *ngIf="teamEvent?.isLimitedAttendees">
                     <mat-label>Max number</mat-label>
                     <input matInput type="number" name="maxAttendees" [ngModel]="teamEvent?.maxAttendees"
-                        (ngModelChange)="updateEvent({maxAttendees: $event})">
+                        (ngModelChange)="updateEvent({maxAttendees: $event})" data-cy="maxAttendees">
                 </mat-form-field>
             </div>
 
@@ -177,7 +177,7 @@
             </mat-card-content>
             <mat-card-actions>
                 <!--Owner of the event can always join without the waitlist-->
-                <button mat-raised-button color="primary" (click)="joinEvent()">
+                <button mat-raised-button color="primary" (click)="joinEvent()" data-cy="eventJoinBtn">
                     <mat-icon inline=true>{{isJoined ? "person_remove" : "person_add"}}</mat-icon>
                     {{isJoined ? "LEAVE" : "JOIN"}}
                 </button>
@@ -189,11 +189,11 @@
                     <mat-icon inline=true>file_copy</mat-icon>
                     DUPLICATE
                 </button>
-                <button mat-icon-button [matMenuTriggerFor]="menu">
+                <button mat-icon-button [matMenuTriggerFor]="menu" data-cy="eventMenuActionBtn">
                     <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu" yPosition="above">
-                    <button mat-raised-button color="warn" (click)="deleteEvent()">
+                    <button mat-raised-button color="warn" (click)="deleteEvent()" data-cy="deleteEventBtn">
                         <mat-icon>delete</mat-icon>
                         DELETE
                     </button>
@@ -231,7 +231,7 @@
     <mat-tab>
         <ng-template mat-tab-label>
             <mat-icon class="mat-tab-icon">groups</mat-icon>
-            Attendees {{numberOfAttendees()}}
+            <span data-cy="attendeesTabTitle">Attendees {{numberOfAttendees()}}</span>
         </ng-template>
         <app-event-participants [eventId]="eventId"
             (numberOfParticipantsEvent)="numberOfParticipants = $event"></app-event-participants>

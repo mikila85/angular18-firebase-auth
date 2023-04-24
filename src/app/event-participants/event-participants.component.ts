@@ -16,7 +16,11 @@ export class EventParticipantsComponent {
   isLoading = true;
 
   ngOnInit(): void {
-    const participantsCollection = collection(this.firestore, `events/${this.eventId}/participants`);
+    if (this.eventId === null) {
+      console.error('Event ID is null');
+      return;
+    }
+    const participantsCollection = collection(this.firestore, 'events', this.eventId, 'participants');
     this.participants$ = collectionData(participantsCollection) as Observable<Participant[]>;
     this.participants$.subscribe((p) => {
       this.isLoading = false;

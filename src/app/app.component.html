@@ -5,7 +5,7 @@
     </button>
     Team Builder
     <span fxFlex></span>
-    <button mat-button *ngIf="showSignInButton" [routerLink]="['/login']"> Sign In </button>
+    <button mat-button *ngIf="showSignInButton" [routerLink]="['/login']" data-cy="signInBtn"> Sign In </button>
     <auth-firebaseui-avatar [links]="avatarLinks" [canViewAccount]=false (onSignOut)="onSignOut()">
     </auth-firebaseui-avatar>
   </mat-toolbar>

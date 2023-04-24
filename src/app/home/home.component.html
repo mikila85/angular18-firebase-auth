@@ -1,6 +1,6 @@
 <mat-card *ngIf="user">
     <mat-card-actions align="end">
-        <button mat-raised-button color="accent" (click)="createNewEvent()">
+        <button mat-raised-button color="accent" (click)="createNewEvent()" data-cy="createNewEventBtn">
             <mat-icon inline=true>add_circle</mat-icon>
             Create New Event
         </button>

@@ -33,7 +33,8 @@
     </mat-card-content>
     <mat-card-actions align="end">
         <!--ToDo change to create new event and redirect to the new event page-->
-        <button mat-raised-button color="accent" routerLink="login" [queryParams]="{redirectUrl: '/'}">
+        <button mat-raised-button color="accent" routerLink="login" [queryParams]="{redirectUrl: '/'}"
+            data-cy="createNewEventBtn">
             <mat-icon inline=true>add_circle</mat-icon>
             Create New Event
         </button>

@@ -111,7 +111,7 @@ export class EventComponent implements OnInit {
             this.lastReadMessageOn = participantData.lastReadMessageOn ? participantData.lastReadMessageOn : new Timestamp(0, 0);
             const q = query(collection(this.firestore, 'events', this.eventId as string, 'messages'), orderBy('ts', 'desc'), limit(1));
             onSnapshot(q, (messageSnapshot) => {
-              if (messageSnapshot.docs[0].data()['ts'] > this.lastReadMessageOn) {
+              if (!messageSnapshot.empty && messageSnapshot.docs[0].data()['ts'] > this.lastReadMessageOn) {
                 this.isUnreadMessage = !this.isMessagesTabOpen(this.selectedTabIndex);
               }
             });

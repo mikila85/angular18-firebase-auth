@@ -4,7 +4,7 @@
         <mat-card-subtitle>using your existing provider</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content fxLayout="column" fxLayoutAlign="center">
-        <button mat-raised-button class="login-button" (click)="loginWithProvider('google')">
+        <button mat-raised-button class="login-button" (click)="loginWithProvider('google')" data-cy="googleBtn">
             <mat-icon svgIcon="google" inline=true></mat-icon>
             Continue with Google
         </button>
@@ -44,7 +44,7 @@
                 <mat-form-field>
                     <mat-label>Email</mat-label>
                     <input matInput required autocomplete="username" type="text" id="emailCtrl" name="emailCtrl"
-                        [(ngModel)]="email" #emailCtrl="ngModel">
+                        [(ngModel)]="email" #emailCtrl="ngModel" data-cy="signInEmail">
                     <mat-icon matSuffix>email</mat-icon>
                     <div *ngIf="emailCtrl.invalid && (emailCtrl.dirty || emailCtrl.touched)">
                         <mat-error *ngIf="emailCtrl.errors?.['required']">
@@ -58,7 +58,8 @@
                 <mat-form-field>
                     <mat-label>Password</mat-label>
                     <input matInput required autocomplete="current-password" [type]="passwordInputType"
-                        id="passwordCtrl" name="passwordCtrl" [(ngModel)]="password" #passwordCtrl="ngModel">
+                        id="passwordCtrl" name="passwordCtrl" [(ngModel)]="password" #passwordCtrl="ngModel"
+                        data-cy="signInPassword">
                     <button *ngIf="passwordInputType==='password'" matSuffix mat-icon-button
                         (click)="passwordInputType='text'">
                         <mat-icon>visibility</mat-icon>
@@ -75,7 +76,8 @@
                     </div>
                 </mat-form-field>
 
-                <button [disabled]="!signInForm.form.valid" mat-raised-button type="submit" color="primary">
+                <button [disabled]="!signInForm.form.valid" mat-raised-button type="submit" color="primary"
+                    data-cy="signInLoginBtn">
                     LOGIN
                 </button>
                 <div fxLayoutAlign="center">
