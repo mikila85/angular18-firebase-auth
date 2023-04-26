@@ -177,7 +177,7 @@
             </mat-card-content>
             <mat-card-actions>
                 <!--Owner of the event can always join without the waitlist-->
-                <button mat-raised-button color="primary" (click)="joinEvent()" data-cy="eventJoinBtn">
+                <button mat-raised-button color="primary" (click)="joinEvent()" data-cy="eventOwnerJoinBtn">
                     <mat-icon inline=true>{{isJoined ? "person_remove" : "person_add"}}</mat-icon>
                     {{isJoined ? "LEAVE" : "JOIN"}}
                 </button>
@@ -203,7 +203,7 @@
 
         <mat-card-actions *ngSwitchCase="false">
             <ng-container *ngIf="isJoined || isWaitlist; else joinButton">
-                <button mat-raised-button color="primary" (click)="joinEvent()">
+                <button mat-raised-button color="primary" (click)="joinEvent()" data-cy="eventLeaveBtn">
                     <mat-icon inline=true>person_remove</mat-icon>
                     LEAVE
                 </button>
@@ -211,14 +211,14 @@
             <ng-template #joinButton>
                 <ng-container
                     *ngIf="!teamEvent?.isLimitedAttendees || numberOfParticipants < (teamEvent?.maxAttendees ?? 9999);else waitlist">
-                    <button mat-raised-button color="primary" (click)="joinEvent()">
+                    <button mat-raised-button color="primary" (click)="joinEvent()" data-cy="eventJoinBtn">
                         <mat-icon inline=true>person_add</mat-icon>
                         JOIN
                     </button>
                 </ng-container>
             </ng-template>
             <ng-template #waitlist>
-                <button mat-raised-button color="primary" (click)="joinWaitlist()">
+                <button mat-raised-button color="primary" (click)="joinWaitlist()" data-cy="eventWaitlistBtn">
                     <mat-icon inline=true>hourglass_empty</mat-icon>
                     JOIN WAITLIST
                 </button>
@@ -239,7 +239,7 @@
     <mat-tab *ngIf="waitlist.length > 0" data-cy="waitlistTab">
         <ng-template mat-tab-label>
             <mat-icon class="mat-tab-icon">hourglass_empty</mat-icon>
-            Waitlist {{waitlist.length}}
+            <span data-cy="waitlistTabTitle">Waitlist {{waitlist.length}}</span>
         </ng-template>
         <mat-list>
             <mat-list-item *ngFor="let participant of waitlist">

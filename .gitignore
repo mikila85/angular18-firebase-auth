@@ -48,3 +48,4 @@ Thumbs.db
 
 # Cypress E2E
 cypress.data.json
+cypress/screenshots
