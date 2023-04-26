@@ -26,7 +26,7 @@ const wait = (ms) => {
 let lastCheckpoint
 
 io.on('connection', (socket) => {
-  console.log('chat new connection')
+  console.log('new connection')
   if (lastCheckpoint) {
     console.log('sending the last checkpoint "%s"', lastCheckpoint)
     socket.emit('checkpoint', lastCheckpoint)
@@ -37,7 +37,7 @@ io.on('connection', (socket) => {
   })
 
   socket.on('checkpoint', (name) => {
-    console.log('chat checkpoint: "%s"', name)
+    console.log('checkpoint: "%s"', name)
     lastCheckpoint = name
     io.emit('checkpoint', name)
   })

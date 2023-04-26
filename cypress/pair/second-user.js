@@ -1,35 +1,20 @@
 /// <reference types="cypress" />
 
 // this test behaves as the second user to join the chat
-it('chats with the first user', () => {
-  cy.task('waitForCheckpoint', 'first user has joined')
+it('second user joins event', () => {
+  cy.task('waitForCheckpoint', 'first user created new event')
 
-  const name = 'Second'
-  // we are chatting with the first user
-  const firstName = 'First'
-  cy.visit('/event/bYcIw5xCPieUgrRj4BaM')
-  cy.get('[data-cy="signInEmail"]').type('teambldrtest+second@gmail.com')
-  cy.get('[data-cy="signInPassword"]').type('SecondTesterCypressPair')
-  cy.get('[data-cy="signInLoginBtn"]').click()
+  cy.readFile('cypress.data.json').then((data) => {
+    cy.wrap(data).as('testData')
+    cy.visit(data.testEventUrl)
+    cy.get('[data-cy="signInEmail"]').type('teambldrtest+second@gmail.com')
+    cy.get('[data-cy="signInPassword"]').type(data.secondUserPassword)
+    cy.get('[data-cy="signInLoginBtn"]').click()
+  })
 
-  cy.get('[data-cy="eventCardTitle"]').contains('Cypress Pair Test')
+  cy.get('[data-cy="eventCardTitle"]').contains('Cypress Test Event Title')
+  cy.get('[data-cy="attendeesTabTitle"]').contains('Attendees 1/5')
   cy.get('[data-cy="messagesTabTitle"]').click()
-
-  /*
-  // make sure the greeting message is shown
-  cy.contains('#messages li i', `${name} join the chat..`).should('be.visible')
+  cy.get('p').contains('First test message')
   cy.task('checkpoint', 'second user has joined')
-
-  cy.get('#txt').type('Good to see you{enter}')
-
-  // a message from the first user arrives
-  cy.contains('#messages li', 'Glad to be here').contains('strong', firstName)
-  cy.task('checkpoint', 'second user saw glad to be here')
-
-  // the first user will disconnect now
-  cy.contains('#messages li i', `${firstName} left the chat..`).should(
-    'be.visible',
-  )
-  cy.task('checkpoint', 'second user saw first user leave')
-  */
 })

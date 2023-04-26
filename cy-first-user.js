@@ -55,21 +55,6 @@ module.exports = defineConfig({
     $schema: "https://on.cypress.io/cypress.schema.json",
     specPattern: ["**/first-user.js"],
     setupNodeEvents(on, config) {
-      on('task', {
-        async connect(name) {
-          console.log('Cypress is connecting to socket server under name %s', name)
-          chatSocket = io('http://localhost:8080')
-
-          chatSocket.emit('username', name)
-          chatSocket.on('chat_message', (msg) => (lastMessage = msg))
-          chatSocket.on('is_online', (msg) => (lastMessage = msg))
-
-          // cy.task should always return something
-          // it cannot return undefined
-          // https://on.cypress.io/task
-          return null
-        },
-      })
       on('task', disconnectTask)
       on('task', checkpointTask)
       on('task', waitForCheckpointTask)
