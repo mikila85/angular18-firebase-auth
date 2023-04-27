@@ -47,7 +47,6 @@ const waitForCheckpointTask = {
 
 module.exports = defineConfig({
   e2e: {
-    baseUrl: "http://localhost:4200",
     fixturesFolder: false,
     supportFile: false,
     video: false,

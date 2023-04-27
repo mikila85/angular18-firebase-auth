@@ -3,7 +3,9 @@
 // this test behaves as the first user to join the chat
 it('first user creates event and invites the second user', () => {
 
-  cy.visit('/')
+  cy.readFile('cypress.data.json').its('homeUrl').then((homeUrl) => {
+    cy.visit(homeUrl)
+  })
   // log in as first user
   cy.get('[data-cy="homeBtn"]')
   cy.get('[data-cy="createNewEventBtn"]').contains('Create New Event')
@@ -52,7 +54,7 @@ it('first user creates event and invites the second user', () => {
 
   cy.task('checkpoint', 'first user created new event')
   cy.task('waitForCheckpoint', 'second user has joined')
-  cy.get('[data-cy="messagesTabTitle"]').invoke('attr', 'ng-reflect-hidden').should('eq', 'true')
+  cy.get('[data-cy="messagesTabTitle"]').should('have.class', 'mat-badge-hidden')
   cy.get('[data-cy="attendeesTabTitle"]').contains('Attendees 2/5').click()
   cy.get('.mat-mdc-list-item').contains('Second Tester')
 
@@ -66,7 +68,7 @@ it('first user creates event and invites the second user', () => {
   cy.task('checkpoint', 'attendees limited to 1')
 
   cy.task('waitForCheckpoint', 'second user has joined waitlist')
-  cy.get('[data-cy="messagesTabTitle"]').invoke('attr', 'ng-reflect-hidden').should('eq', 'false')
+  cy.get('[data-cy="messagesTabTitle"]').should('not.have.class', 'mat-badge-hidden')
   cy.get('[data-cy="waitlistTabTitle"]').contains('Waitlist 1').click()
   cy.get('.mat-mdc-list-item').contains('Second Tester')
   // leave event
