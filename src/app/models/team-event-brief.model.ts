@@ -6,5 +6,7 @@ export interface TeamEventBrief {
     icon: string | null;
     // Title is empty for new events until defined by owner
     title?: string;
+    location?: string;
+    mapsUrl?: string;
     dateTime: Timestamp | Date;
 }

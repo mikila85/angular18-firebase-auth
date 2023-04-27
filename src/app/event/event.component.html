@@ -29,6 +29,17 @@
                 <textarea matInput name="eventDescription" [ngModel]="teamEvent?.description"
                     (ngModelChange)="updateEvent({description: $event})" data-cy="eventDescription"></textarea>
             </mat-form-field>
+            <mat-form-field class="full-width">
+                <mat-label>Location</mat-label>
+                <input matInput name="location" [ngModel]="teamEvent?.location"
+                    (ngModelChange)="updateEvent({location: $event})" data-cy="location">
+            </mat-form-field>
+            <mat-form-field class="full-width">
+                <mat-label>Link to maps</mat-label>
+                <input matInput name="mapsUrl" [ngModel]="teamEvent?.mapsUrl"
+                    (ngModelChange)="updateEvent({mapsUrl: $event})" data-cy="mapsUrl">
+                <mat-icon matSuffix>location_on</mat-icon>
+            </mat-form-field>
             <div fxLayout='row'>
                 <mat-slide-toggle [ngModel]="teamEvent?.isLimitedAttendees"
                     (ngModelChange)="updateEvent({isLimitedAttendees: $event})" data-cy="attendeeLimitToggle">
@@ -154,6 +165,13 @@
         <div *ngSwitchCase="false">
             <p>{{eventDate.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}</p>
             <p>{{teamEvent?.description}}</p>
+            <a mat-button *ngIf="teamEvent?.mapsUrl" [href]="teamEvent?.mapsUrl">
+                <mat-icon>location_on</mat-icon>
+                {{teamEvent?.location}}
+            </a>
+            <p *ngIf="teamEvent?.location && !teamEvent?.mapsUrl">
+                {{teamEvent?.location}}
+            </p>
         </div>
         <mat-progress-bar *ngIf="isPriceLoading" mode="indeterminate"></mat-progress-bar>
         <div *ngIf="isStripePrice && !isJoined">Fee {{(teamEvent?.stripePriceUnitAmount ?? 0)/100 | currency}} </div>
