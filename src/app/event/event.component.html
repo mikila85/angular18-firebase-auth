@@ -5,7 +5,8 @@
             <span>{{eventTitle ? eventTitle : "New Event"}}</span>
         </mat-card-title>
         <span fxFlex></span>
-        <mat-icon (click)="isReadOnly = !isReadOnly">{{isReadOnly ? 'edit' : 'visibility'}}</mat-icon>
+        <mat-icon (click)="isReadOnly = !isReadOnly" data-cy="readOnlyModeBtn">{{isReadOnly ? 'edit' :
+            'visibility'}}</mat-icon>
     </mat-card-header>
     <mat-card-content [ngSwitch]="isOwner && !isReadOnly">
         <div *ngSwitchCase="true">
@@ -168,7 +169,7 @@
         </div>
         <div *ngSwitchCase="false">
             <p>{{eventDate.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}</p>
-            <p>{{teamEvent?.description}}</p>
+            <p data-cy="eventDescriptionText">{{teamEvent?.description}}</p>
             <a mat-button *ngIf="teamEvent?.mapsUrl" [href]="teamEvent?.mapsUrl">
                 <mat-icon>location_on</mat-icon>
                 {{teamEvent?.location}}

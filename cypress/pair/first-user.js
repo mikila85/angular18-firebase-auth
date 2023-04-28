@@ -79,6 +79,16 @@ it('first user creates event and invites the second user', () => {
   cy.task('checkpoint', 'first user left event')
 
   cy.task('waitForCheckpoint', 'second user left')
+  // read-only mode
+  cy.get('[data-cy="readOnlyModeBtn"]').click()
+  cy.get('[data-cy="eventTitle"]').should('not.exist')
+  cy.get('[data-cy="eventDescription"]').should('not.exist')
+  cy.get('[data-cy="eventDescriptionText"]').should('eq', 'Cypress Test Event Description')
+  // back to edit mode
+  cy.get('[data-cy="readOnlyModeBtn"]').click()
+  cy.get('[data-cy="eventTitle"]').should('exist')
+  cy.get('[data-cy="eventDescription"]').should('exist')
+  cy.get('[data-cy="eventDescriptionText"]').should('not.exist')
   // delete event
   cy.get('[data-cy="eventMenuActionBtn"]').click()
   cy.get('[data-cy="deleteEventBtn"]').click()
