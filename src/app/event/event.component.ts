@@ -49,6 +49,7 @@ export class EventComponent implements OnInit {
   paidOn: Date | undefined = undefined;
   lastReadMessageOn: Timestamp = new Timestamp(0, 0);
   isUnreadMessage: boolean = false;
+  isReadOnly: boolean = false;
 
   constructor(
     private route: ActivatedRoute,

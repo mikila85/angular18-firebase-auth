@@ -1,9 +1,13 @@
 <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 <mat-card>
     <mat-card-header>
-        <mat-card-title data-cy="eventCardTitle">{{eventTitle ? eventTitle : "New Event"}}</mat-card-title>
+        <mat-card-title data-cy="eventCardTitle">
+            <span>{{eventTitle ? eventTitle : "New Event"}}</span>
+        </mat-card-title>
+        <span fxFlex></span>
+        <mat-icon (click)="isReadOnly = !isReadOnly">{{isReadOnly ? 'edit' : 'visibility'}}</mat-icon>
     </mat-card-header>
-    <mat-card-content [ngSwitch]="isOwner">
+    <mat-card-content [ngSwitch]="isOwner && !isReadOnly">
         <div *ngSwitchCase="true">
             <div fxLayout='row'>
                 <mat-form-field fxFlex="55%">
