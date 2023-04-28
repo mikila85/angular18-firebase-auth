@@ -1,18 +1,22 @@
- mat-slide-toggle {
-     margin: 8px 0;
-     display: block;
- }
+mat-card-actions .mat-mdc-button-base {
+    margin-right: 8px;
+}
 
- .stripe-button {
-     color: white;
-     background-color: #635bff;
- }
+mat-slide-toggle {
+    margin: 8px 0;
+    display: block;
+}
 
- .stripe-actionRequired-button {
-     color: red;
-     background-color: rgb(255, 231, 242);
- }
+.stripe-button {
+    color: white;
+    background-color: #635bff;
+}
 
- svg {
-     fill: currentColor;
- }
+.stripe-actionRequired-button {
+    color: red;
+    background-color: rgb(255, 231, 242);
+}
+
+svg {
+    fill: currentColor;
+}
