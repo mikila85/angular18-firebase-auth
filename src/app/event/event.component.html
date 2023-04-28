@@ -203,17 +203,18 @@
                     <mat-icon inline=true>content_copy</mat-icon>
                     INVITE
                 </button>
-                <button mat-raised-button (click)="duplicateEvent()">
-                    <mat-icon inline=true>file_copy</mat-icon>
-                    DUPLICATE
-                </button>
                 <button mat-icon-button [matMenuTriggerFor]="menu" data-cy="eventMenuActionBtn">
                     <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu" yPosition="above">
-                    <button mat-raised-button color="warn" (click)="deleteEvent()" data-cy="deleteEventBtn">
-                        <mat-icon>delete</mat-icon>
+                    <button mat-menu-item (click)="deleteEvent()" data-cy="deleteEventBtn" style="color: red;">
+                        <mat-icon color="warn">delete</mat-icon>
                         DELETE
+                    </button>
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item (click)="duplicateEvent()">
+                        <mat-icon>file_copy</mat-icon>
+                        DUPLICATE
                     </button>
                 </mat-menu>
             </mat-card-actions>
