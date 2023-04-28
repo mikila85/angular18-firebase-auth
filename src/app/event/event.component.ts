@@ -412,7 +412,7 @@ export class EventComponent implements OnInit {
   }
 
   storeSelectedTabIndex(tabIndex: number) {
-    if (this.isMessagesTabOpen(tabIndex)) {
+    if (this.isMessagesTabOpen(tabIndex) || this.isMessagesTabOpen(this.selectedTabIndex)) {
       this.isUnreadMessage = false;
       this.lastReadMessageOn = Timestamp.now();
       updateDoc(doc(this.firestore, 'events', this.eventId as string, 'participants', this.user?.uid as string), { lastReadMessageOn: this.lastReadMessageOn });
