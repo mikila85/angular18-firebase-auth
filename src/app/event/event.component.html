@@ -5,10 +5,11 @@
             <span>{{eventTitle ? eventTitle : "New Event"}}</span>
         </mat-card-title>
         <span fxFlex></span>
-        <mat-icon (click)="isReadOnly = !isReadOnly" data-cy="readOnlyModeBtn">{{isReadOnly ? 'edit' :
+        <mat-icon (click)="updateEvent({isReadOnly: !teamEvent?.isReadOnly})"
+            data-cy="readOnlyModeBtn">{{teamEvent?.isReadOnly ? 'edit' :
             'visibility'}}</mat-icon>
     </mat-card-header>
-    <mat-card-content [ngSwitch]="isOwner && !isReadOnly">
+    <mat-card-content [ngSwitch]="isOwner && !teamEvent?.isReadOnly">
         <div *ngSwitchCase="true">
             <div fxLayout='row'>
                 <mat-form-field fxFlex="55%">

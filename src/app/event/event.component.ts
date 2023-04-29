@@ -49,7 +49,6 @@ export class EventComponent implements OnInit {
   paidOn: Date | undefined = undefined;
   lastReadMessageOn: Timestamp = new Timestamp(0, 0);
   isUnreadMessage: boolean = false;
-  isReadOnly: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -266,12 +265,19 @@ export class EventComponent implements OnInit {
 
   copyEventInvite() {
     var eventUrl = window.location.href;
-    var message = `${this.eventTitle}\n${this.eventDate.toLocaleString(`en-AU`, {
+    const dateTimeOn = this.eventDate.toLocaleString(`en-AU`, {
       dateStyle: "full",
       timeStyle: "short"
-    })}\n${eventUrl}`;
+    });
 
-    this.clipboard.copy(message);
+    this.clipboard.copy(`${this.eventTitle}\n${dateTimeOn}\n${eventUrl}`);
+
+    if (navigator.share) {
+      navigator.share({
+        text: `${this.eventTitle}\n${dateTimeOn}`,
+        url: eventUrl
+      })
+    }
   }
 
   updateEvent(data: any) {
