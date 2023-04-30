@@ -13,6 +13,8 @@ export class EventParticipantsComponent {
   @Output() numberOfParticipantsEvent = new EventEmitter<number>();
   private firestore: Firestore = inject(Firestore);
   participants$: Observable<Participant[]> | undefined;
+  refusals$: Observable<Participant[]> | undefined;
+  numberOfRefusals: number = 0;
   isLoading = true;
 
   ngOnInit(): void {
@@ -26,5 +28,8 @@ export class EventParticipantsComponent {
       this.isLoading = false;
       this.numberOfParticipantsEvent.emit(p.length)
     })
+    const refusalsCollection = collection(this.firestore, 'events', this.eventId, 'refusals');
+    this.refusals$ = collectionData(refusalsCollection) as Observable<Participant[]>;
+    this.refusals$.subscribe((p) => { this.numberOfRefusals = p.length });
   }
 }

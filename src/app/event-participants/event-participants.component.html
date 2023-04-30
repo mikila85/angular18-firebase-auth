@@ -8,4 +8,14 @@
             {{participant.paidOn?.toDate()?.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
         </p>
     </mat-list-item>
+    <mat-divider *ngIf="numberOfRefusals > 0"></mat-divider>
+    <h3 matSubheader *ngIf="numberOfRefusals > 0" style="text-align: center;">Not Going {{numberOfRefusals}}</h3>
+    <mat-list-item *ngFor="let refusal of refusals$ | async">
+        <img matListItemAvatar [src]="refusal.photoURL" referrerpolicy="no-referrer" [alt]="refusal.displayName"
+            [routerLink]="['/profile', refusal.uid]">
+        <h3 matListItemTitle>{{refusal.displayName}}</h3>
+        <p matListItemLine *ngIf="refusal.isPaid">Paid
+            {{refusal.paidOn?.toDate()?.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
+        </p>
+    </mat-list-item>
 </mat-list>
