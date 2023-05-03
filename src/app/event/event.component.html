@@ -196,8 +196,7 @@
     <div [ngSwitch]="isOwner">
         <div *ngSwitchCase="true">
             <mat-card-content>
-                Use the "Invite" button to copy the invite URL and paste it into your social network group chat
-                or email to your team members.
+                Use the "Invite" button to share the invite URL with your social network.
             </mat-card-content>
             <mat-card-actions>
                 <!--Owner of the event can always join without the waitlist-->
@@ -206,7 +205,7 @@
                     {{participant ? "LEAVE" : "JOIN"}}
                 </button>
                 <button mat-raised-button (click)="copyEventInvite()" data-cy="eventInviteBtn">
-                    <mat-icon inline=true>content_copy</mat-icon>
+                    <mat-icon inline=true>share</mat-icon>
                     INVITE
                 </button>
                 <button mat-icon-button [matMenuTriggerFor]="menu" data-cy="eventMenuActionBtn">
