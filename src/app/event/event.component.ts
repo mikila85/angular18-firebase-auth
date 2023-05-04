@@ -11,6 +11,7 @@ import { StripeAccountLink } from '../models/stripe-account-link';
 import { TeamEvent } from '../models/team-event.model';
 import { TeamUser } from '../models/team-user';
 import { TeamUserBrief } from '../models/team-user-brief';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-event',
@@ -54,6 +55,7 @@ export class EventComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private readonly functions: Functions,
+    private snackBar: MatSnackBar,
     private clipboard: Clipboard,
   ) { }
 
@@ -94,7 +96,11 @@ export class EventComponent implements OnInit {
       onSnapshot(this.teamEventRef, async (eventSnapshot) => {
         if (!eventSnapshot.exists()) {
           console.error('Event does not exist');
-          return;
+          this.snackBar.open('Event was deleted', 'OK', {
+            duration: 5000
+          });
+          deleteDoc(doc(this.firestore, 'users', user.uid, 'events', this.eventId as string));
+          this.router.navigate([`/`]);
         }
         this.teamEvent = eventSnapshot.data() as TeamEvent;
         this.teamEvent.id = eventSnapshot.id;

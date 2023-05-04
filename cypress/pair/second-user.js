@@ -57,7 +57,7 @@ it('second user joins event', () => {
   cy.get('.mat-mdc-list-item').contains('Second Tester')
   // leave event
   cy.get('[data-cy="notGoingBtn"]').contains('Not Going').click()
-
+  cy.get('[data-cy="homeBtn"]').click()
   cy.task('checkpoint', 'second user left')
 
 })
