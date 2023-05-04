@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TeamUser } from '../models/team-user';
+import { Analytics, logEvent, setUserId } from '@angular/fire/analytics';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +15,7 @@ import { TeamUser } from '../models/team-user';
 })
 export class LoginComponent {
   private auth: Auth = inject(Auth);
+  private analytics: Analytics = inject(Analytics)
   private firestore: Firestore = inject(Firestore);
   public name: string = '';
   public email: string = '';
@@ -93,6 +95,8 @@ export class LoginComponent {
   }
 
   onSuccess(user: any): void {
+    setUserId(this.analytics, user.uid);
+    logEvent(this.analytics, 'login', { uid: user.uid, providerId: user.providerId })
     const dbUserRef = doc(this.firestore, 'users', user.uid);
     getDoc(dbUserRef).then((doc) => {
       if (doc.exists()) {

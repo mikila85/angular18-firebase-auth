@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { Auth, User, onAuthStateChanged } from '@angular/fire/auth';
+import { Analytics, logEvent } from '@angular/fire/analytics';
 import { CollectionReference, Firestore, Timestamp, addDoc, collection, collectionData, orderBy, query } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Message } from '../models/message';
@@ -12,6 +13,7 @@ import { Message } from '../models/message';
 export class MessagesComponent implements OnInit {
   @Input() eventId: string | null = null;
   private firestore: Firestore = inject(Firestore);
+  private analytics: Analytics = inject(Analytics);
   private auth: Auth = inject(Auth);
   user: User | null = null;
   private messagesCollection: CollectionReference | undefined;
@@ -36,6 +38,7 @@ export class MessagesComponent implements OnInit {
       console.error("sendMessage: user or messages collection is falsy");
       return;
     }
+    logEvent(this.analytics, 'send_message', { uid: this.user.uid, eventId: this.eventId })
     addDoc(this.messagesCollection, {
       userId: this.user.uid,
       photoURL: this.user.photoURL,

@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { Firestore, doc, updateDoc } from '@angular/fire/firestore';
+import { Analytics, logEvent } from '@angular/fire/analytics';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -11,6 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class StripeAccountCreatedComponent implements OnInit {
   private firestore: Firestore = inject(Firestore);
   private auth: Auth = inject(Auth);
+  private analytics: Analytics = inject(Analytics);
 
   constructor(
     private route: ActivatedRoute,
@@ -27,6 +29,7 @@ export class StripeAccountCreatedComponent implements OnInit {
         console.error('User object is falsy');
         return;
       }
+      logEvent(this.analytics, 'stripe_account_created', { uid: user.uid, eventId, accountId })
       updateDoc(doc(this.firestore, `users/${user.uid}`), { stripeAccountId: accountId })
         .then(() => { this.router.navigate(['/event', { eventId: eventId }]) });
     })

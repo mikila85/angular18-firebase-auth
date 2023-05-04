@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Auth, User, onAuthStateChanged } from '@angular/fire/auth';
+import { Analytics, logEvent } from '@angular/fire/analytics';
 import { Firestore, Timestamp, collection, doc, onSnapshot, orderBy, query, writeBatch } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { TeamEvent } from '../models/team-event.model';
@@ -11,6 +12,7 @@ import { TeamEvent } from '../models/team-event.model';
 })
 export class HomeComponent implements OnInit {
   private firestore: Firestore = inject(Firestore);
+  private analytics: Analytics = inject(Analytics);
   isLoading = true;
   private auth: Auth = inject(Auth);
   user: User | null = null;
@@ -48,6 +50,7 @@ export class HomeComponent implements OnInit {
       return;
     }
     const eventId = doc(collection(this.firestore, 'events')).id;
+    logEvent(this.analytics, 'new_event', { uid: this.user.uid, eventId: eventId })
     const batch = writeBatch(this.firestore);
     const newEvent: TeamEvent = {
       owner: this.user.uid,

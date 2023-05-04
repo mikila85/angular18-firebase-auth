@@ -1,6 +1,7 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit, inject } from '@angular/core';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
+import { Analytics, logEvent } from '@angular/fire/analytics';
 import { DocumentData, DocumentReference, Firestore, Timestamp, collection, deleteDoc, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query, updateDoc, writeBatch } from '@angular/fire/firestore';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -22,6 +23,7 @@ export class EventComponent implements OnInit {
   static readonly applicationFeePercentage = 5;
   private auth: Auth = inject(Auth);
   private firestore: Firestore = inject(Firestore);
+  private analytics: Analytics = inject(Analytics)
   selectedTabIndex: number = 0;
   user: TeamUser | null = null;
   teamEventRef: DocumentReference<DocumentData> | undefined;
@@ -202,6 +204,7 @@ export class EventComponent implements OnInit {
       console.error("notGoing: falsy user");
       return;
     }
+    logEvent(this.analytics, 'not_going', { uid: this.user.uid, eventId: this.eventId })
     const batch = writeBatch(this.firestore);
     if (this.participant) {
       batch.update(doc(this.firestore, 'events', this.eventId as string, 'participants', this.user?.uid as string), { status: 'OUT' });
@@ -224,10 +227,11 @@ export class EventComponent implements OnInit {
   }
 
   joinEvent(): void {
+    logEvent(this.analytics, 'join_event', { uid: this.user?.uid, eventId: this.eventId })
     this.registerParticipant(<TeamUserBrief>this.user);
   }
 
-  private registerParticipant(user: TeamUserBrief, removeFromWaitlist: boolean = false) {
+  private registerParticipant(user: TeamUserBrief) {
     const batch = writeBatch(this.firestore);
     batch.set(doc(this.firestore, 'events', this.eventId as string, 'participants', user.uid), {
       uid: user.uid,
@@ -243,10 +247,10 @@ export class EventComponent implements OnInit {
     batch.commit().catch((error) => {
       console.log(error);
     });
-
   }
 
   joinWaitlist(): void {
+    logEvent(this.analytics, 'join_waitlist', { uid: this.user?.uid, eventId: this.eventId })
     const batch = writeBatch(this.firestore);
     batch.set(doc(this.firestore, 'events', this.eventId as string, 'participants', this.user?.uid as string), {
       uid: this.user?.uid,
@@ -270,10 +274,12 @@ export class EventComponent implements OnInit {
     if (this.waitlist.length === 0) return;
 
     let nextOnWaitlist = this.waitlist.reduce((max, p) => (max.waitlistOn ?? 0) > (p.waitlistOn ?? 0) ? max : p);
+    logEvent(this.analytics, 'promote_waitlist', { uid: this.user?.uid, promoted: nextOnWaitlist.uid, eventId: this.eventId })
     updateDoc(doc(this.firestore, 'events', this.eventId as string, 'participants', nextOnWaitlist.uid), { status: 'IN' });
   }
 
   copyEventInvite() {
+    logEvent(this.analytics, 'copy_invite', { uid: this.user?.uid, eventId: this.eventId })
     var eventUrl = window.location.href;
     const dateTimeOn = this.eventDate.toLocaleString(`en-AU`, {
       dateStyle: "full",
@@ -299,6 +305,7 @@ export class EventComponent implements OnInit {
       console.error("duplicateEvent: user object is falsy");
       return;
     }
+    logEvent(this.analytics, 'duplicate', { uid: this.user.uid, eventId: this.eventId })
     let newEventDate = new Date();
     newEventDate.setHours(this.eventDate.getHours());
     newEventDate.setMinutes(this.eventDate.getMinutes());
@@ -325,6 +332,7 @@ export class EventComponent implements OnInit {
   }
 
   deleteEvent(): void {
+    logEvent(this.analytics, 'delete_event', { uid: this.user?.uid, eventId: this.eventId })
     if (!this.teamEventRef) {
       console.error("deleteEvent: falsy teamEventDoc");
       return;
@@ -336,6 +344,7 @@ export class EventComponent implements OnInit {
   }
 
   createStripeConnectedAccount() {
+    logEvent(this.analytics, 'create_stripe_account', { uid: this.user?.uid, eventId: this.eventId })
     this.isStripeLoading = true;
     const createAccount = httpsCallableData<unknown, StripeAccountLink>(this.functions, 'createStripeConnectedAccount');
     const createAccountData = {
@@ -353,6 +362,7 @@ export class EventComponent implements OnInit {
   }
 
   async getStripeConnectedAccount(stripeAccountId: string) {
+    logEvent(this.analytics, 'get_stripe_account', { uid: this.user?.uid, eventId: this.eventId })
     const getAccount = httpsCallableData<unknown, Stripe.Account>(this.functions, 'getStripeConnectedAccount');
     const account = await firstValueFrom(getAccount({ isTestMode: this.teamEvent?.isTestMode, id: stripeAccountId }));
     return account;
@@ -373,6 +383,7 @@ export class EventComponent implements OnInit {
     https://stripe.com/docs/connect/destination-charges#flow-of-funds-app-fee
   */
   createStripePrice(price: number) {
+    logEvent(this.analytics, 'create_stripe_price', { uid: this.user?.uid, eventId: this.eventId })
     this.isPriceLoading = true;
     const priceWithStripeFees = Math.ceil((price * 100 + 30) / (1 - 0.0175));
     const tax = Math.ceil((priceWithStripeFees - (price * 100)) / 10);
@@ -400,6 +411,7 @@ export class EventComponent implements OnInit {
   }
 
   createStripeCheckoutSession() {
+    logEvent(this.analytics, 'begin_checkout', { uid: this.user?.uid, eventId: this.eventId })
     this.isPriceLoading = true;
     const stripeCheckout = httpsCallableData<unknown, Stripe.Checkout.Session>(this.functions, 'createStripeCheckoutSession');
 
