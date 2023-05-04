@@ -16,6 +16,13 @@ it('second user joins event', () => {
   cy.get('[data-cy="eventCardTitle"]').contains('Cypress Test Event Title')
   cy.get('[data-cy="attendeesTabTitle"]').contains('Attendees 1/5')
   cy.get('.mat-mdc-list-item').contains('First Tester')
+  // Reject event
+  cy.get('[data-cy="notGoingSubheader"]').should('not.exist')
+  cy.get('[data-cy="eventJoinBtn"]').contains('JOIN')
+  cy.get('[data-cy="notGoingBtn"]').contains('Not Going').click()
+  cy.get('[data-cy="notGoingSubheader"]').should('contain', 'Not Going 1')
+  cy.get('.mat-mdc-list-item').contains('Second Tester')
+  cy.get('[data-cy="attendeesTabTitle"]').contains('Attendees 1/5')
   // join event
   cy.get('[data-cy="eventJoinBtn"]').contains('JOIN').click()
   cy.get('[data-cy="attendeesTabTitle"]').contains('Attendees 2/5')
@@ -31,7 +38,7 @@ it('second user joins event', () => {
 
   cy.task('waitForCheckpoint', 'attendees limited to 1')
   cy.get('[data-cy="messagesTabTitle"]').should('have.class', 'mat-badge-hidden')
-  cy.get('[data-cy="eventLeaveBtn"]').contains('LEAVE').click()
+  cy.get('[data-cy="notGoingBtn"]').contains('Not Going').click()
   cy.wait(500)
   cy.get('[data-cy="attendeesTabTitle"]').contains('Attendees 1/1')
   cy.get('[data-cy="eventWaitlistBtn"]').contains('JOIN WAITLIST').click()
@@ -45,11 +52,11 @@ it('second user joins event', () => {
 
   cy.task('waitForCheckpoint', 'first user left event')
   cy.get('[data-cy="waitlistTab"]').should('not.exist')
-  cy.get('[data-cy="eventLeaveBtn"]').should('exist')
+  cy.get('[data-cy="notGoingBtn"]').should('exist')
   cy.get('[data-cy="attendeesTabTitle"]').click()
   cy.get('.mat-mdc-list-item').contains('Second Tester')
   // leave event
-  cy.get('[data-cy="eventLeaveBtn"]').contains('LEAVE').click()
+  cy.get('[data-cy="notGoingBtn"]').contains('Not Going').click()
 
   cy.task('checkpoint', 'second user left')
 

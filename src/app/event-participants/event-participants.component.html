@@ -1,6 +1,5 @@
-<mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 <mat-list>
-    <mat-list-item *ngFor="let participant of participants$ | async">
+    <mat-list-item *ngFor="let participant of participants">
         <img matListItemAvatar [src]="participant.photoURL" referrerpolicy="no-referrer" [alt]="participant.displayName"
             [routerLink]="['/profile', participant.uid]">
         <h3 matListItemTitle>{{participant.displayName}}</h3>
@@ -8,9 +7,12 @@
             {{participant.paidOn?.toDate()?.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
         </p>
     </mat-list-item>
-    <mat-divider *ngIf="numberOfRefusals > 0"></mat-divider>
-    <h3 matSubheader *ngIf="numberOfRefusals > 0" style="text-align: center;">Not Going {{numberOfRefusals}}</h3>
-    <mat-list-item *ngFor="let refusal of refusals$ | async">
+    <div *ngIf="refusals.length > 0">
+        <mat-divider></mat-divider>
+        <h3 matSubheader style="text-align: center;" data-cy="notGoingSubheader">Not Going
+            {{refusals.length}}</h3>
+    </div>
+    <mat-list-item *ngFor="let refusal of refusals">
         <img matListItemAvatar [src]="refusal.photoURL" referrerpolicy="no-referrer" [alt]="refusal.displayName"
             [routerLink]="['/profile', refusal.uid]">
         <h3 matListItemTitle>{{refusal.displayName}}</h3>

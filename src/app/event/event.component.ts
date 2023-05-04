@@ -31,7 +31,9 @@ export class EventComponent implements OnInit {
   eventTime: string = (new Date()).toTimeString().substring(0, 5);
   eventTitle: string = "New Event";
   participant: Participant | undefined;
-  refusal: Participant | undefined;
+  participants: Participant[] = [];
+  refusals: Participant[] = [];
+  waitlist: Participant[] = [];
   stripeUrl: string = "https://stripe.com";
   //ToDo: investigate if it's possible to remove this variable and use teamEvent.eventFee instead
   eventFee: number = 0;
@@ -39,13 +41,10 @@ export class EventComponent implements OnInit {
   isStripePrice: boolean = false;
   teamColors = ['Red', 'White', 'Blue', 'Orange', 'Yellow', 'Green', 'Gray'];
   teams: { color: string, size: number }[] = [{ color: 'Red', size: 0 }]
-  numberOfParticipants: number = 0;
-  waitlist: TeamUserBrief[] = [];
   isLoading = true;
   isStripeLoading = false;
   isPriceLoading = false;
   isOwner = false;
-  isWaitlist = false;
   isPaid: boolean | undefined = false;
   paidOn: Date | undefined = undefined;
   lastReadMessageOn: Timestamp = new Timestamp(0, 0);
@@ -99,42 +98,41 @@ export class EventComponent implements OnInit {
         }
         this.teamEvent = eventSnapshot.data() as TeamEvent;
         this.teamEvent.id = eventSnapshot.id;
-        onSnapshot(doc(this.firestore, `events/${this.eventId}/participants/${this.user?.uid}`), (participantSnapshot) => {
-          if (participantSnapshot.exists()) {
-            this.participant = participantSnapshot.data() as Participant;
-            if (!this.participant) {
-              console.error("ngOnInit participantSnapshot.data() returned falsy participant data");
-              return;
-            }
-            this.isPaid = this.participant.isPaid;
-            this.paidOn = this.participant.paidOn?.toDate();
-            this.lastReadMessageOn = this.participant.lastReadMessageOn ? this.participant.lastReadMessageOn : new Timestamp(0, 0);
-            const q = query(collection(this.firestore, 'events', this.eventId as string, 'messages'), orderBy('ts', 'desc'), limit(1));
-            onSnapshot(q, (messageSnapshot) => {
-              if (!messageSnapshot.empty && messageSnapshot.docs[0].data()['ts'] > this.lastReadMessageOn) {
-                this.isUnreadMessage = !this.isMessagesTabOpen(this.selectedTabIndex);
-              }
-            });
-          } else {
-            this.participant = undefined;
-          }
-        });
-        onSnapshot(doc(this.firestore, `events/${this.eventId}/refusals/${this.user?.uid}`), (refusalSnapshot) => {
-          if (refusalSnapshot.exists()) {
-            this.refusal = refusalSnapshot.data() as Participant;
-            if (!this.refusal) {
-              console.error("ngOnInit participantSnapshot.data() returned falsy refusal data");
-              return;
-            }
-            this.isPaid = this.refusal.isPaid;
-            this.paidOn = this.refusal.paidOn?.toDate();
-          } else {
-            this.refusal = undefined;
-          }
-        });
+        onSnapshot(collection(this.firestore, 'events', this.eventId as string, 'participants'), (participantsSnapshot) => {
+          this.participant = undefined;
+          this.participants = [];
+          this.refusals = [];
+          this.waitlist = [];
 
-        onSnapshot(doc(this.firestore, 'events', this.eventId as string, 'waitlist', this.user?.uid as string), (waitlistSnapshot) => {
-          this.isWaitlist = waitlistSnapshot.exists();
+          participantsSnapshot.docs.forEach(async (participantDoc) => {
+            const p = participantDoc.data() as Participant;
+            if (this.user?.uid === p.uid) {
+              this.participant = p;
+              this.isPaid = this.participant.isPaid;
+              this.paidOn = this.participant.paidOn?.toDate();
+              this.lastReadMessageOn = this.participant.lastReadMessageOn ? this.participant.lastReadMessageOn : new Timestamp(0, 0);
+              const q = query(collection(this.firestore, 'events', this.eventId as string, 'messages'), orderBy('ts', 'desc'), limit(1));
+              onSnapshot(q, (messageSnapshot) => {
+                if (!messageSnapshot.empty && messageSnapshot.docs[0].data()['ts'] > this.lastReadMessageOn) {
+                  this.isUnreadMessage = !this.isMessagesTabOpen(this.selectedTabIndex);
+                }
+              });
+            }
+            switch (p.status) {
+              case 'IN':
+                this.participants.push(p);
+                break;
+              case 'OUT':
+                this.refusals.push(p);
+                break;
+              case 'WAITLIST':
+                this.waitlist.push(p);
+                break;
+              default:
+                console.error('Unknown participant status: ', p.status);
+                break;
+            }
+          });
         });
 
         this.eventDate = (this.teamEvent.dateTime as Timestamp).toDate();
@@ -152,7 +150,6 @@ export class EventComponent implements OnInit {
         }
         this.isStripePrice = !!this.teamEvent.stripePriceId;
 
-        this.getWaitlist();
         this.isLoading = false;
       });
     });
@@ -187,7 +184,7 @@ export class EventComponent implements OnInit {
   }
 
   numberOfAttendees(): string {
-    var attendeesInfo = this.numberOfParticipants.toString();
+    var attendeesInfo = this.participants.length.toString();
     if (this.teamEvent?.isLimitedAttendees) {
       attendeesInfo += `/${this.teamEvent.maxAttendees}`;
     }
@@ -200,24 +197,27 @@ export class EventComponent implements OnInit {
       return;
     }
     const batch = writeBatch(this.firestore);
-    const notGoingPerson: Participant = this.participant ? this.participant :
-      {
+    if (this.participant) {
+      batch.update(doc(this.firestore, 'events', this.eventId as string, 'participants', this.user?.uid as string), { status: 'OUT' });
+    } else {
+      batch.set(doc(this.firestore, 'events', this.eventId as string, 'participants', this.user?.uid as string), {
         uid: this.user.uid,
         displayName: this.user.displayName as string,
         photoURL: this.user.photoURL,
-      };
-
-    batch.set(doc(this.firestore, 'events', this.eventId as string, 'refusals', this.user?.uid as string), notGoingPerson);
-    batch.delete(doc(this.firestore, 'events', this.eventId as string, 'participants', this.user?.uid as string));
+        status: 'OUT',
+      });
+    }
     if (!this.isOwner) {
       batch.delete(doc(this.firestore, 'users', this.user?.uid as string, 'events', this.eventId as string));
     }
     batch.commit();
-    this.promoteNextPersonOnWaitlist();
+    // HACK: participants array are not yet updated in firebase snapshot, so we take one participant out.
+    if (this.participants.length - 1 < (this.teamEvent?.maxAttendees ?? 0)) {
+      this.promoteNextPersonOnWaitlist();
+    }
   }
 
   joinEvent(): void {
-    deleteDoc(doc(this.firestore, 'events', this.eventId as string, 'refusals', this.user?.uid as string));
     this.registerParticipant(<TeamUserBrief>this.user);
   }
 
@@ -226,17 +226,14 @@ export class EventComponent implements OnInit {
     batch.set(doc(this.firestore, 'events', this.eventId as string, 'participants', user.uid), {
       uid: user.uid,
       displayName: user.displayName,
-      photoURL: user.photoURL
+      photoURL: user.photoURL,
+      status: 'IN',
     });
-    if (removeFromWaitlist) {
-      batch.delete(doc(this.firestore, 'events', this.eventId as string, 'waitlist', user.uid));
-    } else {
-      batch.set(doc(this.firestore, 'users', user.uid, 'events', this.eventId as string), {
-        dateTime: this.eventDate,
-        icon: this.teamEvent?.icon,
-        title: this.eventTitle
-      });
-    }
+    batch.set(doc(this.firestore, 'users', user.uid, 'events', this.eventId as string), {
+      dateTime: this.eventDate,
+      icon: this.teamEvent?.icon,
+      title: this.eventTitle
+    });
     batch.commit().catch((error) => {
       console.log(error);
     });
@@ -245,44 +242,29 @@ export class EventComponent implements OnInit {
 
   joinWaitlist(): void {
     const batch = writeBatch(this.firestore);
-    if (this.isWaitlist) {
-      batch.delete(doc(this.firestore, 'events', this.eventId as string, 'waitlist', this.user?.uid as string));
-      if (!this.isOwner) {
-        batch.delete(doc(this.firestore, 'users', this.user?.uid as string, 'events', this.eventId as string));
-      }
-    } else {
-      batch.set(doc(this.firestore, 'events', this.eventId as string, 'waitlist', this.user?.uid as string), {
-        uid: this.user?.uid,
-        displayName: this.user?.displayName,
-        photoURL: this.user?.photoURL,
-        ts: new Date()
-      });
+    batch.set(doc(this.firestore, 'events', this.eventId as string, 'participants', this.user?.uid as string), {
+      uid: this.user?.uid,
+      displayName: this.user?.displayName,
+      photoURL: this.user?.photoURL,
+      status: 'WAITLIST',
+      waitlistOn: new Date()
+    });
 
-      batch.set(doc(this.firestore, 'users', this.user?.uid as string, 'events', this.eventId as string), {
-        dateTime: this.eventDate,
-        icon: this.teamEvent?.icon,
-        title: this.eventTitle
-      });
-    }
+    batch.set(doc(this.firestore, 'users', this.user?.uid as string, 'events', this.eventId as string), {
+      dateTime: this.eventDate,
+      icon: this.teamEvent?.icon,
+      title: this.eventTitle
+    });
     batch.commit().catch((error) => {
       console.log(error);
     });
-    this.isWaitlist = !this.isWaitlist;
   }
 
   promoteNextPersonOnWaitlist() {
-    const q = query(collection(this.firestore, 'events', this.eventId as string, 'waitlist'), orderBy('ts', 'asc'), limit(1));
-    getDocs(q).then((firstInWaitlist) => {
-      if (!firstInWaitlist.empty) {
-        this.registerParticipant(firstInWaitlist.docs[0].data() as TeamUserBrief, true);
-      }
-    });
-  }
+    if (this.waitlist.length === 0) return;
 
-  getWaitlist() {
-    onSnapshot(collection(this.firestore, `events/${this.eventId}/waitlist`), (querySnapshot) => {
-      this.waitlist = querySnapshot.docs.map(doc => doc.data() as TeamUserBrief);
-    });
+    let nextOnWaitlist = this.waitlist.reduce((max, p) => (max.waitlistOn ?? 0) > (p.waitlistOn ?? 0) ? max : p);
+    updateDoc(doc(this.firestore, 'events', this.eventId as string, 'participants', nextOnWaitlist.uid), { status: 'IN' });
   }
 
   copyEventInvite() {

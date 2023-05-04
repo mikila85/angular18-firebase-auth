@@ -200,9 +200,15 @@
             </mat-card-content>
             <mat-card-actions>
                 <!--Owner of the event can always join without the waitlist-->
-                <button mat-raised-button color="primary" (click)="joinEvent()" data-cy="eventOwnerJoinBtn">
-                    <mat-icon inline=true>{{participant ? "person_remove" : "person_add"}}</mat-icon>
-                    {{participant ? "LEAVE" : "JOIN"}}
+                <button mat-raised-button color="primary" (click)="joinEvent()" data-cy="eventOwnerJoinBtn"
+                    *ngIf="participant?.status !== 'IN'">
+                    <mat-icon inline=true>person_add</mat-icon>
+                    JOIN
+                </button>
+                <button mat-raised-button color="accent" (click)="notGoing()" data-cy="eventOwnerNotGoingBtn"
+                    *ngIf="participant?.status !== 'OUT'">
+                    <mat-icon inline=true>cancel</mat-icon>
+                    Not Going
                 </button>
                 <button mat-raised-button (click)="copyEventInvite()" data-cy="eventInviteBtn">
                     <mat-icon inline=true>share</mat-icon>
@@ -227,20 +233,22 @@
 
         <mat-card-actions *ngSwitchCase="false">
             <ng-container
-                *ngIf="!teamEvent?.isLimitedAttendees || numberOfParticipants < (teamEvent?.maxAttendees ?? 9999);else waitlist">
+                *ngIf="!teamEvent?.isLimitedAttendees || participants.length < (teamEvent?.maxAttendees ?? 9999);else waitlist">
                 <button mat-raised-button color="primary" (click)="joinEvent()" data-cy="eventJoinBtn"
-                    *ngIf="!participant">
+                    *ngIf="participant?.status !== 'IN'">
                     <mat-icon inline=true>person_add</mat-icon>
                     JOIN
                 </button>
             </ng-container>
             <ng-template #waitlist>
-                <button mat-raised-button color="primary" (click)="joinWaitlist()" data-cy="eventWaitlistBtn">
+                <button mat-raised-button color="primary" (click)="joinWaitlist()" data-cy="eventWaitlistBtn"
+                    *ngIf="participant?.status !== 'WAITLIST'">
                     <mat-icon inline=true>hourglass_empty</mat-icon>
                     JOIN WAITLIST
                 </button>
             </ng-template>
-            <button mat-raised-button color="accent" (click)="notGoing()" data-cy="notGoingBtn" *ngIf="!refusal">
+            <button mat-raised-button color="accent" (click)="notGoing()" data-cy="notGoingBtn"
+                *ngIf="participant?.status !== 'OUT'">
                 <mat-icon inline=true>cancel</mat-icon>
                 Not Going
             </button>
@@ -255,8 +263,7 @@
             <mat-icon class="mat-tab-icon">groups</mat-icon>
             <span data-cy="attendeesTabTitle">Attendees {{numberOfAttendees()}}</span>
         </ng-template>
-        <app-event-participants [eventId]="eventId"
-            (numberOfParticipantsEvent)="numberOfParticipants = $event"></app-event-participants>
+        <app-event-participants [participants]="participants" [refusals]="refusals"></app-event-participants>
     </mat-tab>
     <mat-tab *ngIf="waitlist.length > 0" data-cy="waitlistTab">
         <ng-template mat-tab-label>

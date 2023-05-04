@@ -72,7 +72,7 @@ it('first user creates event and invites the second user', () => {
   cy.get('[data-cy="waitlistTabTitle"]').contains('Waitlist 1').click()
   cy.get('.mat-mdc-list-item').contains('Second Tester')
   // leave event
-  cy.get('[data-cy="eventOwnerJoinBtn"]').contains('LEAVE').click()
+  cy.get('[data-cy="eventOwnerNotGoingBtn"]').contains('Not Going').click()
   cy.get('[data-cy="waitlistTabTitle"]').should('not.exist')
   cy.get('[data-cy="attendeesTabTitle"]').click()
   cy.get('.mat-mdc-list-item').contains('Second Tester')
@@ -83,7 +83,7 @@ it('first user creates event and invites the second user', () => {
   cy.get('[data-cy="readOnlyModeBtn"]').click()
   cy.get('[data-cy="eventTitle"]').should('not.exist')
   cy.get('[data-cy="eventDescription"]').should('not.exist')
-  cy.get('[data-cy="eventDescriptionText"]').should('eq', 'Cypress Test Event Description')
+  cy.get('[data-cy="eventDescriptionText"]').contains('Cypress Test Event Description')
   // back to edit mode
   cy.get('[data-cy="readOnlyModeBtn"]').click()
   cy.get('[data-cy="eventTitle"]').should('exist')
@@ -93,5 +93,4 @@ it('first user creates event and invites the second user', () => {
   cy.get('[data-cy="eventMenuActionBtn"]').click()
   cy.get('[data-cy="deleteEventBtn"]').click()
   cy.get('[data-cy="createNewEventBtn"]').should('exist')
-
 })
