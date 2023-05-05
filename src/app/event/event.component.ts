@@ -42,7 +42,7 @@ export class EventComponent implements OnInit {
   eventFee: number = 0;
   isStripeAccount: boolean = false;
   isStripePrice: boolean = false;
-  teamColors = ['Red', 'White', 'Blue', 'Orange', 'Yellow', 'Green', 'Gray'];
+  teamColors = ['Red', 'White', 'Blue', 'Orange', 'Yellow', 'Green', 'Gray', 'Purple', 'Cyan', 'PapayaWhip'];
   teams: { color: string, size: number }[] = [{ color: 'Red', size: 0 }]
   isLoading = true;
   isStripeLoading = false;

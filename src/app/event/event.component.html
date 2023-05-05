@@ -58,17 +58,17 @@
                 </mat-form-field>
             </div>
 
-            <!-- Disable Team Allocation functionality
-            <mat-slide-toggle [(ngModel)]="isTeamAllocations" (ngModelChange)="teamEventDoc?.update({isTeamAllocations: $event})">
+            <mat-slide-toggle [ngModel]="teamEvent?.isTeamAllocations"
+                (ngModelChange)="updateEvent({isTeamAllocations: $event})">
                 Team Allocations
             </mat-slide-toggle>
--->
             <div *ngIf="teamEvent?.isTeamAllocations">
-                <div fxLayout='row' fxLayoutAlign="stretch center" *ngFor="let team of teams; let i = index">
-                    <button mat-flat-button fxFlex="50%" [matMenuTriggerFor]="teamColorMenu"
-                        [matMenuTriggerData]="{index: i}" [style]="'background-color:'+team.color">
+                <div fxLayout='row' fxLayoutAlign="stretch stretch" *ngFor="let team of teams; let i = index">
+                    <button mat-flat-button mat-button fxFlex="50%" [matMenuTriggerFor]="teamColorMenu"
+                        [matMenuTriggerData]="{index: i}" [style]="'height: 56px; background-color:'+team.color">
                         {{team.color}}
                     </button>
+                    <span fxFlex="1%"></span>
                     <mat-form-field fxFlex="40%">
                         <input type="number" matInput placeholder="Team Size" [(ngModel)]="team.size" name="teamSize">
                     </mat-form-field>
