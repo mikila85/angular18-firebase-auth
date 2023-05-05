@@ -1,7 +1,7 @@
 <mat-list>
     <mat-list-item *ngFor="let participant of participants">
-        <img matListItemAvatar [src]="participant.photoURL" referrerpolicy="no-referrer" [alt]="participant.displayName"
-            [routerLink]="['/profile', participant.uid]">
+        <img matListItemAvatar [src]="getAvatarUrl(participant)" referrerpolicy="no-referrer"
+            [alt]="getDisplayNameInitials(participant.displayName)" [routerLink]="['/profile', participant.uid]">
         <h3 matListItemTitle>{{participant.displayName}}</h3>
         <p matListItemLine *ngIf="participant.isPaid">Paid
             {{participant.paidOn?.toDate()?.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
