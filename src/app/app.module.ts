@@ -46,6 +46,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatChipsModule } from '@angular/material/chips';
 
 @NgModule({
   declarations: [
@@ -106,6 +107,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatBadgeModule,
     MatDividerModule,
     MatSnackBarModule,
+    MatChipsModule
   ],
   providers: [
     ScreenTrackingService, UserTrackingService,

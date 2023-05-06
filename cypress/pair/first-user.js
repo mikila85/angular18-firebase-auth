@@ -72,7 +72,7 @@ it('first user creates event and invites the second user', () => {
   cy.get('[data-cy="waitlistTabTitle"]').contains('Waitlist 1').click()
   cy.get('.mat-mdc-list-item').contains('Second Tester')
   // leave event
-  cy.get('[data-cy="eventOwnerNotGoingBtn"]').contains('Not Going').click()
+  cy.get('[data-cy="notGoingBtn"]').contains('Not Going').click()
   cy.get('[data-cy="waitlistTabTitle"]').should('not.exist')
   cy.get('[data-cy="attendeesTabTitle"]').click()
   cy.get('.mat-mdc-list-item').contains('Second Tester')

@@ -5,9 +5,9 @@
             <span>{{eventTitle ? eventTitle : "New Event"}}</span>
         </mat-card-title>
         <span fxFlex></span>
-        <mat-icon (click)="updateEvent({isReadOnly: !teamEvent?.isReadOnly})"
-            data-cy="readOnlyModeBtn">{{teamEvent?.isReadOnly ? 'edit' :
-            'visibility'}}</mat-icon>
+        <mat-icon *ngIf="isOwner" (click)="updateEvent({isReadOnly: !teamEvent?.isReadOnly})" data-cy="readOnlyModeBtn">
+            {{teamEvent?.isReadOnly ? 'edit' : 'visibility'}}
+        </mat-icon>
     </mat-card-header>
     <mat-card-content [ngSwitch]="isOwner && !teamEvent?.isReadOnly">
         <div *ngSwitchCase="true">
@@ -205,11 +205,7 @@
                     <mat-icon inline=true>person_add</mat-icon>
                     JOIN
                 </button>
-                <button mat-raised-button color="accent" (click)="notGoing()" data-cy="eventOwnerNotGoingBtn"
-                    *ngIf="participant?.status !== 'OUT'">
-                    <mat-icon inline=true>cancel</mat-icon>
-                    Not Going
-                </button>
+                <ng-container *ngTemplateOutlet="sharedButtons"></ng-container>
                 <button mat-raised-button (click)="copyEventInvite()" data-cy="eventInviteBtn">
                     <mat-icon inline=true>share</mat-icon>
                     INVITE
@@ -247,29 +243,29 @@
                     JOIN WAITLIST
                 </button>
             </ng-template>
-            <button mat-raised-button [matMenuTriggerFor]="teamPickMenu"
-                [style]="'background-color:'+participant?.teamColor" data-cy="teamPickBtn"
-                *ngIf="teamEvent?.isTeamAllocations && participant?.status === 'IN'">
-                <mat-icon inline=true>palette</mat-icon>
-                Pick a Team
-            </button>
-            <mat-menu #teamPickMenu="matMenu" yPosition="above">
-                <ng-template matMenuContent let-index="index">
-                    <button mat-fab *ngFor="let team of subTeams" [style]="'background-color:'+team.color"
-                        (click)="subTeamColorUpdate(team.color)">
-                    </button>
-                </ng-template>
-            </mat-menu>
-
-            <button mat-raised-button color="accent" (click)="notGoing()" data-cy="notGoingBtn"
-                *ngIf="participant?.status !== 'OUT'">
-                <mat-icon inline=true>cancel</mat-icon>
-                Not Going
-            </button>
-
+            <ng-container *ngTemplateOutlet="sharedButtons"></ng-container>
         </mat-card-actions>
     </div>
 </mat-card>
+<ng-template #sharedButtons>
+    <button mat-raised-button [matMenuTriggerFor]="teamPickMenu" [style]="'background-color:'+participant?.teamColor"
+        data-cy="teamPickBtn" *ngIf="teamEvent?.isTeamAllocations && participant?.status === 'IN'">
+        <mat-icon inline=true>palette</mat-icon>
+        Pick a Team
+    </button>
+    <button mat-raised-button color="accent" (click)="notGoing()" data-cy="notGoingBtn"
+        *ngIf="participant?.status !== 'OUT'">
+        <mat-icon inline=true>cancel</mat-icon>
+        Not Going
+    </button>
+</ng-template>
+<mat-menu #teamPickMenu="matMenu" yPosition="above">
+    <ng-template matMenuContent let-index="index">
+        <button mat-fab *ngFor="let team of subTeams" [style]="'background-color:'+team.color"
+            (click)="subTeamColorUpdate(team.color)">
+        </button>
+    </ng-template>
+</mat-menu>
 
 <mat-tab-group [selectedIndex]="selectedTabIndex" (selectedIndexChange)="storeSelectedTabIndex($event)">
     <mat-tab data-cy="attendeesTab">

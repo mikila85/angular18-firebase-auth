@@ -14,6 +14,7 @@ it('second user joins event', () => {
   })
 
   cy.get('[data-cy="eventCardTitle"]').contains('Cypress Test Event Title')
+  cy.get('[data-cy="readOnlyModeBtn"]').should('not.exist')
   cy.get('[data-cy="attendeesTabTitle"]').contains('Attendees 1/5')
   cy.get('.mat-mdc-list-item').contains('First Tester')
   // Reject event

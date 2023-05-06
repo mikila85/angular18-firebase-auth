@@ -1,5 +1,8 @@
-<mat-list>
-    <mat-list-item *ngFor="let participant of participants">
+<mat-list *ngFor="let team of teamColors; let i = index">
+    <div mat-subheader *ngIf="!(teamColors.length === 1 && team === 'Undecided')">
+        <mat-chip [style]="'background-color:'+team">{{team}}</mat-chip>
+    </div>
+    <mat-list-item *ngFor="let participant of sortedParticipants[i]">
         <img matListItemAvatar [src]="getAvatarUrl(participant)" referrerpolicy="no-referrer"
             [alt]="getDisplayNameInitials(participant.displayName)" [routerLink]="['/profile', participant.uid]">
         <h3 matListItemTitle>{{participant.displayName}}</h3>

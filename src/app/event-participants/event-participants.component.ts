@@ -7,8 +7,39 @@ import { Participant } from '../models/participant.model';
   styleUrls: ['./event-participants.component.css']
 })
 export class EventParticipantsComponent {
-  @Input() participants: Participant[] = [];
+  sortedParticipants: Participant[][] = [];
+  teamColors: string[] = [];
+  @Input() set participants(value: Participant[]) {
+    this.updateParticipants(value);
+  }
   @Input() refusals: Participant[] = [];
+
+  updateParticipants(newParticipants: Participant[]): void {
+    newParticipants.forEach(p => { if (!p.teamColor) p.teamColor = 'Undecided' });
+    // Sort participants array by team color
+    newParticipants.sort((a, b) => {
+      if (a.teamColor === b.teamColor) {
+        return 0;
+      } else if (a.teamColor === undefined) {
+        a.teamColor = 'Undecided';
+        return -1;
+      } else if (b.teamColor === undefined) {
+        b.teamColor = 'Undecided';
+        return 1;
+      } else if (a.teamColor < b.teamColor) {
+        return -1;
+      } else if (a.teamColor > b.teamColor) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+    const uniqueColors = new Set<string>();
+    newParticipants.forEach(p => uniqueColors.add(p.teamColor ?? 'Undecided'));
+    this.teamColors = Array.from(uniqueColors);
+    // Group participants by team color
+    this.sortedParticipants = this.teamColors.map(color => newParticipants.filter(p => p.teamColor === color));
+  }
 
   getAvatarUrl(participant: Participant): string {
     return participant.photoURL ?? this.nameToAvatar(participant.displayName);
