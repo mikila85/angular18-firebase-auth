@@ -247,6 +247,20 @@
                     JOIN WAITLIST
                 </button>
             </ng-template>
+            <button mat-raised-button [matMenuTriggerFor]="teamPickMenu"
+                [style]="'background-color:'+participant?.teamColor" data-cy="teamPickBtn"
+                *ngIf="teamEvent?.isTeamAllocations && participant?.status === 'IN'">
+                <mat-icon inline=true>palette</mat-icon>
+                Pick a Team
+            </button>
+            <mat-menu #teamPickMenu="matMenu" yPosition="above">
+                <ng-template matMenuContent let-index="index">
+                    <button mat-fab *ngFor="let team of subTeams" [style]="'background-color:'+team.color"
+                        (click)="subTeamColorUpdate(team.color)">
+                    </button>
+                </ng-template>
+            </mat-menu>
+
             <button mat-raised-button color="accent" (click)="notGoing()" data-cy="notGoingBtn"
                 *ngIf="participant?.status !== 'OUT'">
                 <mat-icon inline=true>cancel</mat-icon>

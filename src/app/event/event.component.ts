@@ -498,4 +498,9 @@ export class EventComponent implements OnInit {
     updateDoc(doc(this.teamEventTeamsRef, this.subTeams[index].id), data)
   }
 
+  subTeamColorUpdate(color: string) {
+    console.log("subTeamColorUpdate", color);
+    updateDoc(doc(this.firestore, 'events', this.eventId as string, 'participants', this.participant?.uid as string),
+      { teamColor: color })
+  }
 }
