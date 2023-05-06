@@ -2,7 +2,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit, inject } from '@angular/core';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { Analytics, logEvent } from '@angular/fire/analytics';
-import { DocumentData, DocumentReference, Firestore, Timestamp, collection, deleteDoc, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query, updateDoc, writeBatch } from '@angular/fire/firestore';
+import { DocumentData, DocumentReference, Firestore, Timestamp, collection, deleteDoc, doc, getDoc, limit, onSnapshot, orderBy, query, updateDoc, writeBatch, CollectionReference, addDoc } from '@angular/fire/firestore';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -13,6 +13,7 @@ import { TeamEvent } from '../models/team-event.model';
 import { TeamUser } from '../models/team-user';
 import { TeamUserBrief } from '../models/team-user-brief';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SubTeam } from '../models/sub-team';
 
 @Component({
   selector: 'app-event',
@@ -42,8 +43,9 @@ export class EventComponent implements OnInit {
   eventFee: number = 0;
   isStripeAccount: boolean = false;
   isStripePrice: boolean = false;
+  teamEventTeamsRef: CollectionReference<DocumentData> | undefined;
+  subTeams: SubTeam[] = [];
   teamColors = ['Red', 'White', 'Blue', 'Orange', 'Yellow', 'Green', 'Gray', 'Purple', 'Cyan', 'PapayaWhip'];
-  teams: { color: string, size: number }[] = [{ color: 'Red', size: 0 }]
   isLoading = true;
   isStripeLoading = false;
   isPriceLoading = false;
@@ -159,6 +161,16 @@ export class EventComponent implements OnInit {
         this.isStripePrice = !!this.teamEvent.stripePriceId;
 
         this.isLoading = false;
+      });
+
+      this.teamEventTeamsRef = collection(this.firestore, 'events', this.eventId as string, 'teams');
+      onSnapshot(this.teamEventTeamsRef, async (teamsSnapshot) => {
+        this.subTeams = [];
+        teamsSnapshot.docs.forEach(async (teamDoc) => {
+          const team = teamDoc.data() as SubTeam;
+          team.id = teamDoc.id;
+          this.subTeams.push(team);
+        });
       });
     });
   }
@@ -454,4 +466,36 @@ export class EventComponent implements OnInit {
     const messagesTabIndex = this.waitlist.length > 0 ? 2 : 1;
     return tabIndex === messagesTabIndex;
   }
+
+  updateTeamAllocations(isOn: boolean) {
+    this.updateEvent({ isTeamAllocations: isOn });
+    if (isOn && this.subTeams.length === 0) {
+      this.subTeamsAdd();
+    }
+  }
+
+  subTeamsDelete(teamId: string) {
+    if (!this.teamEventTeamsRef) {
+      console.error("No teamEventTeamsRef");
+      return;
+    }
+    deleteDoc(doc(this.teamEventTeamsRef, teamId))
+  }
+
+  subTeamsAdd() {
+    if (!this.teamEventTeamsRef) {
+      console.error("No teamEventTeamsRef");
+      return;
+    }
+    addDoc(this.teamEventTeamsRef, { color: 'White', size: null })
+  }
+
+  subTeamsUpdate(index: number, data: any) {
+    if (!this.teamEventTeamsRef) {
+      console.error("No teamEventTeamsRef");
+      return;
+    }
+    updateDoc(doc(this.teamEventTeamsRef, this.subTeams[index].id), data)
+  }
+
 }

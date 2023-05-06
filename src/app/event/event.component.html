@@ -58,33 +58,33 @@
                 </mat-form-field>
             </div>
 
-            <mat-slide-toggle [ngModel]="teamEvent?.isTeamAllocations"
-                (ngModelChange)="updateEvent({isTeamAllocations: $event})">
+            <mat-slide-toggle [ngModel]="teamEvent?.isTeamAllocations" (ngModelChange)="updateTeamAllocations($event)">
                 Team Allocations
             </mat-slide-toggle>
             <div *ngIf="teamEvent?.isTeamAllocations">
-                <div fxLayout='row' fxLayoutAlign="stretch stretch" *ngFor="let team of teams; let i = index">
+                <div fxLayout='row' fxLayoutAlign="stretch stretch" *ngFor="let team of subTeams; let i = index">
                     <button mat-flat-button mat-button fxFlex="50%" [matMenuTriggerFor]="teamColorMenu"
                         [matMenuTriggerData]="{index: i}" [style]="'height: 56px; background-color:'+team.color">
                         {{team.color}}
                     </button>
                     <span fxFlex="1%"></span>
                     <mat-form-field fxFlex="40%">
-                        <input type="number" matInput placeholder="Team Size" [(ngModel)]="team.size" name="teamSize">
+                        <input type="number" matInput placeholder="Team Size" [ngModel]="team.size" name="teamSize"
+                            (ngModelChange)="subTeamsUpdate(i, {size: $event})">
                     </mat-form-field>
-                    <button mat-icon-button aria-label="Remove team" (click)="teams.splice(i,1)">
+                    <button mat-icon-button aria-label="Remove team" (click)="subTeamsDelete(team.id)">
                         <mat-icon>delete</mat-icon>
                     </button>
                 </div>
                 <button mat-raised-button [matMenuTriggerFor]="teamColorMenu"
-                    [matMenuTriggerData]="{index: teams.length}" (click)="teams.push({color:'White', size: 0})">
+                    [matMenuTriggerData]="{index: subTeams.length}" (click)="subTeamsAdd()">
                     <mat-icon inline=true>add</mat-icon>
                     Add Team
                 </button>
                 <mat-menu #teamColorMenu="matMenu" yPosition="above">
                     <ng-template matMenuContent let-index="index">
                         <button mat-fab *ngFor="let teamColor of teamColors" [style]="'background-color:'+teamColor"
-                            (click)="teams[index].color = teamColor">
+                            (click)="subTeamsUpdate(index, {color: teamColor})">
                         </button>
                     </ng-template>
                 </mat-menu>

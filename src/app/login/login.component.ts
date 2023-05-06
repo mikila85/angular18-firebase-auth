@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Auth, AuthProvider, FacebookAuthProvider, GoogleAuthProvider, OAuthProvider, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, updateProfile } from '@angular/fire/auth';
+import { Auth, AuthProvider, FacebookAuthProvider, GoogleAuthProvider, OAuthProvider, User, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, updateProfile } from '@angular/fire/auth';
 import { Firestore, doc, getDoc, setDoc, updateDoc } from '@angular/fire/firestore';
 import { MatIconRegistry } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -94,9 +94,9 @@ export class LoginComponent {
     this.isResetPassword = false;
   }
 
-  onSuccess(user: any): void {
+  onSuccess(user: User): void {
     setUserId(this.analytics, user.uid);
-    logEvent(this.analytics, 'login', { uid: user.uid, providerId: user.providerId })
+    logEvent(this.analytics, 'login', { uid: user.uid, providerId: user.providerData[0].providerId })
     const dbUserRef = doc(this.firestore, 'users', user.uid);
     getDoc(dbUserRef).then((doc) => {
       if (doc.exists()) {
