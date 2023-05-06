@@ -1,6 +1,7 @@
 <mat-list *ngFor="let team of teamColors; let i = index">
     <div mat-subheader *ngIf="!(teamColors.length === 1 && team === 'Undecided')">
         <mat-chip [style]="'background-color:'+team">{{team}}</mat-chip>
+        - {{sortedParticipants[i].length}}
     </div>
     <mat-list-item *ngFor="let participant of sortedParticipants[i]">
         <img matListItemAvatar [src]="getAvatarUrl(participant)" referrerpolicy="no-referrer"
