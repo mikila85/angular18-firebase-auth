@@ -22,14 +22,27 @@ it('first user creates event and invites the second user', () => {
   cy.get('[data-cy="waitlistTab"]').should('not.exist')
   cy.get('[data-cy="eventTitle"]').type('Cypress Test Event Title')
   cy.get('[data-cy="eventDescription"]').type('Cypress Test Event Description')
-  cy.get('[data-cy="attendeeLimitToggle"]').click()
+  cy.get('#mat-mdc-slide-toggle-1-button').click()
   cy.get('[data-cy="maxAttendeesField"]').click()
   cy.get('[data-cy="maxAttendees"]').type('5')
   cy.get('[data-cy="attendeesTabTitle"]').contains('/5')
+  // team allocations
+  cy.get('[data-cy="teamColorMenuBtn"]').should('not.exist')
+  cy.get('#mat-mdc-slide-toggle-2-button').click()
+  cy.get('[data-cy="teamColorMenuBtn"]').click()
+  cy.get('[data-cy="teamColorSelectBtn"]:first').click()
+  cy.get('[data-cy="addTeamBtn"]').click()
+  cy.get('[data-cy="teamColorSelectBtn"]:last').click()
+
   // join event
   cy.get('[data-cy="eventOwnerJoinBtn"]').contains('JOIN').click()
   cy.get('[data-cy="attendeesTabTitle"]').contains('Attendees 1/5')
   cy.get('.mat-mdc-list-item').contains('First Tester')
+  cy.get('.mat-chip').should('not.exist')
+  cy.get('[data-cy="teamPickBtn"]').click()
+  cy.get('[data-cy="setTeamColorBtn"]:first').click()
+  cy.get('.mat-mdc-chip').contains('Red').should('exist')
+
   // send message
   cy.get('[data-cy="messagesTabTitle"]').click()
   cy.get('[data-cy="messageInput"]').type('First test message')
@@ -57,6 +70,7 @@ it('first user creates event and invites the second user', () => {
   cy.get('[data-cy="messagesTabTitle"]').should('have.class', 'mat-badge-hidden')
   cy.get('[data-cy="attendeesTabTitle"]').contains('Attendees 2/5').click()
   cy.get('.mat-mdc-list-item').contains('Second Tester')
+  cy.get('.mat-mdc-chip').contains('PapayaWhip').should('exist')
 
   // limit attendees to 1
   cy.get('[data-cy="maxAttendees"]').clear()

@@ -25,9 +25,13 @@ it('second user joins event', () => {
   cy.get('.mat-mdc-list-item').contains('Second Tester')
   cy.get('[data-cy="attendeesTabTitle"]').contains('Attendees 1/5')
   // join event
+  cy.get('[data-cy="teamPickBtn"]').should('not.exist')
   cy.get('[data-cy="eventJoinBtn"]').contains('JOIN').click()
   cy.get('[data-cy="attendeesTabTitle"]').contains('Attendees 2/5')
   cy.get('.mat-mdc-list-item').contains('Second Tester')
+  cy.get('[data-cy="teamPickBtn"]').click()
+  cy.get('[data-cy="setTeamColorBtn"]:last').click()
+
   // check messages
   cy.get('[data-cy="messagesTabTitle"]').should('not.have.class', 'mat-badge-hidden')
   cy.get('[data-cy="messagesTabTitle"]').click()
