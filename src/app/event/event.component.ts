@@ -45,6 +45,7 @@ export class EventComponent implements OnInit {
   isStripePrice: boolean = false;
   teamEventTeamsRef: CollectionReference<DocumentData> | undefined;
   subTeams: SubTeam[] = [];
+  isFirstSubTeamDefined: boolean = false;
   teamColors = ['Red', 'White', 'Blue', 'Orange', 'Yellow', 'Green', 'Gray', 'Purple', 'Cyan', 'PapayaWhip'];
   isLoading = true;
   isStripeLoading = false;
@@ -166,6 +167,7 @@ export class EventComponent implements OnInit {
       this.teamEventTeamsRef = collection(this.firestore, 'events', this.eventId as string, 'teams');
       onSnapshot(this.teamEventTeamsRef, async (teamsSnapshot) => {
         this.subTeams = [];
+        this.isFirstSubTeamDefined = teamsSnapshot.docs.length > 0;
         teamsSnapshot.docs.forEach(async (teamDoc) => {
           const team = teamDoc.data() as SubTeam;
           team.id = teamDoc.id;
@@ -469,7 +471,8 @@ export class EventComponent implements OnInit {
 
   updateTeamAllocations(isOn: boolean) {
     this.updateEvent({ isTeamAllocations: isOn });
-    if (isOn && this.subTeams.length === 0) {
+    if (isOn && !this.isFirstSubTeamDefined) {
+      this.isFirstSubTeamDefined = true;
       this.subTeamsAdd();
     }
   }
