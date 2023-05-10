@@ -10,6 +10,14 @@
 <app-about *ngIf="!isLoading && !user"></app-about>
 
 <mat-nav-list>
+    <ng-container [ngTemplateOutlet]="eventsList" [ngTemplateOutletContext]="{teamEvents:teamEvents}"></ng-container>
+    <div mat-subheader *ngIf="pastEvents.length > 0">
+        Past Events
+    </div>
+    <ng-container [ngTemplateOutlet]="eventsList" [ngTemplateOutletContext]="{teamEvents:pastEvents}"></ng-container>
+</mat-nav-list>
+
+<ng-template #eventsList let-teamEvents="teamEvents">
     <a mat-list-item [routerLink]="['/event/'+teamEvent.id]" *ngFor="let teamEvent of teamEvents">
         <img matListItemAvatar [src]="teamEvent.icon" referrerpolicy="no-referrer" [alt]="teamEvent.title">
         <h3 matListItemTitle [style]="teamEvent.title ? '' : 'font-style: italic;'">
@@ -21,4 +29,4 @@
         </p>
         <p>{{teamEvent.icon}}</p>
     </a>
-</mat-nav-list>
+</ng-template>

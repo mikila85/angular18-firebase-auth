@@ -2,7 +2,8 @@
 <mat-card>
     <mat-card-header>
         <mat-card-title data-cy="eventCardTitle">
-            <span>{{eventTitle ? eventTitle : "New Event"}}</span>
+            <span *ngIf="isLoading">Loading ...</span>
+            <span *ngIf="!isLoading">{{eventTitle ? eventTitle : "New Event"}}</span>
         </mat-card-title>
         <span fxFlex></span>
         <mat-icon *ngIf="isOwner" (click)="updateEvent({isReadOnly: !teamEvent?.isReadOnly})" data-cy="readOnlyModeBtn">

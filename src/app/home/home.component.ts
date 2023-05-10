@@ -17,6 +17,7 @@ export class HomeComponent implements OnInit {
   private auth: Auth = inject(Auth);
   user: User | null = null;
   teamEvents: TeamEvent[] = [];
+  pastEvents: TeamEvent[] = [];
 
   constructor(
     private router: Router,
@@ -29,10 +30,18 @@ export class HomeComponent implements OnInit {
         const q = query(collection(this.firestore, `users/${this.user.uid}/events`), orderBy('dateTime', 'desc'));
         onSnapshot(q, (querySnapshot) => {
           this.teamEvents = [];
+          this.pastEvents = [];
           querySnapshot.forEach((doc) => {
             var teamEvent = doc.data() as TeamEvent;
             teamEvent.id = doc.id;
-            this.teamEvents.push(teamEvent);
+            if ((teamEvent.dateTime as Timestamp).toDate() > new Date()) {
+              this.teamEvents.push(teamEvent);
+            } else {
+              this.pastEvents.push(teamEvent);
+            }
+          });
+          this.teamEvents.sort((a, b) => {
+            return (a.dateTime as Timestamp).toDate().getTime() - (b.dateTime as Timestamp).toDate().getTime();
           });
           this.isLoading = false;
         });
