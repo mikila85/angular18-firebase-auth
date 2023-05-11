@@ -1,0 +1,25 @@
+<mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+<mat-card *ngIf="!isLoading">
+    <mat-card-header>
+        <mat-card-title data-cy="eventCardTitle">
+            <span *ngIf="isLoading">Loading ...</span>
+            <span *ngIf="!isLoading">{{team?.title ? team?.title : "New Team"}}</span>
+        </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <mat-form-field class="full-width">
+            <mat-label>Title</mat-label>
+            <input matInput name="title" [ngModel]="team?.title" (ngModelChange)="updateTeamTitle($event)">
+        </mat-form-field>
+        <mat-form-field class="full-width">
+            <mat-label>About the Team</mat-label>
+            <textarea matInput name="description" [ngModel]="team?.description"
+                (ngModelChange)="updateTeam({description: $event })"></textarea>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+            <mat-label>Emails</mat-label>
+            <textarea matInput name="emails" [ngModel]="team?.extras"
+                (ngModelChange)="updateTeam({extras: $event })"></textarea>
+        </mat-form-field>
+    </mat-card-content>
+</mat-card>

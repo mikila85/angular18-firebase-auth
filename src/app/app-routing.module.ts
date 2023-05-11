@@ -9,12 +9,16 @@ import { StripeAccountCreatedComponent } from './stripe-account-created/stripe-a
 import { StripeCheckoutCompletedComponent } from './stripe-checkout-completed/stripe-checkout-completed.component';
 import { UserProfileViewComponent } from './user-profile-view/user-profile-view.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { TeamsComponent } from './teams/teams.component';
+import { TeamComponent } from './team/team.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'about', component: AboutComponent },
   { path: 'profile', component: UserProfileComponent, canActivate: [CanActivateGuard] },
   { path: 'profile/:userId', component: UserProfileViewComponent, canActivate: [CanActivateGuard] },
+  { path: 'teams', component: TeamsComponent, canActivate: [CanActivateGuard] },
+  { path: 'team/:teamId', component: TeamComponent, canActivate: [CanActivateGuard] },
   { path: 'event/:eventId', component: EventComponent, canActivate: [CanActivateGuard] },
   { path: 'stripe/:eventId/:accountId', component: StripeAccountCreatedComponent, canActivate: [CanActivateGuard] },
   { path: 'stripe-payment/:eventId/:userId/:success', component: StripeCheckoutCompletedComponent, canActivate: [CanActivateGuard] },

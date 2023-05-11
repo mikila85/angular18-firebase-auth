@@ -16,6 +16,7 @@ export class AppComponent {
 
   avatarLinks: LinkMenuItem[] = [
     { icon: 'account_circle', text: 'Profile', callback: () => { this.router.navigate(['profile']); } },
+    { icon: 'group', text: 'My Teams', callback: () => { this.router.navigate(['teams']); } },
     { icon: 'info', text: 'About the app', callback: () => { this.router.navigate(['about']); } },
     {
       icon: 'mail', text: 'Contact the developer', callback: () => {
