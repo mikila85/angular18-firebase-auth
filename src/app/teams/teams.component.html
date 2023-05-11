@@ -10,7 +10,8 @@
 
 <mat-nav-list>
     <a mat-list-item [routerLink]="['/team/'+team.id]" *ngFor="let team of teams">
-        <img matListItemAvatar [src]="team.icon" referrerpolicy="no-referrer" [alt]="team.icon">
+        <img *ngIf="team.icon" matListItemAvatar [src]="team.icon" referrerpolicy="no-referrer">
+        <i *ngIf="!team.icon" matListItemAvatar class="material-icons">group</i>
         <h3 matListItemTitle [style]="team.title ? '' : 'font-style: italic;'">
             {{team.title ? team.title : "New Team"}}
         </h3>
