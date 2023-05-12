@@ -1,3 +1,4 @@
+// https://firebase.google.com/docs/functions/get-started
 const functions = require("firebase-functions");
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
@@ -5,8 +6,33 @@ const functions = require("firebase-functions");
 // https://firebase.google.com/docs/functions/config-env#secret-manager
 const stripeApiTestKey = 'sk_test_51MocYgCxlz3elfmgLtXVZxrEhrmZE3lXUBFMfpcpknrHfmkOJ9vIsJEF9RAiD9xwrCj79wXmSHpJaMMiZsZrYkXm00fvanaNSc';
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+const nodemailer = require('nodemailer');
+// Configure the email transport using the default SMTP transport and a GMail account.
+// For Gmail, enable these:
+// 1. https://www.google.com/settings/security/lesssecureapps
+// 2. https://accounts.google.com/DisplayUnlockCaptcha
+// 3. Configure the `gmail.email` and `gmail.password` Google Cloud environment variables.
+//    https://firebase.google.com/docs/functions/config-env?gen=2nd#secret_parameters
+// https://miracleio.me/snippets/use-gmail-with-nodemailer/
+exports.sendEmail = functions.region('australia-southeast1')
+    .runWith({ secrets: ["GMAIL_EMAIL", "GMAIL_PASSWORD"] }).https
+    .onCall(async (data, context) => {
+        console.log("sendEmail started");
+        console.log(process.env.GMAIL_EMAIL);
+        const mailTransport = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.GMAIL_EMAIL,
+                pass: process.env.GMAIL_PASSWORD,
+            },
+        });
+
+        const mailOptions = data;
+        const info = await mailTransport.sendMail(mailOptions);
+        functions.logger.log('New email sent to: ', mailOptions.to, info.response);
+        return info;
+    });
+
 // https://stripe.com/docs/api?lang=node
 exports.createStripeConnectedAccount = functions.region('australia-southeast1')
     .runWith({ secrets: ["STRIPE_LIVE_RESTRICTED_CONNECT_PLATFORM_API_KEY"] }).https
