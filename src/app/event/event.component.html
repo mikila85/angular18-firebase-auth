@@ -162,9 +162,9 @@
                         </div>
                         <p>
                             Application Fee: {{(teamEvent?.applicationFee ?? 0)/100 | currency}}<br />
-                            Estimated Stripe Fee: {{(teamEvent?.stripePriceUnitAmount ??
+                            Estimated Stripe Fee: {{((teamEvent?.stripePriceUnitAmount ??
                             0)-eventFee*100-(teamEvent?.applicationFee ??
-                            0)/100 | currency}}<br />
+                            0))/100 | currency}}<br />
                             Total payable: {{(teamEvent?.stripePriceUnitAmount ?? 0)/100 | currency}}
                         </p>
                     </div>
