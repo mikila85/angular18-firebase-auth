@@ -50,6 +50,7 @@ export class EventComponent implements OnInit {
   isLoading = true;
   isStripeLoading = false;
   isPriceLoading = false;
+  isActivatingStripeAccount = false;
   isOwner = false;
   isPaid: boolean | undefined = false;
   paidOn: Date | undefined = undefined;
@@ -90,13 +91,27 @@ export class EventComponent implements OnInit {
         this.stripeUrl = "https://dashboard.stripe.com";
         this.isStripeAccount = true;
         if (!userDoc.isStripeAccountEnabled) {
-          const account = await this.getStripeConnectedAccount(userDoc.stripeAccountId);
-          if (account.charges_enabled && account.payouts_enabled) {
-            updateDoc(doc(this.firestore, `users/${user.uid}`), { isStripeAccountEnabled: true });
-          }
+          // repeat few times until account is enabled
+          this.isActivatingStripeAccount = true;
+          var intervalCounter = 0;
+          const getAccountInterval = setInterval(async () => {
+            const account = await this.getStripeConnectedAccount(userDoc.stripeAccountId as string);
+            if (account.charges_enabled && account.payouts_enabled) {
+              if (this.user) {
+                this.user.isStripeAccountEnabled = true;
+              }
+              updateDoc(doc(this.firestore, `users/${user.uid}`), { isStripeAccountEnabled: true }).then(() => {
+                this.isActivatingStripeAccount = false;
+              });
+              clearInterval(getAccountInterval);
+            }
+            if (intervalCounter++ > 5) {
+              this.isActivatingStripeAccount = false;
+              clearInterval(getAccountInterval);
+            }
+          }, 3000);
         }
       }
-
       this.teamEventRef = doc(this.firestore, 'events', this.eventId as string);
       onSnapshot(this.teamEventRef, async (eventSnapshot) => {
         if (!eventSnapshot.exists()) {
