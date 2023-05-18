@@ -292,13 +292,17 @@ export class EventComponent implements OnInit {
     updateDoc(doc(this.firestore, 'events', this.eventId as string, 'participants', nextOnWaitlist.uid), { status: 'IN' });
   }
 
-  copyEventInvite() {
-    logEvent(this.analytics, 'copy_invite', { uid: this.user?.uid, eventId: this.eventId })
-    var eventUrl = window.location.href;
-    const dateTimeOn = this.eventDate.toLocaleString(`en-AU`, {
+  eventDateTime(): string {
+    return this.eventDate.toLocaleString(`en-AU`, {
       dateStyle: "full",
       timeStyle: "short"
     });
+  }
+
+  copyEventInvite() {
+    logEvent(this.analytics, 'copy_invite', { uid: this.user?.uid, eventId: this.eventId })
+    var eventUrl = window.location.href;
+    const dateTimeOn = this.eventDateTime();
 
     this.clipboard.copy(`${this.eventTitle}\n${dateTimeOn}\n${eventUrl}`);
 
@@ -506,4 +510,25 @@ export class EventComponent implements OnInit {
     updateDoc(doc(this.firestore, 'events', this.eventId as string, 'participants', this.participant?.uid as string),
       { teamColor: color })
   }
+
+  /* - Feature Flag: disable for now
+  sendEmailToTeam() {
+    logEvent(this.analytics, 'send_email_to_team', { uid: this.user?.uid, eventId: this.eventId })
+    const sendEmailToTeam = httpsCallableData<unknown, boolean>(this.functions, 'sendEmail');
+    const mailOptions: MailOptions = {
+      to: 'azhidkov@gmail.com',
+      subject: `${this.eventTitle} ${this.eventDateTime()}`,
+      text: `Hi Team,\n${this.teamEvent?.description}\nHere is the link to the event: ${window.location.origin}/event/${this.eventId}\n\nRegards,\n${this.user?.displayName}`,
+      html: `<p>Hi Team,</p>
+      <p>${this.teamEvent?.description}</p>
+      <p>Here is the link to the event: <a href="${window.location.origin}/event/${this.eventId}">${window.location.origin}/event/${this.eventId}</a></p>
+      <p>Regards,</p>
+      <p>${this.user?.displayName}</p>`
+    }
+
+    sendEmailToTeam(mailOptions).subscribe(r => {
+      console.log("sendEmailToTeam:", r);
+    })
+  }
+  */
 }
