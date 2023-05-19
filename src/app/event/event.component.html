@@ -154,28 +154,33 @@
                         </button>
                     </div>
                     <div *ngIf="isStripeAccount && user?.isStripeAccountEnabled">
-                        <p>
-                            Please provide the amount you want to receive in your account from each participant and
-                            use the "Get Total Fee" button to calculate the total amount participants have to pay,
-                            including application and stripe processing fees.
+                        <p *ngIf="user?.stripeCountry !== 'AU'">
+                            Payments in your country are coming soon. Please check back later.
                         </p>
-                        <div fxLayout="row">
-                            <mat-form-field>
-                                <span matPrefix>$</span>
-                                <input matInput type="number" [ngModel]="eventFee | currency:'':''"
-                                    [ngModelOptions]="{updateOn:'blur'}" (ngModelChange)="eventFee=$event" />
-                                <button mat-raised-button matSuffix (click)="createStripePrice(eventFee)">
-                                    Get Total Fee
-                                </button>
-                            </mat-form-field>
+                        <div *ngIf="user?.stripeCountry === 'AU'">
+                            <p>
+                                Please provide the amount you want to receive in your account from each participant and
+                                use the "Get Total Fee" button to calculate the total amount participants have to pay,
+                                including application and stripe processing fees.
+                            </p>
+                            <div fxLayout="row">
+                                <mat-form-field>
+                                    <span matPrefix>$</span>
+                                    <input matInput type="number" [ngModel]="eventFee | currency:'':''"
+                                        [ngModelOptions]="{updateOn:'blur'}" (ngModelChange)="eventFee=$event" />
+                                    <button mat-raised-button matSuffix (click)="createStripePrice(eventFee)">
+                                        Get Total Fee
+                                    </button>
+                                </mat-form-field>
+                            </div>
+                            <p>
+                                Application Fee: {{(teamEvent?.applicationFee ?? 0)/100 | currency}}<br />
+                                Estimated Stripe Fee: {{((teamEvent?.stripePriceUnitAmount ??
+                                0)-eventFee*100-(teamEvent?.applicationFee ??
+                                0))/100 | currency}}<br />
+                                Total payable: {{(teamEvent?.stripePriceUnitAmount ?? 0)/100 | currency}}
+                            </p>
                         </div>
-                        <p>
-                            Application Fee: {{(teamEvent?.applicationFee ?? 0)/100 | currency}}<br />
-                            Estimated Stripe Fee: {{((teamEvent?.stripePriceUnitAmount ??
-                            0)-eventFee*100-(teamEvent?.applicationFee ??
-                            0))/100 | currency}}<br />
-                            Total payable: {{(teamEvent?.stripePriceUnitAmount ?? 0)/100 | currency}}
-                        </p>
                     </div>
                 </div>
             </div>

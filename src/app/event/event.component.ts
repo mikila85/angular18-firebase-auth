@@ -100,9 +100,13 @@ export class EventComponent implements OnInit {
               if (this.user) {
                 this.user.isStripeAccountEnabled = true;
               }
-              updateDoc(doc(this.firestore, `users/${user.uid}`), { isStripeAccountEnabled: true }).then(() => {
-                this.isActivatingStripeAccount = false;
-              });
+              updateDoc(doc(this.firestore, `users/${user.uid}`), {
+                isStripeAccountEnabled: true,
+                stripeCountry: account.country
+              })
+                .then(() => {
+                  this.isActivatingStripeAccount = false;
+                });
               clearInterval(getAccountInterval);
             }
             if (intervalCounter++ > 5) {
