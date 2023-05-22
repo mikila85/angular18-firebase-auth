@@ -9,6 +9,7 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { connectFunctionsEmulator, getFunctions, provideFunctions } from '@angular/fire/functions';
 import { getMessaging, provideMessaging } from '@angular/fire/messaging';
+import { getStorage, provideStorage } from '@angular/fire/storage';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -79,6 +80,7 @@ import { TeamComponent } from './team/team.component';
     provideAnalytics(() => getAnalytics()),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
+    provideStorage(() => getStorage()),
     provideFunctions(() => {
       const functions = getFunctions(undefined, 'australia-southeast1');
       if (environment.useEmulators) {

@@ -3,9 +3,17 @@
     <mat-card-header>
         <mat-card-title-group>
             <mat-card-title>{{user.displayName}}</mat-card-title>
-            <img mat-card-xl-image [src]="user.photoURL" referrerpolicy="no-referrer" alt="Profile image">
+            <img mat-card-xl-image [src]="profileImageUrl" referrerpolicy="no-referrer" alt="Upload profile image">
         </mat-card-title-group>
     </mat-card-header>
+    <mat-progress-bar *ngIf="isImageLoading" mode="indeterminate"></mat-progress-bar>
+    <mat-card-actions align="end">
+        <button type="button" mat-raised-button (click)="fileInput.click()">
+            <mat-icon inline=true>photo_camera</mat-icon>
+            New Profile Image
+        </button>
+        <input hidden (change)="onImageSelected($event)" #fileInput type="file" id="uploadImage" accept='image/*'>
+    </mat-card-actions>
     <mat-card-content>
         <mat-form-field class="full-width">
             <mat-label>Display Name</mat-label>
