@@ -3,7 +3,8 @@
     <mat-card-header>
         <mat-card-title-group>
             <mat-card-title>{{user.displayName}}</mat-card-title>
-            <img mat-card-xl-image [src]="profileImageUrl" referrerpolicy="no-referrer" alt="Upload profile image">
+            <img mat-card-xl-image style="height: auto;" [src]="profileImageUrl" referrerpolicy="no-referrer"
+                alt="Upload profile image" (click)="openFullSizeImage()">
         </mat-card-title-group>
     </mat-card-header>
     <mat-progress-bar *ngIf="isImageLoading" mode="indeterminate"></mat-progress-bar>
