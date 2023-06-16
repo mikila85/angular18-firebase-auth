@@ -11,10 +11,14 @@ import { UserProfileViewComponent } from './user-profile-view/user-profile-view.
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { TeamsComponent } from './teams/teams.component';
 import { TeamComponent } from './team/team.component';
+import { DemoHomeComponent } from './demo-home/demo-home.component';
+import { DemoEventComponent } from './demo-event/demo-event.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'about', component: AboutComponent },
+  { path: 'demo', component: DemoHomeComponent },
+  { path: 'demo-event', component: DemoEventComponent },
   { path: 'profile', component: UserProfileComponent, canActivate: [CanActivateGuard] },
   { path: 'profile/:userId', component: UserProfileViewComponent, canActivate: [CanActivateGuard] },
   { path: 'teams', component: TeamsComponent, canActivate: [CanActivateGuard] },

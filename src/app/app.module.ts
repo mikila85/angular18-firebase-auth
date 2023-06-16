@@ -50,6 +50,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { TeamsComponent } from './teams/teams.component';
 import { TeamComponent } from './team/team.component';
+import { DemoHomeComponent } from './demo-home/demo-home.component';
+import { DemoEventComponent } from './demo-event/demo-event.component';
 
 @NgModule({
   declarations: [
@@ -68,6 +70,8 @@ import { TeamComponent } from './team/team.component';
     UserProfileViewComponent,
     TeamsComponent,
     TeamComponent,
+    DemoHomeComponent,
+    DemoEventComponent,
   ],
   imports: [
     BrowserModule,

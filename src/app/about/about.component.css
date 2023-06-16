@@ -2,3 +2,7 @@
     background-image: url('../../assets/icons/favicon-32x32.png');
     background-size: cover;
 }
+
+mat-card-actions .mat-mdc-button-base {
+    margin-right: 8px;
+}

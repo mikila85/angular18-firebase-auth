@@ -32,6 +32,10 @@
         </p>
     </mat-card-content>
     <mat-card-actions align="end">
+        <button mat-raised-button color="primary" routerLink="demo" data-cy="demoBtn">
+            <mat-icon inline=true>preview</mat-icon>
+            DEMO
+        </button>
         <!--ToDo change to create new event and redirect to the new event page-->
         <button mat-raised-button color="accent" routerLink="login" [queryParams]="{redirectUrl: '/'}"
             data-cy="createNewEventBtn">
