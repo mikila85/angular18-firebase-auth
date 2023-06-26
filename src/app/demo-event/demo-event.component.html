@@ -1,1 +1,303 @@
-<p>demo-event works!</p>
+<mat-card>
+    <mat-card-actions>
+        <button mat-button [routerLink]="['/']">
+            <mat-icon>exit_to_app</mat-icon>
+            Exit DEMO
+        </button>
+    </mat-card-actions>
+    <mat-card-header>
+        <mat-card-title data-cy="eventCardTitle">
+            <span>{{eventTitle}}</span>
+        </mat-card-title>
+    </mat-card-header>
+    <mat-card-content [ngSwitch]="isOwner">
+        <div *ngSwitchCase="true">
+            <div fxLayout='row'>
+                <mat-form-field fxFlex="55%">
+                    <mat-label>Choose a date</mat-label>
+                    <input matInput [min]="minDate" [matDatepicker]="picker" [(ngModel)]="eventDate">
+                    <mat-hint>MM/DD/YYYY</mat-hint>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field fxFlex="45%">
+                    <input type="time" matInput placeholder="Start Time" [(ngModel)]="eventTime" name="startTime">
+                </mat-form-field>
+            </div>
+            <mat-form-field class="full-width">
+                <mat-label>Title</mat-label>
+                <input matInput name="eventTitle" [(ngModel)]="title" data-cy="eventTitle">
+            </mat-form-field>
+            <mat-form-field class="full-width">
+                <mat-label>Description</mat-label>
+                <textarea matInput name="eventDescription" [(ngModel)]="description"
+                    data-cy="eventDescription"></textarea>
+            </mat-form-field>
+            <mat-form-field class="full-width">
+                <mat-label>Location</mat-label>
+                <input matInput name="location" [(ngModel)]="location" data-cy="location">
+            </mat-form-field>
+            <mat-form-field class="full-width">
+                <mat-label>Link to maps</mat-label>
+                <input matInput name="mapsUrl" [(ngModel)]="mapsUrl" data-cy="mapsUrl">
+                <mat-icon matSuffix>location_on</mat-icon>
+            </mat-form-field>
+            <div fxLayout='row'>
+                <mat-slide-toggle [(ngModel)]="isLimitedAttendees" data-cy="attendeeLimitToggle">
+                    Attendee limit
+                </mat-slide-toggle>
+                <mat-form-field *ngIf="isLimitedAttendees" data-cy="maxAttendeesField">
+                    <mat-label>Max number</mat-label>
+                    <input matInput type="number" name="maxAttendees" [(ngModel)]="maxAttendees" data-cy="maxAttendees">
+                </mat-form-field>
+            </div>
+            <mat-slide-toggle [ngModel]="isTeamAllocations" (ngModelChange)="isTeamAllocations=!isTeamAllocations"
+                data-cy="teamAllocationsToggle">
+                Team Allocations
+            </mat-slide-toggle>
+            <div *ngIf="isTeamAllocations">
+                <div fxLayout='row' fxLayoutAlign="stretch stretch" *ngFor="let team of subTeams; let i = index">
+                    <button mat-flat-button mat-button fxFlex="50%" [matMenuTriggerFor]="teamColorMenu"
+                        [matMenuTriggerData]="{index: i}" [style]="'height: 56px; background-color:'+team.color"
+                        data-cy="teamColorMenuBtn">
+                        {{team.color}}
+                    </button>
+                    <span fxFlex="1%"></span>
+                    <mat-form-field fxFlex="40%">
+                        <input type="number" matInput placeholder="Team Size" [ngModel]="team.size" name="teamSize">
+                    </mat-form-field>
+                    <button mat-icon-button aria-label="Remove team" (click)="subTeams.splice(i, 1)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </div>
+                <button mat-raised-button [matMenuTriggerFor]="teamColorMenu"
+                    [matMenuTriggerData]="{index: subTeams.length}"
+                    (click)="subTeams.push({id: '', color: 'White', size: null })" data-cy="addTeamBtn">
+                    <mat-icon inline=true>add</mat-icon>
+                    Add Team
+                </button>
+                <mat-menu #teamColorMenu="matMenu" yPosition="above">
+                    <ng-template matMenuContent let-index="index">
+                        <button mat-fab *ngFor="let teamColor of teamColors" [style]="'background-color:'+teamColor"
+                            (click)="subTeams[index].color = teamColor" data-cy="teamColorSelectBtn">
+                        </button>
+                    </ng-template>
+                </mat-menu>
+            </div>
+
+            <div fxLayout='row'>
+                <mat-slide-toggle [ngModel]="isEventFee" (ngModelChange)="isEventFee=!isEventFee">
+                    Event Fee
+                </mat-slide-toggle>
+            </div>
+            <div *ngIf="isEventFee">
+                <a [href]="stripeUrl" mat-button>
+                    <img src="https://images.ctfassets.net/fzn2n1nzq965/4M6d6BSWzlgsrJx8rdZb0I/733f37ef69b5ca1d3d33e127184f4ce4/Powered_by_Stripe.svg?q=80&amp;w=1082"
+                        alt="Powered by Stripe" width="150" height="34" loading="lazy">
+                </a>
+                <div *ngIf="isStripeAccount">
+                    <div *ngIf="isActivatingStripeAccount">
+                        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                        <p>
+                            Your Stripe account is being activated...
+                        </p>
+                    </div>
+                    <div *ngIf="!isActivatingStripeAccount && !isStripeAccountEnabled">
+                        <h3>Your Stripe account is not activated.</h3>
+                        <p>
+                            Please complete Stripe onboarding by providing required information.
+                            Use <span class="stripe-actionRequired-button">
+                                Action required
+                                <svg aria-hidden="true" height="12" width="12" viewBox="0 0 16 16"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="m10.115 1.308 5.635 11.269A2.365 2.365 0 0 1 13.634 16H2.365A2.365 2.365 0 0 1 .25 12.577L5.884 1.308a2.365 2.365 0 0 1 4.231 0zM8 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM8 9c.552 0 1-.32 1-.714V4.714C9 4.32 8.552 4 8 4s-1 .32-1 .714v3.572C7 8.68 7.448 9 8 9z"
+                                        fill-rule="evenodd"></path>
+                                </svg>
+                            </span> button on your Stripe dashboard.
+                        </p>
+                        <a href="https://dashboard.stripe.com/account/status" mat-raised-button class="stripe-button">
+                            <mat-icon inline=true>account_balance</mat-icon>
+                            Complete Stripe Onboarding
+                        </a>
+                    </div>
+                </div>
+
+                <div *ngIf="!isStripeAccount">
+                    <p>
+                        To start accepting payments and moving funds to your bank account through the app,
+                        you need set up your account with the internet payment processing platform Stripe.
+                    </p>
+                    <button mat-raised-button (click)="createStripeConnectedAccount()" class="stripe-button">
+                        <mat-icon inline=true>account_balance</mat-icon>
+                        Create Stripe Account
+                    </button>
+                </div>
+                <!--
+                        <div *ngIf="isStripeAccount && user?.isStripeAccountEnabled">
+                            <p *ngIf="user?.stripeCountry !== 'AU'">
+                            Payments in your country are coming soon. Please check back later.
+                        </p>
+                        <div *ngIf="user?.stripeCountry === 'AU'">
+                            <p>
+                                Please provide the amount you want to receive in your account from each participant and
+                                use the "Get Total Fee" button to calculate the total amount participants have to pay,
+                                including application and stripe processing fees.
+                            </p>
+                            <div fxLayout="row">
+                                <mat-form-field>
+                                    <span matPrefix>$</span>
+                                    <input matInput type="number" [ngModel]="eventFee | currency:'':''"
+                                        [ngModelOptions]="{updateOn:'blur'}" (ngModelChange)="eventFee=$event" />
+                                    <button mat-raised-button matSuffix (click)="createStripePrice(eventFee)">
+                                        Get Total Fee
+                                    </button>
+                                </mat-form-field>
+                            </div>
+                            <p>
+                                Application Fee: {{(teamEvent?.applicationFee ?? 0)/100 | currency}}<br />
+                                Estimated Stripe Fee: {{((teamEvent?.stripePriceUnitAmount ??
+                                    0)-eventFee*100-(teamEvent?.applicationFee ??
+                                    0))/100 | currency}}<br />
+                                    Total payable: {{(teamEvent?.stripePriceUnitAmount ?? 0)/100 | currency}}
+                                </p>
+                            </div>
+                        </div>
+                    -->
+            </div>
+        </div>
+        <div *ngSwitchCase="false">
+            <p>{{eventDate.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}</p>
+            <p data-cy="eventDescriptionText">{{description}}</p>
+            <a mat-button *ngIf="mapsUrl" [href]="mapsUrl">
+                <mat-icon>location_on</mat-icon>
+                {{location}}
+            </a>
+            <p *ngIf="location && !mapsUrl">
+                {{location}}
+            </p>
+        </div>
+        <!--
+            <div *ngIf="isStripePrice && !participant">Fee {{(teamEvent?.stripePriceUnitAmount ?? 0)/100 | currency}} </div>
+            <div *ngIf="isStripePrice && participant && !isPaid" fxLayout="row" fxLayoutAlign="stretch center">
+            <span>Pay {{(teamEvent?.stripePriceUnitAmount ?? 0)/100 | currency}} </span>
+            <button mat-raised-button style="margin-left: 16px;" (click)="createStripeCheckoutSession()">
+                <mat-icon inline=true>shopping_cart</mat-icon>
+                Proceed to Checkout
+            </button>
+        </div>
+        <p *ngIf="isPaid">
+            Paid
+            {{paidOn?.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
+        </p>
+    -->
+    </mat-card-content>
+    <!--
+
+    <div [ngSwitch]="isOwner">
+        <div *ngSwitchCase="true">
+            <mat-card-content>
+                Use the "Invite" button to share the invite URL with your social network.
+            </mat-card-content>
+            <mat-card-actions>
+                <button mat-raised-button color="primary" (click)="joinEvent()" data-cy="eventOwnerJoinBtn"
+                    *ngIf="participant?.status !== 'IN'">
+                    <mat-icon inline=true>person_add</mat-icon>
+                    JOIN
+                </button>
+                <ng-container *ngTemplateOutlet="sharedButtons"></ng-container>
+                <button mat-raised-button (click)="copyEventInvite()" data-cy="eventInviteBtn">
+                    <mat-icon inline=true>share</mat-icon>
+                    INVITE
+                </button>
+                <button mat-icon-button [matMenuTriggerFor]="menu" data-cy="eventMenuActionBtn">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu" yPosition="above">
+                    <button mat-menu-item (click)="deleteEvent()" data-cy="deleteEventBtn" style="color: red;">
+                        <mat-icon color="warn">delete</mat-icon>
+                        DELETE
+                    </button>
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item (click)="duplicateEvent()">
+                        <mat-icon>file_copy</mat-icon>
+                        DUPLICATE
+                    </button>
+                </mat-menu>
+            </mat-card-actions>
+        </div>
+
+        <mat-card-actions *ngSwitchCase="false">
+            <ng-container
+                *ngIf="!teamEvent?.isLimitedAttendees || participants.length < (teamEvent?.maxAttendees ?? 9999);else waitlist">
+                <button mat-raised-button color="primary" (click)="joinEvent()" data-cy="eventJoinBtn"
+                    *ngIf="participant?.status !== 'IN'">
+                    <mat-icon inline=true>person_add</mat-icon>
+                    JOIN
+                </button>
+            </ng-container>
+            <ng-template #waitlist>
+                <button mat-raised-button color="primary" (click)="joinWaitlist()" data-cy="eventWaitlistBtn"
+                    *ngIf="participant?.status !== 'WAITLIST'">
+                    <mat-icon inline=true>hourglass_empty</mat-icon>
+                    JOIN WAITLIST
+                </button>
+            </ng-template>
+            <ng-container *ngTemplateOutlet="sharedButtons"></ng-container>
+        </mat-card-actions>
+    </div>
+-->
+</mat-card>
+<!--
+
+<ng-template #sharedButtons>
+    <button mat-raised-button [matMenuTriggerFor]="teamPickMenu" [style]="'background-color:'+participant?.teamColor"
+        data-cy="teamPickBtn" *ngIf="teamEvent?.isTeamAllocations && participant?.status === 'IN'">
+        <mat-icon inline=true>palette</mat-icon>
+        Pick a Team
+    </button>
+    <button mat-raised-button color="accent" (click)="notGoing()" data-cy="notGoingBtn"
+        *ngIf="participant?.status !== 'OUT'">
+        <mat-icon inline=true>cancel</mat-icon>
+        Not Going
+    </button>
+</ng-template>
+<mat-menu #teamPickMenu="matMenu" yPosition="above">
+    <ng-template matMenuContent let-index="index">
+        <button mat-fab *ngFor="let team of subTeams" [style]="'background-color:'+team.color"
+            (click)="subTeamColorUpdate(team.color)" data-cy="setTeamColorBtn">
+        </button>
+    </ng-template>
+</mat-menu>
+
+<mat-tab-group [selectedIndex]="selectedTabIndex" (selectedIndexChange)="storeSelectedTabIndex($event)">
+    <mat-tab data-cy="attendeesTab">
+        <ng-template mat-tab-label>
+            <mat-icon class="mat-tab-icon">groups</mat-icon>
+            <span data-cy="attendeesTabTitle">Attendees {{numberOfAttendees()}}</span>
+        </ng-template>
+        <app-event-participants [participants]="participants" [refusals]="refusals"></app-event-participants>
+    </mat-tab>
+    <mat-tab *ngIf="waitlist.length > 0" data-cy="waitlistTab">
+        <ng-template mat-tab-label>
+            <mat-icon class="mat-tab-icon">hourglass_empty</mat-icon>
+            <span data-cy="waitlistTabTitle">Waitlist {{waitlist.length}}</span>
+        </ng-template>
+        <mat-list>
+            <mat-list-item *ngFor="let participant of waitlist">
+                <img matListItemAvatar [src]="participant.photoURL" referrerpolicy="no-referrer"
+                    [alt]="participant.displayName">
+                <h3 matListItemTitle>{{participant.displayName}}</h3>
+            </mat-list-item>
+        </mat-list>
+    </mat-tab>
+    <mat-tab label="Messages" hidden>
+        <ng-template mat-tab-label>
+            <mat-icon class="mat-tab-icon">forum</mat-icon>
+            <span matBadge="#" matBadgeColor="warn" [matBadgeHidden]="!isUnreadMessage"
+                data-cy="messagesTabTitle">Messages</span>
+        </ng-template>
+        <app-messages [eventId]="eventId"></app-messages>
+    </mat-tab>
+</mat-tab-group>
+-->

@@ -18,7 +18,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'about', component: AboutComponent },
   { path: 'demo', component: DemoHomeComponent },
-  { path: 'demo-event', component: DemoEventComponent },
+  { path: 'demo-event/:eventId', component: DemoEventComponent },
   { path: 'profile', component: UserProfileComponent, canActivate: [CanActivateGuard] },
   { path: 'profile/:userId', component: UserProfileViewComponent, canActivate: [CanActivateGuard] },
   { path: 'teams', component: TeamsComponent, canActivate: [CanActivateGuard] },

@@ -24,7 +24,7 @@ export class EventComponent implements OnInit {
   static readonly applicationFeePercentage = 5;
   private auth: Auth = inject(Auth);
   private firestore: Firestore = inject(Firestore);
-  private analytics: Analytics = inject(Analytics)
+  private analytics: Analytics = inject(Analytics);
   selectedTabIndex: number = 0;
   user: TeamUser | null = null;
   teamEventRef: DocumentReference<DocumentData> | undefined;

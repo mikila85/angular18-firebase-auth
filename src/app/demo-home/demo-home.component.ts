@@ -27,5 +27,4 @@ export class DemoHomeComponent {
     this.date3.setMinutes(30);
   }
 
-  createNewEvent() { }
 }

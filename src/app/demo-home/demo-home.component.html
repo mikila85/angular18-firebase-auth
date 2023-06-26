@@ -6,7 +6,7 @@
         </button>
     </mat-card-actions>
     <mat-card-actions align="end">
-        <button mat-raised-button color="accent" (click)="createNewEvent()" data-cy="demoCreateNewEventBtn">
+        <button mat-raised-button color="accent" [routerLink]="['/demo-event/new']" data-cy="demoCreateNewEventBtn">
             <mat-icon inline=true>add_circle</mat-icon>
             Create New Event
         </button>
