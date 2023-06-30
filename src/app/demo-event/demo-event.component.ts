@@ -6,6 +6,7 @@ import { SubTeam } from '../models/sub-team';
 import { Analytics, logEvent } from '@angular/fire/analytics';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { StripeAccountLink } from '../models/stripe-account-link';
+import { Participant } from '../models/participant.model';
 
 @Component({
   selector: 'app-demo-event',
@@ -34,6 +35,11 @@ export class DemoEventComponent implements OnInit {
   isStripeAccount: boolean = false;
   isActivatingStripeAccount: boolean = false;
   isStripeAccountEnabled: boolean = false;
+  isUnreadMessage: boolean = false;
+  participant: Participant = { uid: 'DEMO', displayName: 'DEMO person', photoURL: './../../assets/icons/favicon-32x32.png' };
+  participants: Participant[] = [];
+  refusals: Participant[] = [];
+  waitlist: Participant[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -58,6 +64,11 @@ export class DemoEventComponent implements OnInit {
         this.eventDate.setMinutes(0);
         this.location = 'The Kiosk Floreat Beach';
         this.mapsUrl = 'https://goo.gl/maps/zQWpL9M9Vte9uYGb7';
+        this.participants = [
+          { uid: 'DEMO1', displayName: 'Anna Webber', photoURL: './../../assets/demo-person1.jpg', status: 'IN' },
+          { uid: 'DEMO2', displayName: 'Jack', photoURL: './../../assets/demo-person2.jpg', status: 'IN' },
+          { uid: 'DEMO3', displayName: 'John Doe', photoURL: './../../assets/demo-person3.jpg', status: 'IN' },
+        ]
         break;
       case '2':
         this.eventTitle = 'Volleyball league';
@@ -97,6 +108,62 @@ export class DemoEventComponent implements OnInit {
     createAccount(createAccountData).subscribe((accountLink: StripeAccountLink) => {
       window.open(accountLink.url, '_self', '')
     })
+  }
+
+  setStatus(newStatus: 'IN' | 'OUT'): void {
+    //HACK: this is a hack to force the change detection to run to update EventParticipantsComponent
+    this.participants = [
+      { uid: 'DEMO1', displayName: 'Anna Webber', photoURL: './../../assets/demo-person1.jpg', status: 'IN' },
+      { uid: 'DEMO2', displayName: 'Jack', photoURL: './../../assets/demo-person2.jpg', status: 'IN' },
+      { uid: 'DEMO3', displayName: 'John Doe', photoURL: './../../assets/demo-person3.jpg', status: 'IN' },
+    ];
+    this.refusals = [];
+    this.participant.status = newStatus;
+    if (newStatus === 'IN') {
+      this.participants.push(this.participant);
+    } else {
+      this.refusals.push(this.participant);
+    }
+  }
+
+  numberOfAttendees(): string {
+    var attendeesInfo = this.participants.length.toString();
+    if (this.isLimitedAttendees) {
+      attendeesInfo += `/${this.maxAttendees}`;
+    }
+    return attendeesInfo;
+  }
+
+  joinWaitlist(): void {
+    this.waitlist.push(this.participant);
+  }
+
+  deleteEvent(): void {
+    logEvent(this.analytics, 'demo_delete_event', { uid: 'demo', eventId: 'new demo event' })
+  }
+  duplicateEvent(): void {
+    logEvent(this.analytics, 'demo_duplicate_event', { uid: 'demo', eventId: 'new demo event' })
+  }
+
+  eventDateTime(): string {
+    return this.eventDate.toLocaleString(`en-AU`, {
+      dateStyle: "full",
+      timeStyle: "short"
+    });
+  }
+
+  copyEventInvite() {
+    var eventUrl = window.location.href;
+    const dateTimeOn = this.eventDateTime();
+
+    this.clipboard.copy(`DEMO ${this.eventTitle}\n${dateTimeOn}\nhttps://team-bldr.web.app`);
+
+    if (navigator.share) {
+      navigator.share({
+        text: `${this.eventTitle}\n${dateTimeOn}`,
+        url: eventUrl
+      })
+    }
   }
 
 }

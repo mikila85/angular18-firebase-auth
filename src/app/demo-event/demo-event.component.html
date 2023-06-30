@@ -192,7 +192,6 @@
         </p>
     -->
     </mat-card-content>
-    <!--
 
     <div [ngSwitch]="isOwner">
         <div *ngSwitchCase="true">
@@ -200,7 +199,7 @@
                 Use the "Invite" button to share the invite URL with your social network.
             </mat-card-content>
             <mat-card-actions>
-                <button mat-raised-button color="primary" (click)="joinEvent()" data-cy="eventOwnerJoinBtn"
+                <button mat-raised-button color="primary" (click)="setStatus('IN')" data-cy="eventOwnerJoinBtn"
                     *ngIf="participant?.status !== 'IN'">
                     <mat-icon inline=true>person_add</mat-icon>
                     JOIN
@@ -228,9 +227,8 @@
         </div>
 
         <mat-card-actions *ngSwitchCase="false">
-            <ng-container
-                *ngIf="!teamEvent?.isLimitedAttendees || participants.length < (teamEvent?.maxAttendees ?? 9999);else waitlist">
-                <button mat-raised-button color="primary" (click)="joinEvent()" data-cy="eventJoinBtn"
+            <ng-container *ngIf="!isLimitedAttendees || participants.length < (maxAttendees ?? 9999);else waitlist">
+                <button mat-raised-button color="primary" (click)="setStatus('IN')" data-cy="eventJoinBtn"
                     *ngIf="participant?.status !== 'IN'">
                     <mat-icon inline=true>person_add</mat-icon>
                     JOIN
@@ -246,17 +244,15 @@
             <ng-container *ngTemplateOutlet="sharedButtons"></ng-container>
         </mat-card-actions>
     </div>
--->
 </mat-card>
-<!--
 
 <ng-template #sharedButtons>
-    <button mat-raised-button [matMenuTriggerFor]="teamPickMenu" [style]="'background-color:'+participant?.teamColor"
-        data-cy="teamPickBtn" *ngIf="teamEvent?.isTeamAllocations && participant?.status === 'IN'">
+    <button mat-raised-button [matMenuTriggerFor]="teamPickMenu" [style]="'background-color:'+participant.teamColor"
+        data-cy="teamPickBtn" *ngIf="isTeamAllocations && participant?.status === 'IN'">
         <mat-icon inline=true>palette</mat-icon>
         Pick a Team
     </button>
-    <button mat-raised-button color="accent" (click)="notGoing()" data-cy="notGoingBtn"
+    <button mat-raised-button color="accent" (click)="setStatus('OUT')" data-cy="notGoingBtn"
         *ngIf="participant?.status !== 'OUT'">
         <mat-icon inline=true>cancel</mat-icon>
         Not Going
@@ -265,12 +261,12 @@
 <mat-menu #teamPickMenu="matMenu" yPosition="above">
     <ng-template matMenuContent let-index="index">
         <button mat-fab *ngFor="let team of subTeams" [style]="'background-color:'+team.color"
-            (click)="subTeamColorUpdate(team.color)" data-cy="setTeamColorBtn">
+            (click)="participant.teamColor = team.color" data-cy="setTeamColorBtn">
         </button>
     </ng-template>
 </mat-menu>
 
-<mat-tab-group [selectedIndex]="selectedTabIndex" (selectedIndexChange)="storeSelectedTabIndex($event)">
+<mat-tab-group>
     <mat-tab data-cy="attendeesTab">
         <ng-template mat-tab-label>
             <mat-icon class="mat-tab-icon">groups</mat-icon>
@@ -278,10 +274,10 @@
         </ng-template>
         <app-event-participants [participants]="participants" [refusals]="refusals"></app-event-participants>
     </mat-tab>
-    <mat-tab *ngIf="waitlist.length > 0" data-cy="waitlistTab">
+    <mat-tab data-cy="waitlistTab">
         <ng-template mat-tab-label>
             <mat-icon class="mat-tab-icon">hourglass_empty</mat-icon>
-            <span data-cy="waitlistTabTitle">Waitlist {{waitlist.length}}</span>
+            <span data-cy="waitlistTabTitle">Waitlist 0</span>
         </ng-template>
         <mat-list>
             <mat-list-item *ngFor="let participant of waitlist">
@@ -297,7 +293,6 @@
             <span matBadge="#" matBadgeColor="warn" [matBadgeHidden]="!isUnreadMessage"
                 data-cy="messagesTabTitle">Messages</span>
         </ng-template>
-        <app-messages [eventId]="eventId"></app-messages>
+        <app-messages eventId="demo"></app-messages>
     </mat-tab>
 </mat-tab-group>
--->
