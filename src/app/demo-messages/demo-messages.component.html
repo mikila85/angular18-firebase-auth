@@ -1,0 +1,28 @@
+<mat-card>
+    <mat-card-content>
+        <mat-form-field fxFlex="100%">
+            <mat-label>Message</mat-label>
+            <textarea matInput [(ngModel)]="text" data-cy="messageInput"></textarea>
+        </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="sendMessage()" [disabled]="!text" data-cy="sendMessageBtn">
+            <mat-icon inline=true>send</mat-icon>
+            SEND
+        </button>
+    </mat-card-actions>
+</mat-card>
+
+<mat-card *ngFor="let message of messages">
+    <mat-card-header>
+        <img mat-card-avatar [src]="message.photoURL" referrerpolicy="no-referrer" [alt]="message.displayName">
+        <mat-card-title>{{message.displayName}}</mat-card-title>
+        <mat-card-subtitle>
+            {{messageDateTime(message.ts) | date:'fullDate'}} at
+            {{messageDateTime(message.ts) | date:'shortTime'}}
+        </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+        <p>{{message.text}}</p>
+    </mat-card-content>
+</mat-card>

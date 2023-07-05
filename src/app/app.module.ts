@@ -52,6 +52,7 @@ import { TeamsComponent } from './teams/teams.component';
 import { TeamComponent } from './team/team.component';
 import { DemoHomeComponent } from './demo-home/demo-home.component';
 import { DemoEventComponent } from './demo-event/demo-event.component';
+import { DemoMessagesComponent } from './demo-messages/demo-messages.component';
 
 @NgModule({
   declarations: [
@@ -72,6 +73,7 @@ import { DemoEventComponent } from './demo-event/demo-event.component';
     TeamComponent,
     DemoHomeComponent,
     DemoEventComponent,
+    DemoMessagesComponent,
   ],
   imports: [
     BrowserModule,
