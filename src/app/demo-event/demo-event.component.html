@@ -277,7 +277,7 @@
     <mat-tab data-cy="waitlistTab">
         <ng-template mat-tab-label>
             <mat-icon class="mat-tab-icon">hourglass_empty</mat-icon>
-            <span data-cy="waitlistTabTitle">Waitlist 0</span>
+            <span data-cy="waitlistTabTitle">Waitlist {{waitlist.length}}</span>
         </ng-template>
         <mat-list>
             <mat-list-item *ngFor="let participant of waitlist">

@@ -34,17 +34,27 @@
             {{date2 | date:'shortTime'}}
         </p>
     </a>
+    <a mat-list-item [routerLink]="['/demo-event/3']">
+        <img matListItemAvatar src="./../../assets/demo-person1.jpg">
+        <h3 matListItemTitle>
+            Doubles Tennis
+        </h3>
+        <p matListItemLine>
+            {{date3 | date:'fullDate'}} at
+            {{date3 | date:'shortTime'}}
+        </p>
+    </a>
     <div mat-subheader>
         Past Events
     </div>
-    <a mat-list-item [routerLink]="['/demo-event/3']">
+    <a mat-list-item [routerLink]="['/demo-event/4']">
         <img matListItemAvatar src="./../../assets/demo-person3.jpg">
         <h3 matListItemTitle>
             Football game
         </h3>
         <p matListItemLine>
-            {{date3 | date:'fullDate'}} at
-            {{date3 | date:'shortTime'}}
+            {{date4 | date:'fullDate'}} at
+            {{date4 | date:'shortTime'}}
         </p>
     </a>
 </mat-nav-list>

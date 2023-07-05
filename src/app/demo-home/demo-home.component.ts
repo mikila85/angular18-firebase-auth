@@ -9,6 +9,7 @@ export class DemoHomeComponent {
   date1: Date;
   date2: Date;
   date3: Date;
+  date4: Date;
 
   constructor() {
     var now: Date = new Date();
@@ -22,9 +23,14 @@ export class DemoHomeComponent {
     this.date2.setMinutes(0);
 
     now = new Date();
-    this.date3 = new Date(now.setDate(now.getDate() - 2));
-    this.date3.setHours(18);
-    this.date3.setMinutes(30);
+    this.date3 = new Date(now.setDate(now.getDate() + 1));
+    this.date3.setHours(10);
+    this.date3.setMinutes(0);
+
+    now = new Date();
+    this.date4 = new Date(now.setDate(now.getDate() - 2));
+    this.date4.setHours(18);
+    this.date4.setMinutes(30);
   }
 
 }

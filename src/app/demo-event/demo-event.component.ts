@@ -80,6 +80,20 @@ export class DemoEventComponent implements OnInit {
         this.mapsUrl = 'https://goo.gl/maps/h1J5CvH1Si2ZhNsa9';
         break;
       case '3':
+        this.eventTitle = 'Doubles Tennis';
+        this.eventDate = new Date(now.setDate(now.getDate() + 1));
+        this.eventDate.setHours(10);
+        this.eventDate.setMinutes(0);
+        this.location = 'Wembley Downs Tennis Club';
+        this.mapsUrl = 'https://goo.gl/maps/Yps22dpuubvjsdPN7';
+        this.participants = [
+          { uid: 'DEMO1', displayName: 'Anna Webber', photoURL: './../../assets/demo-person1.jpg', status: 'IN' },
+          { uid: 'DEMO3', displayName: 'John Doe', photoURL: './../../assets/demo-person3.jpg', status: 'IN' },
+        ];
+        this.isLimitedAttendees = true;
+        this.maxAttendees = 2;
+        break;
+      case '4':
         this.eventTitle = 'Football game';
         this.description = "Social drop-in game";
         this.eventDate = new Date(now.setDate(now.getDate() - 2));
@@ -118,6 +132,7 @@ export class DemoEventComponent implements OnInit {
       { uid: 'DEMO3', displayName: 'John Doe', photoURL: './../../assets/demo-person3.jpg', status: 'IN' },
     ];
     this.refusals = [];
+    this.waitlist = [];
     this.participant.status = newStatus;
     if (newStatus === 'IN') {
       this.participants.push(this.participant);
@@ -135,7 +150,8 @@ export class DemoEventComponent implements OnInit {
   }
 
   joinWaitlist(): void {
-    this.waitlist.push(this.participant);
+    this.participant.status = 'WAITLIST';
+    this.waitlist = [this.participant];
   }
 
   deleteEvent(): void {
