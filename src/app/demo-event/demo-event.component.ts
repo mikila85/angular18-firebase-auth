@@ -15,6 +15,7 @@ import { Participant } from '../models/participant.model';
 })
 export class DemoEventComponent implements OnInit {
   private analytics: Analytics = inject(Analytics)
+  eventId: string = '';
   eventTitle: string = '';
   isOwner: boolean = false;
   minDate: Date = new Date();
@@ -126,11 +127,11 @@ export class DemoEventComponent implements OnInit {
 
   setStatus(newStatus: 'IN' | 'OUT'): void {
     //HACK: this is a hack to force the change detection to run to update EventParticipantsComponent
-    this.participants = [
+    this.participants = this.eventId === '1' ? [
       { uid: 'DEMO1', displayName: 'Anna Webber', photoURL: './../../assets/demo-person1.jpg', status: 'IN' },
       { uid: 'DEMO2', displayName: 'Jack', photoURL: './../../assets/demo-person2.jpg', status: 'IN' },
       { uid: 'DEMO3', displayName: 'John Doe', photoURL: './../../assets/demo-person3.jpg', status: 'IN' },
-    ];
+    ] : [];
     this.refusals = [];
     this.waitlist = [];
     this.participant.status = newStatus;

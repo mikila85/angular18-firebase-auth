@@ -261,7 +261,7 @@
 <mat-menu #teamPickMenu="matMenu" yPosition="above">
     <ng-template matMenuContent let-index="index">
         <button mat-fab *ngFor="let team of subTeams" [style]="'background-color:'+team.color"
-            (click)="participant.teamColor = team.color" data-cy="setTeamColorBtn">
+            (click)="participant.teamColor = team.color; setStatus('IN')" data-cy="setTeamColorBtn">
         </button>
     </ng-template>
 </mat-menu>
