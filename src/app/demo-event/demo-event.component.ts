@@ -7,6 +7,7 @@ import { Analytics, logEvent } from '@angular/fire/analytics';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { StripeAccountLink } from '../models/stripe-account-link';
 import { Participant } from '../models/participant.model';
+import { Stripe } from 'stripe';
 
 @Component({
   selector: 'app-demo-event',
@@ -36,11 +37,16 @@ export class DemoEventComponent implements OnInit {
   isStripeAccount: boolean = false;
   isActivatingStripeAccount: boolean = false;
   isStripeAccountEnabled: boolean = false;
+  isStripePrice: boolean = false;
+  stripePriceUnitAmount: number = 1000;
+  isPaid: boolean = false;
+  paidOn: Date = new Date();
   isUnreadMessage: boolean = false;
   participant: Participant = { uid: 'DEMO', displayName: 'DEMO person', photoURL: './../../assets/icons/favicon-32x32.png' };
   participants: Participant[] = [];
   refusals: Participant[] = [];
   waitlist: Participant[] = [];
+  isPriceLoading = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -52,6 +58,8 @@ export class DemoEventComponent implements OnInit {
 
   ngOnInit(): void {
     const eventId = this.route.snapshot.paramMap.get('eventId');
+    this.isPaid = (this.route.snapshot.queryParamMap.get('isPaid') === 'true');
+
     const now: Date = new Date();
     switch (eventId) {
       case 'new':
@@ -79,6 +87,7 @@ export class DemoEventComponent implements OnInit {
         this.eventDate.setMinutes(0);
         this.location = 'Loftus Recreation Centre';
         this.mapsUrl = 'https://goo.gl/maps/h1J5CvH1Si2ZhNsa9';
+        this.isStripePrice = true;
         break;
       case '3':
         this.eventTitle = 'Doubles Tennis';
@@ -122,6 +131,35 @@ export class DemoEventComponent implements OnInit {
     }
     createAccount(createAccountData).subscribe((accountLink: StripeAccountLink) => {
       window.open(accountLink.url, '_self', '')
+    })
+  }
+
+  createStripeCheckoutSession() {
+    this.isPriceLoading = true;
+    const stripeCheckout = httpsCallableData<unknown, Stripe.Checkout.Session>(this.functions, 'createStripeCheckoutSession');
+
+    const returnUrl = `${window.location.origin}/demo-event/2`
+    const checkoutData = {
+      isTestMode: true,
+      payment: {
+        mode: 'payment',
+        line_items: [{ price: 'price_1NQSmJCj9S5aVtj6ZXBOTanh', quantity: 1 }],
+        payment_intent_data: {
+          application_fee_amount: 50,
+        },
+        success_url: returnUrl + '?isPaid=true',
+        cancel_url: returnUrl,
+      },
+      connectedAccountId: 'acct_1Mu6G3Cj9S5aVtj6'
+    }
+    stripeCheckout(checkoutData).subscribe(r => {
+      this.isPriceLoading = false;
+      if (r.url) {
+        window.open(r.url, '_blank', '')
+      } else {
+        console.error("No URL returned by createStripeCheckoutSession")
+        console.log(r);
+      }
     })
   }
 

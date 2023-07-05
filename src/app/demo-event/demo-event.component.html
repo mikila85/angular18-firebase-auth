@@ -177,10 +177,9 @@
                 {{location}}
             </p>
         </div>
-        <!--
-            <div *ngIf="isStripePrice && !participant">Fee {{(teamEvent?.stripePriceUnitAmount ?? 0)/100 | currency}} </div>
-            <div *ngIf="isStripePrice && participant && !isPaid" fxLayout="row" fxLayoutAlign="stretch center">
-            <span>Pay {{(teamEvent?.stripePriceUnitAmount ?? 0)/100 | currency}} </span>
+        <div *ngIf="isStripePrice && !participant">Fee {{stripePriceUnitAmount/100 | currency}} </div>
+        <div *ngIf="isStripePrice && participant && !isPaid" fxLayout="row" fxLayoutAlign="stretch center">
+            <span>Pay {{stripePriceUnitAmount/100 | currency}} </span>
             <button mat-raised-button style="margin-left: 16px;" (click)="createStripeCheckoutSession()">
                 <mat-icon inline=true>shopping_cart</mat-icon>
                 Proceed to Checkout
@@ -188,9 +187,8 @@
         </div>
         <p *ngIf="isPaid">
             Paid
-            {{paidOn?.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
+            {{paidOn.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
         </p>
-    -->
     </mat-card-content>
 
     <div [ngSwitch]="isOwner">
