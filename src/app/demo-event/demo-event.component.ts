@@ -57,11 +57,11 @@ export class DemoEventComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const eventId = this.route.snapshot.paramMap.get('eventId');
+    this.eventId = this.route.snapshot.paramMap.get('eventId') ?? '';
     this.isPaid = (this.route.snapshot.queryParamMap.get('isPaid') === 'true');
 
     const now: Date = new Date();
-    switch (eventId) {
+    switch (this.eventId) {
       case 'new':
         this.isOwner = true;
         break;
@@ -165,11 +165,24 @@ export class DemoEventComponent implements OnInit {
 
   setStatus(newStatus: 'IN' | 'OUT'): void {
     //HACK: this is a hack to force the change detection to run to update EventParticipantsComponent
-    this.participants = this.eventId === '1' ? [
-      { uid: 'DEMO1', displayName: 'Anna Webber', photoURL: './../../assets/demo-person1.jpg', status: 'IN' },
-      { uid: 'DEMO2', displayName: 'Jack', photoURL: './../../assets/demo-person2.jpg', status: 'IN' },
-      { uid: 'DEMO3', displayName: 'John Doe', photoURL: './../../assets/demo-person3.jpg', status: 'IN' },
-    ] : [];
+    switch (this.eventId) {
+      case '1':
+        this.participants = [
+          { uid: 'DEMO1', displayName: 'Anna Webber', photoURL: './../../assets/demo-person1.jpg', status: 'IN' },
+          { uid: 'DEMO2', displayName: 'Jack', photoURL: './../../assets/demo-person2.jpg', status: 'IN' },
+          { uid: 'DEMO3', displayName: 'John Doe', photoURL: './../../assets/demo-person3.jpg', status: 'IN' },
+        ]
+        break;
+      case '3':
+        this.participants = [
+          { uid: 'DEMO1', displayName: 'Anna Webber', photoURL: './../../assets/demo-person1.jpg', status: 'IN' },
+          { uid: 'DEMO3', displayName: 'John Doe', photoURL: './../../assets/demo-person3.jpg', status: 'IN' },
+        ];
+        break;
+      default:
+        this.participants = [];
+    }
+
     this.refusals = [];
     this.waitlist = [];
     this.participant.status = newStatus;
@@ -191,6 +204,7 @@ export class DemoEventComponent implements OnInit {
   joinWaitlist(): void {
     this.participant.status = 'WAITLIST';
     this.waitlist = [this.participant];
+    this.refusals = [];
   }
 
   deleteEvent(): void {
