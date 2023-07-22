@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.web.team_bldr.twa",
+        "sha256_cert_fingerprints": ["97:82:4E:8C:44:8C:5F:E8:33:99:6D:A9:01:FB:93:39:AA:7A:7E:B5:EC:6C:47:85:61:E3:78:88:6B:C9:BE:97"]
+      }
+    }]
