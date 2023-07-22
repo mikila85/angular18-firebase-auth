@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Analytics, setUserId } from '@angular/fire/analytics';
 import { Auth, user } from '@angular/fire/auth';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
-export class CanActivateGuard implements CanActivate {
+export class CanActivateGuard  {
   private auth: Auth = inject(Auth);
   private analytics: Analytics = inject(Analytics)
   user$ = user(this.auth);
