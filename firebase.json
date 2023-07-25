@@ -9,6 +9,9 @@
     "ignore": [
       "**/.*"
     ],
+    "i18n": {
+      "root": "/"
+    },
     "frameworksBackend": {
       "region": "australia-southeast1"
     },

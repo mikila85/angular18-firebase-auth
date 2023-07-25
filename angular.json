@@ -25,7 +25,6 @@
             "outputPath": "dist/team-bldr",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "localize": true,
             "polyfills": [
               "zone.js"
             ],
