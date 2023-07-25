@@ -3,9 +3,9 @@
     <button mat-icon-button [routerLink]="['/']" data-cy="homeBtn">
       <mat-icon>home</mat-icon>
     </button>
-    Team Builder
+    <span i18n>Team Builder</span>
     <span fxFlex></span>
-    <button mat-button *ngIf="showSignInButton" [routerLink]="['/login']" data-cy="signInBtn"> Sign In </button>
+    <button mat-button *ngIf="showSignInButton" [routerLink]="['/login']" data-cy="signInBtn" i18n>Sign In</button>
     <auth-firebaseui-avatar [links]="avatarLinks" [canViewAccount]=false (onSignOut)="onSignOut()">
     </auth-firebaseui-avatar>
   </mat-toolbar>

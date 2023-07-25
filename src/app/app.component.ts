@@ -15,11 +15,11 @@ export class AppComponent {
   showSignInButton: boolean = false;
 
   avatarLinks: LinkMenuItem[] = [
-    { icon: 'account_circle', text: 'Profile', callback: () => { this.router.navigate(['profile']); } },
-    { icon: 'group', text: 'My Teams', callback: () => { this.router.navigate(['teams']); } },
-    { icon: 'info', text: 'About the app', callback: () => { this.router.navigate(['about']); } },
+    { icon: 'account_circle', text: $localize`Profile`, callback: () => { this.router.navigate(['profile']); } },
+    { icon: 'group', text: $localize`My Teams`, callback: () => { this.router.navigate(['teams']); } },
+    { icon: 'info', text: $localize`About the app`, callback: () => { this.router.navigate(['about']); } },
     {
-      icon: 'mail', text: 'Contact the developer', callback: () => {
+      icon: 'mail', text: $localize`Contact the developer`, callback: () => {
         logEvent(this.analytics, 'email_developer');
         window.open('mailto:azhidkov@gmail.com?subject=Team%20Builder%20App&body=Hi%20Alex,%20Love%20your%20app!');
       }

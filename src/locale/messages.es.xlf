@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en-AU" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="7017854055999088751" datatype="html">
+        <source>Team Builder App</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/about/about.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="939388275654013269" datatype="html">
+        <source>Social Events Organiser</source>
+        <target>Organizador de Eventos Sociales</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/about/about.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4430406418191731715" datatype="html">
+        <source> Welcome to a social event organisation app designed to make planning and coordinating events easier for you and your friends! The simple interface makes it easy to create events, invite team members, and keep track of attendees. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/about/about.component.html</context>
+          <context context-type="linenumber">8,12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4923652942289479712" datatype="html">
+        <source> With this app, you can also collect money from your team members to pay for events or venues using Stripe integration. No more chasing down payments or dealing with awkward money situations! </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/about/about.component.html</context>
+          <context context-type="linenumber">13,16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7461268664902900341" datatype="html">
+        <source> The app is developed by Alexander Zhidkov. Feel free to connect on <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://www.linkedin.com/in/azhidkov&quot;&gt;"/>LinkedIn<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> or send me an <x id="START_LINK_1" equiv-text="&lt;a href=&quot;&quot;
+                (click)=&quot;openEmail()&quot;&gt;"/>email<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/about/about.component.html</context>
+          <context context-type="linenumber">17,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8530677867753277275" datatype="html">
+        <source> You can find the source code on <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://github.com/AlexZhidkov/team-bldr-v2301&quot;&gt;"/>GitHub<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. Please <x id="START_LINK_1" equiv-text="&lt;a href=&quot;https://github.com/AlexZhidkov/team-bldr-v2301/issues/new&quot;&gt;"/>raise an issue<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> if you find any bugs. And check out the <x id="START_LINK_2" equiv-text="&lt;a href=&quot;https://github.com/AlexZhidkov/team-bldr-v2301/discussions&quot;&gt;"/>Discussions<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> to share your ideas and feedback. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/about/about.component.html</context>
+          <context context-type="linenumber">22,29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2343354099327403050" datatype="html">
+        <source> Thank you for using the app and I hope it helps you plan some amazing social events with your friends! </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/about/about.component.html</context>
+          <context context-type="linenumber">30,32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="290741995620238167" datatype="html">
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>preview<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> DEMO </source>
+        <target><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>preview<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Demostración </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/about/about.component.html</context>
+          <context context-type="linenumber">36,38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7789861394335822879" datatype="html">
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>add_circle<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Create New Event </source>
+        <target><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>add_circle<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Crear nuevo evento </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/about/about.component.html</context>
+          <context context-type="linenumber">42,44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4809339899322746177" datatype="html">
+        <source>Team Builder</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="840692109692540367" datatype="html">
+        <source>Sign In</source>
+        <target>Acceso</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4915431133669985304" datatype="html">
+        <source>Profile</source>
+        <target>Perfil</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="544767180464962974" datatype="html">
+        <source>My Teams</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1547268968557045047" datatype="html">
+        <source>About the app</source>
+        <target>Sobre</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2971994693389835189" datatype="html">
+        <source>Contact the developer</source>
+        <target>Contacto</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
