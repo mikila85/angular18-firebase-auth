@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="en-AU" datatype="plaintext" original="ng2.template">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
       <trans-unit id="7017854055999088751" datatype="html">
         <source>Team Builder App</source>
@@ -73,6 +73,10 @@
           <context context-type="sourcefile">src/app/about/about.component.html</context>
           <context context-type="linenumber">42,44</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-home/demo-home.component.html</context>
+          <context context-type="linenumber">11,13</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="4809339899322746177" datatype="html">
         <source>Team Builder</source>
@@ -99,6 +103,7 @@
       </trans-unit>
       <trans-unit id="544767180464962974" datatype="html">
         <source>My Teams</source>
+        <target>Mis equipos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
           <context context-type="linenumber">19</context>
@@ -106,7 +111,7 @@
       </trans-unit>
       <trans-unit id="1547268968557045047" datatype="html">
         <source>About the app</source>
-        <target>Sobre</target>
+        <target>Sobre la aplicación</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
           <context context-type="linenumber">20</context>
@@ -114,10 +119,426 @@
       </trans-unit>
       <trans-unit id="2971994693389835189" datatype="html">
         <source>Contact the developer</source>
-        <target>Contacto</target>
+        <target>Contacta al desarrollador</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
           <context context-type="linenumber">22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5737284309388382477" datatype="html">
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon&gt;"/>exit_to_app<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Exit DEMO </source>
+        <target><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon&gt;"/>exit_to_app<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Terminar la demostración </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">4,6</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-home/demo-home.component.html</context>
+          <context context-type="linenumber">4,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6524262610032366385" datatype="html">
+        <source>Choose a date</source>
+        <target>Elija una fecha</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5701618810648052610" datatype="html">
+        <source>Title</source>
+        <target>Título</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4902817035128594900" datatype="html">
+        <source>Description</source>
+        <target>Descripción</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="471816275243265264" datatype="html">
+        <source>Location</source>
+        <target>Ubicación</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5028271128261033677" datatype="html">
+        <source>Link to maps</source>
+        <target>Enlace a mapas</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6174391647071614354" datatype="html">
+        <source> Attendee limit </source>
+        <target> Límite de asistentes </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">46,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3763254980345342981" datatype="html">
+        <source>Max number</source>
+        <target>Número máximo</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="442874602590710036" datatype="html">
+        <source> Team Allocations </source>
+        <target> Asignaciones de equipo </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">55,57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1822352113528892402" datatype="html">
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>add<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Add Team </source>
+        <target><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>add<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Añadir equipo </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">76,78</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7150733756263218576" datatype="html">
+        <source> Event Fee </source>
+        <target> Tarifa de evento </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">89,91</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3768246657358321521" datatype="html">
+        <source> Your Stripe account is being activated... </source>
+        <target> Su cuenta de Stripe se está activando ... </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">101,103</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3548027479321769387" datatype="html">
+        <source>Your Stripe account is not activated.</source>
+        <target>Su cuenta de Stripe no está activada.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">106</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3142161864895193562" datatype="html">
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>account_balance<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Complete Stripe Onboarding </source>
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>account_balance<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Completar la incorporación de Stripe </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">121,123</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="174871109815873678" datatype="html">
+        <source> To start accepting payments and moving funds to your bank account through the app, you need set up your account with the internet payment processing platform Stripe. </source>
+        <target> Para comenzar a aceptar pagos y transferir fondos a su cuenta bancaria a través de la aplicación, debe configurar su cuenta con la plataforma de procesamiento de pagos por Internet Stripe. </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">128,131</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6548330716031955751" datatype="html">
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>account_balance<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Create Stripe Account </source>
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>account_balance<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Crear cuenta de Stripe </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">133,135</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3872377242304383418" datatype="html">
+        <source>Pay <x id="INTERPOLATION" equiv-text="{{stripePriceUnitAmount/100 | currency}}"/> </source>
+        <source>Pagar <x id="INTERPOLATION" equiv-text="{{stripePriceUnitAmount/100 | currency}}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">183</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2575919237382423586" datatype="html">
+        <source> Paid <x id="INTERPOLATION" equiv-text="{{paidOn.toLocaleString(&quot;en-AU&quot;, {dateStyle: &quot;full&quot;, timeStyle: &quot;short&quot;})}}"/> </source>
+        <source> Pagado <x id="INTERPOLATION" equiv-text="{{paidOn.toLocaleString(&quot;en-AU&quot;, {dateStyle: &quot;full&quot;, timeStyle: &quot;short&quot;})}}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">189,192</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5211189164304816192" datatype="html">
+        <source> Use the &quot;Invite&quot; button to share the invite URL with your social network. </source>
+        <target> Utilice el botón &quot;Invitar&quot; para compartir la URL de invitación con su red social. </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">197,199</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6366403105324938167" datatype="html">
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>person_add<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> JOIN </source>
+        <target><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>person_add<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> UNIRSE </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">203,205</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">232,234</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7460917858365635634" datatype="html">
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>share<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> INVITE </source>
+        <target><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>share<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> INVITAR </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">208,210</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1242358171155632807" datatype="html">
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon color=&quot;warn&quot;&gt;"/>delete<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> DELETE </source>
+        <target><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon color=&quot;warn&quot;&gt;"/>delete<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> BORRAR </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">216,218</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7033558239975548270" datatype="html">
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon&gt;"/>file_copy<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> DUPLICATE </source>
+        <target><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon&gt;"/>file_copy<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> DUPLICAR </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">221,223</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1636527333718918098" datatype="html">
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>hourglass_empty<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> JOIN WAITLIST </source>
+        <target><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>hourglass_empty<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> LISTA DE ESPERA </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">239,241</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="111162250716399590" datatype="html">
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>palette<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Pick a Team </source>
+        <target><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>palette<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Elige un equipo </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">251,253</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2116590493948946607" datatype="html">
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>cancel<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Not Going </source>
+        <target><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon inline=true&gt;"/>cancel<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> No voy </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">256,258</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5248010933709110816" datatype="html">
+        <source>Attendees <x id="INTERPOLATION" equiv-text="{{numberOfAttendees()}}"/></source>
+        <target>Asistentes <x id="INTERPOLATION" equiv-text="{{numberOfAttendees()}}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">272</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5081392624859101871" datatype="html">
+        <source>Waitlist <x id="INTERPOLATION" equiv-text="{{waitlist.length}}"/></source>
+        <target>Lista de espera <x id="INTERPOLATION" equiv-text="{{waitlist.length}}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">279</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6452372740127749380" datatype="html">
+        <source>Messages</source>
+        <target>Mensajes</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.html</context>
+          <context context-type="linenumber">293</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7777715714095152819" datatype="html">
+        <source>Sunday Breakfast with friends</source>
+        <target>Desayuno dominical con amigos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1128958950885161164" datatype="html">
+        <source>Let&apos;s have a nice breakfast by the ocean together this Sunday!</source>
+        <target>¡Vamos a desayunar juntos este domingo!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5221277050092696796" datatype="html">
+        <source>Anna Webber</source>
+        <target>Anna Webber</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">77</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">100</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">171</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">178</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="556344249509064822" datatype="html">
+        <source>Jack</source>
+        <target>Jack</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">78</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">172</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1731594811396701423" datatype="html">
+        <source>John Doe</source>
+        <target>John Doe</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">79</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">101</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">173</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">179</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7666847376430940726" datatype="html">
+        <source>Volleyball league</source>
+        <target>Liga de voleibol</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">83</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3803965152294148434" datatype="html">
+        <source>Game vs Scorchers</source>
+        <target>Juego vs Xeneizes</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">84</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5661461434508736790" datatype="html">
+        <source>Loftus Recreation Centre</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">88</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="749942677408625673" datatype="html">
+        <source>Doubles Tennis</source>
+        <target>Tenis dobles</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">93</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2490902711365752015" datatype="html">
+        <source>Wembley Downs Tennis Club</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">97</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="368270181166267187" datatype="html">
+        <source>Football game</source>
+        <target>Juego de fútbol</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">107</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2855360918098187281" datatype="html">
+        <source>Social drop-in game</source>
+        <target>Juego social de drop-in</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">108</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1918974368847592258" datatype="html">
+        <source>Yokine Regional Open Space</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-event/demo-event.component.ts</context>
+          <context context-type="linenumber">112</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3671911180993121076" datatype="html">
+        <source> Sunday Breakfast with friends </source>
+        <target> Desayuno dominical con amigos </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-home/demo-home.component.html</context>
+          <context context-type="linenumber">20,22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2509500097039734230" datatype="html">
+        <source> Volleyball league </source>
+        <target> Liga de voleibol </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-home/demo-home.component.html</context>
+          <context context-type="linenumber">30,32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="249629962657249892" datatype="html">
+        <source> Doubles Tennis </source>
+        <target> Tenis dobles </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-home/demo-home.component.html</context>
+          <context context-type="linenumber">40,42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5681184747150569217" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{date3 | date:&apos;fullDate&apos;}}"/> at <x id="INTERPOLATION_1" equiv-text="{{date3 | date:&apos;shortTime&apos;}}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-home/demo-home.component.html</context>
+          <context context-type="linenumber">43,46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3981612535275030616" datatype="html">
+        <source> Past Events </source>
+        <target> Eventos pasados </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-home/demo-home.component.html</context>
+          <context context-type="linenumber">48,50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5334368227593706470" datatype="html">
+        <source> Football game </source>
+        <target> Juego de fútbol </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/demo-home/demo-home.component.html</context>
+          <context context-type="linenumber">53,55</context>
         </context-group>
       </trans-unit>
     </body>

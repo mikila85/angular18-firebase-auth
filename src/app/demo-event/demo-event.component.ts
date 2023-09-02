@@ -66,50 +66,50 @@ export class DemoEventComponent implements OnInit {
         this.isOwner = true;
         break;
       case '1':
-        this.eventTitle = 'Sunday Breakfast with friends';
-        this.description = "Let's have a nice breakfast by the ocean together this Sunday!";
+        this.eventTitle = $localize`Sunday Breakfast with friends`;
+        this.description = $localize`Let's have a nice breakfast by the ocean together this Sunday!`;
         this.eventDate = new Date(now.setDate(now.getDate() + 7 - now.getDay()));
         this.eventDate.setHours(9);
         this.eventDate.setMinutes(0);
         this.location = 'The Kiosk Floreat Beach';
         this.mapsUrl = 'https://goo.gl/maps/zQWpL9M9Vte9uYGb7';
         this.participants = [
-          { uid: 'DEMO1', displayName: 'Anna Webber', photoURL: './../../assets/demo-person1.jpg', status: 'IN' },
-          { uid: 'DEMO2', displayName: 'Jack', photoURL: './../../assets/demo-person2.jpg', status: 'IN' },
-          { uid: 'DEMO3', displayName: 'John Doe', photoURL: './../../assets/demo-person3.jpg', status: 'IN' },
+          { uid: 'DEMO1', displayName: $localize`Anna Webber`, photoURL: './../../assets/demo-person1.jpg', status: 'IN' },
+          { uid: 'DEMO2', displayName: $localize`Jack`, photoURL: './../../assets/demo-person2.jpg', status: 'IN' },
+          { uid: 'DEMO3', displayName: $localize`John Doe`, photoURL: './../../assets/demo-person3.jpg', status: 'IN' },
         ]
         break;
       case '2':
-        this.eventTitle = 'Volleyball league';
-        this.description = "Game vs Scorchers"
+        this.eventTitle = $localize`Volleyball league`;
+        this.description = $localize`Game vs Scorchers`
         this.eventDate = new Date(now.setDate(now.getDate() + 1));
         this.eventDate.setHours(19);
         this.eventDate.setMinutes(0);
-        this.location = 'Loftus Recreation Centre';
+        this.location = $localize`Loftus Recreation Centre`;
         this.mapsUrl = 'https://goo.gl/maps/h1J5CvH1Si2ZhNsa9';
         this.isStripePrice = true;
         break;
       case '3':
-        this.eventTitle = 'Doubles Tennis';
+        this.eventTitle = $localize`Doubles Tennis`;
         this.eventDate = new Date(now.setDate(now.getDate() + 1));
         this.eventDate.setHours(10);
         this.eventDate.setMinutes(0);
-        this.location = 'Wembley Downs Tennis Club';
+        this.location = $localize`Wembley Downs Tennis Club`;
         this.mapsUrl = 'https://goo.gl/maps/Yps22dpuubvjsdPN7';
         this.participants = [
-          { uid: 'DEMO1', displayName: 'Anna Webber', photoURL: './../../assets/demo-person1.jpg', status: 'IN' },
-          { uid: 'DEMO3', displayName: 'John Doe', photoURL: './../../assets/demo-person3.jpg', status: 'IN' },
+          { uid: 'DEMO1', displayName: $localize`Anna Webber`, photoURL: './../../assets/demo-person1.jpg', status: 'IN' },
+          { uid: 'DEMO3', displayName: $localize`John Doe`, photoURL: './../../assets/demo-person3.jpg', status: 'IN' },
         ];
         this.isLimitedAttendees = true;
         this.maxAttendees = 2;
         break;
       case '4':
-        this.eventTitle = 'Football game';
-        this.description = "Social drop-in game";
+        this.eventTitle = $localize`Football game`;
+        this.description = $localize`Social drop-in game`;
         this.eventDate = new Date(now.setDate(now.getDate() - 2));
         this.eventDate.setHours(18);
         this.eventDate.setMinutes(30);
-        this.location = 'Yokine Regional Open Space';
+        this.location = $localize`Yokine Regional Open Space`;
         this.mapsUrl = 'https://goo.gl/maps/9veeApFWK2H7sXGY9';
         break;
       default:
@@ -168,15 +168,15 @@ export class DemoEventComponent implements OnInit {
     switch (this.eventId) {
       case '1':
         this.participants = [
-          { uid: 'DEMO1', displayName: 'Anna Webber', photoURL: './../../assets/demo-person1.jpg', status: 'IN' },
-          { uid: 'DEMO2', displayName: 'Jack', photoURL: './../../assets/demo-person2.jpg', status: 'IN' },
-          { uid: 'DEMO3', displayName: 'John Doe', photoURL: './../../assets/demo-person3.jpg', status: 'IN' },
+          { uid: 'DEMO1', displayName: $localize`Anna Webber`, photoURL: './../../assets/demo-person1.jpg', status: 'IN' },
+          { uid: 'DEMO2', displayName: $localize`Jack`, photoURL: './../../assets/demo-person2.jpg', status: 'IN' },
+          { uid: 'DEMO3', displayName: $localize`John Doe`, photoURL: './../../assets/demo-person3.jpg', status: 'IN' },
         ]
         break;
       case '3':
         this.participants = [
-          { uid: 'DEMO1', displayName: 'Anna Webber', photoURL: './../../assets/demo-person1.jpg', status: 'IN' },
-          { uid: 'DEMO3', displayName: 'John Doe', photoURL: './../../assets/demo-person3.jpg', status: 'IN' },
+          { uid: 'DEMO1', displayName: $localize`Anna Webber`, photoURL: './../../assets/demo-person1.jpg', status: 'IN' },
+          { uid: 'DEMO3', displayName: $localize`John Doe`, photoURL: './../../assets/demo-person3.jpg', status: 'IN' },
         ];
         break;
       default:
