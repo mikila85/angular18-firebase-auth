@@ -362,8 +362,16 @@ export class EventComponent implements OnInit {
       title: this.eventTitle
     });
     batch.commit().then(() => {
-      this.router.navigate([`event/${newEventId}`]).then(() => {
-        window.location.reload();
+      const batchTeams = writeBatch(this.firestore);
+      this.subTeams.forEach((subTeam) => {
+        const id = subTeam.id!;
+        delete subTeam.id;
+        batchTeams.set(doc(this.firestore, 'events', newEventId, 'teams', id), subTeam);
+      });
+      batchTeams.commit().then(() => {
+        this.router.navigate([`event/${newEventId}`]).then(() => {
+          window.location.reload();
+        });
       });
     })
   }

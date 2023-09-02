@@ -75,7 +75,7 @@
                         <input type="number" matInput placeholder="Team Size" [ngModel]="team.size" name="teamSize"
                             (ngModelChange)="subTeamsUpdate(i, {size: $event})">
                     </mat-form-field>
-                    <button mat-icon-button aria-label="Remove team" (click)="subTeamsDelete(team.id)">
+                    <button mat-icon-button aria-label="Remove team" (click)="subTeamsDelete(team.id!)">
                         <mat-icon>delete</mat-icon>
                     </button>
                 </div>
