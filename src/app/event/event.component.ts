@@ -71,9 +71,6 @@ export class EventComponent implements OnInit {
       console.error('Event ID is falsy');
       return;
     }
-    this.snackBar.open('Something went wrong', 'OK');
-    this.router.navigate([`/`]);
-
     this.selectedTabIndex = Number(localStorage.getItem('selectedTabIndex'));
     onAuthStateChanged(this.auth, async (user) => {
       if (!user) {
