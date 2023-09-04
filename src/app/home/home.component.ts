@@ -1,7 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { Auth, User, onAuthStateChanged } from '@angular/fire/auth';
 import { Analytics, logEvent } from '@angular/fire/analytics';
+import { Auth, User, onAuthStateChanged } from '@angular/fire/auth';
 import { Firestore, Timestamp, collection, doc, onSnapshot, orderBy, query, writeBatch } from '@angular/fire/firestore';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { TeamEvent } from '../models/team-event.model';
 
@@ -21,6 +22,7 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private router: Router,
+    private snackBar: MatSnackBar,
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -56,6 +58,8 @@ export class HomeComponent implements OnInit {
   createNewEvent(): void {
     if (!this.user) {
       console.error('User object is falsy');
+      this.snackBar.open('Please sign in to continue', 'OK');
+      this.router.navigate([`/`]);
       return;
     }
     const eventId = doc(collection(this.firestore, 'events')).id;

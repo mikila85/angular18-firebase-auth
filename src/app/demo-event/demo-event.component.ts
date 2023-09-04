@@ -1,13 +1,13 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { ActivatedRoute, Router } from '@angular/router';
-import { SubTeam } from '../models/sub-team';
+import { Component, OnInit, inject } from '@angular/core';
 import { Analytics, logEvent } from '@angular/fire/analytics';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
-import { StripeAccountLink } from '../models/stripe-account-link';
-import { Participant } from '../models/participant.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Stripe } from 'stripe';
+import { Participant } from '../models/participant.model';
+import { StripeAccountLink } from '../models/stripe-account-link';
+import { SubTeam } from '../models/sub-team';
 
 @Component({
   selector: 'app-demo-event',
@@ -157,8 +157,11 @@ export class DemoEventComponent implements OnInit {
       if (r.url) {
         window.open(r.url, '_blank', '')
       } else {
-        console.error("No URL returned by createStripeCheckoutSession")
+        const message = "No URL returned by createStripeCheckoutSession"
+        console.error(message)
         console.log(r);
+        this.snackBar.open(message, 'OK');
+        this.router.navigate([`/`]);
       }
     })
   }

@@ -1,19 +1,19 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit, inject } from '@angular/core';
-import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { Analytics, logEvent } from '@angular/fire/analytics';
-import { DocumentData, DocumentReference, Firestore, Timestamp, collection, deleteDoc, doc, getDoc, limit, onSnapshot, orderBy, query, updateDoc, writeBatch, CollectionReference, addDoc } from '@angular/fire/firestore';
+import { Auth, onAuthStateChanged } from '@angular/fire/auth';
+import { CollectionReference, DocumentData, DocumentReference, Firestore, Timestamp, addDoc, collection, deleteDoc, doc, getDoc, limit, onSnapshot, orderBy, query, updateDoc, writeBatch } from '@angular/fire/firestore';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { Stripe } from 'stripe';
 import { Participant } from '../models/participant.model';
 import { StripeAccountLink } from '../models/stripe-account-link';
+import { SubTeam } from '../models/sub-team';
 import { TeamEvent } from '../models/team-event.model';
 import { TeamUser } from '../models/team-user';
 import { TeamUserBrief } from '../models/team-user-brief';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { SubTeam } from '../models/sub-team';
 
 @Component({
   selector: 'app-event',
@@ -71,6 +71,9 @@ export class EventComponent implements OnInit {
       console.error('Event ID is falsy');
       return;
     }
+    this.snackBar.open('Something went wrong', 'OK');
+    this.router.navigate([`/`]);
+
     this.selectedTabIndex = Number(localStorage.getItem('selectedTabIndex'));
     onAuthStateChanged(this.auth, async (user) => {
       if (!user) {
@@ -82,6 +85,8 @@ export class EventComponent implements OnInit {
       const userDoc = userSnapshot.data() as TeamUser;
       if (!userDoc || !this.user) {
         console.error("ngOnInit userDoc.subscribe: returned falsy user");
+        this.snackBar.open('Something went wrong', 'OK');
+        this.router.navigate([`/`]);
         return;
       }
       this.user.isStripeAccountEnabled = userDoc.isStripeAccountEnabled;
@@ -481,6 +486,8 @@ export class EventComponent implements OnInit {
       } else {
         console.error("No URL returned by createStripeCheckoutSession")
         console.log(r);
+        this.snackBar.open('Something went wrong', 'OK');
+        this.router.navigate([`/`]);
       }
     })
   }
