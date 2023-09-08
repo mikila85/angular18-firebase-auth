@@ -301,6 +301,10 @@
                 <img matListItemAvatar [src]="participant.photoURL" referrerpolicy="no-referrer"
                     [alt]="participant.displayName">
                 <h3 matListItemTitle>{{participant.displayName}}</h3>
+                <p matListItemLine>
+                    {{participant.waitlistOn?.toDate()?.toLocaleString("en-AU", {dateStyle: "full", timeStyle:
+                    "short"})}}
+                </p>
             </mat-list-item>
         </mat-list>
     </mat-tab>

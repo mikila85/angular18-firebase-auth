@@ -165,6 +165,7 @@ export class EventComponent implements OnInit {
                 break;
             }
           });
+          this.waitlist.sort((a, b) => ((a.waitlistOn?.toMillis() ?? 0) - (b.waitlistOn?.toMillis() ?? 0)));
         });
 
         this.eventDate = (this.teamEvent.dateTime as Timestamp).toDate();
@@ -479,7 +480,7 @@ export class EventComponent implements OnInit {
     stripeCheckout(checkoutData).subscribe(r => {
       this.isPriceLoading = false;
       if (r.url) {
-        window.open(r.url, '_blank', '')
+        window.location.assign(r.url);
       } else {
         console.error("No URL returned by createStripeCheckoutSession")
         console.log(r);
