@@ -31,6 +31,11 @@ https://glebbahmutov.com/blog/sync-two-cypress-runners/
 `node ./cypress/pair/chat`
 `npx cypress open --config-file cy-first-user.js`
 
+# Internationalization
+https://github.com/daniel-sc/ng-extract-i18n-merge
+`ng add ng-extract-i18n-merge`
+`ng extract-i18n`
+
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.

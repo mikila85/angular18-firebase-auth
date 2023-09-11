@@ -1,6 +1,6 @@
 <mat-card *ngIf="user">
     <mat-card-actions align="end">
-        <button mat-raised-button color="accent" (click)="createNewEvent()" data-cy="createNewEventBtn">
+        <button mat-raised-button color="accent" (click)="createNewEvent()" data-cy="createNewEventBtn" i18n>
             <mat-icon inline=true>add_circle</mat-icon>
             Create New Event
         </button>
@@ -11,7 +11,7 @@
 
 <mat-nav-list>
     <ng-container [ngTemplateOutlet]="eventsList" [ngTemplateOutletContext]="{teamEvents:teamEvents}"></ng-container>
-    <div mat-subheader *ngIf="pastEvents.length > 0">
+    <div mat-subheader *ngIf="pastEvents.length > 0" i18n>
         Past Events
     </div>
     <ng-container [ngTemplateOutlet]="eventsList" [ngTemplateOutletContext]="{teamEvents:pastEvents}"></ng-container>

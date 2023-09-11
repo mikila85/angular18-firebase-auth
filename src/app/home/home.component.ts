@@ -58,7 +58,7 @@ export class HomeComponent implements OnInit {
   createNewEvent(): void {
     if (!this.user) {
       console.error('User object is falsy');
-      this.snackBar.open('Please sign in to continue', 'OK');
+      this.snackBar.open($localize`Please sign in to continue`, 'OK');
       this.router.navigate([`/`]);
       return;
     }
