@@ -11,17 +11,19 @@
             {{participant.paidOn?.toDate()?.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
         </p>
     </mat-list-item>
-    <div *ngIf="refusals.length > 0">
-        <mat-divider></mat-divider>
-        <h3 matSubheader style="text-align: center;" data-cy="notGoingSubheader">Not Going
-            {{refusals.length}}</h3>
-    </div>
-    <mat-list-item *ngFor="let refusal of refusals">
-        <img matListItemAvatar [src]="refusal.photoURL" referrerpolicy="no-referrer" [alt]="refusal.displayName"
-            [routerLink]="['/profile', refusal.uid]">
-        <h3 matListItemTitle>{{refusal.displayName}}</h3>
-        <p matListItemLine *ngIf="refusal.isPaid">Paid
-            {{refusal.paidOn?.toDate()?.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
-        </p>
-    </mat-list-item>
 </mat-list>
+<div *ngIf="refusals.length > 0">
+    <mat-divider></mat-divider>
+    <h3 matSubheader style="text-align: center;" data-cy="notGoingSubheader">Not Going
+        {{refusals.length}}</h3>
+    <mat-list>
+        <mat-list-item *ngFor="let refusal of refusals">
+            <img matListItemAvatar [src]="refusal.photoURL" referrerpolicy="no-referrer" [alt]="refusal.displayName"
+                [routerLink]="['/profile', refusal.uid]">
+            <h3 matListItemTitle>{{refusal.displayName}}</h3>
+            <p matListItemLine *ngIf="refusal.isPaid">Paid
+                {{refusal.paidOn?.toDate()?.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
+            </p>
+        </mat-list-item>
+    </mat-list>
+</div>
