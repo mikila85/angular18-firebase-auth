@@ -243,7 +243,7 @@ export class EventComponent implements OnInit {
     logEvent(this.analytics, 'not_going', { uid: this.user.uid, eventId: this.eventId })
     const batch = writeBatch(this.firestore);
     if (this.participant) {
-      batch.update(doc(this.firestore, 'events', this.eventId as string, 'participants', this.user?.uid as string), { status: 'OUT' });
+      batch.update(doc(this.firestore, 'events', this.eventId as string, 'participants', this.user?.uid as string), { status: 'OUT', actedOn: new Date() });
     } else {
       batch.set(doc(this.firestore, 'events', this.eventId as string, 'participants', this.user?.uid as string), {
         uid: this.user.uid,
@@ -274,6 +274,7 @@ export class EventComponent implements OnInit {
       displayName: user.displayName,
       photoURL: user.photoURL,
       status: 'IN',
+      actedOn: new Date()
     });
     batch.set(doc(this.firestore, 'users', user.uid, 'events', this.eventId as string), {
       dateTime: this.eventDate,
@@ -311,7 +312,7 @@ export class EventComponent implements OnInit {
 
     let nextOnWaitlist = this.waitlist.reduce((max, p) => (max.waitlistOn ?? 0) > (p.waitlistOn ?? 0) ? max : p);
     logEvent(this.analytics, 'promote_waitlist', { uid: this.user?.uid, promoted: nextOnWaitlist.uid, eventId: this.eventId })
-    updateDoc(doc(this.firestore, 'events', this.eventId as string, 'participants', nextOnWaitlist.uid), { status: 'IN' });
+    updateDoc(doc(this.firestore, 'events', this.eventId as string, 'participants', nextOnWaitlist.uid), { status: 'IN', promotedFromWaitlistOn: new Date() });
   }
 
   eventDateTime(): string {
