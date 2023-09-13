@@ -60,6 +60,7 @@ it('second user joins event', () => {
   cy.get('[data-cy="notGoingBtn"]').should('exist')
   cy.get('[data-cy="attendeesTabTitle"]').click()
   cy.get('.mat-mdc-list-item').contains('Second Tester')
+  cy.get('[data-cy="eventWaitlistBtn"]').should('not.exist')
   // leave event
   cy.get('[data-cy="notGoingBtn"]').contains('Not Going').click()
   cy.get('[data-cy="homeBtn"]').click()

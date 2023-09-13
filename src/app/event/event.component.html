@@ -244,21 +244,16 @@
         </div>
 
         <mat-card-actions *ngSwitchCase="false">
-            <ng-container
-                *ngIf="!teamEvent?.isLimitedAttendees || participants.length < (teamEvent?.maxAttendees ?? 9999);else waitlist">
-                <button mat-raised-button color="primary" (click)="joinEvent()" data-cy="eventJoinBtn"
-                    *ngIf="participant?.status !== 'IN'">
-                    <mat-icon inline=true>person_add</mat-icon>
-                    JOIN
-                </button>
-            </ng-container>
-            <ng-template #waitlist>
-                <button mat-raised-button color="primary" (click)="joinWaitlist()" data-cy="eventWaitlistBtn"
-                    *ngIf="participant?.status !== 'WAITLIST'">
-                    <mat-icon inline=true>hourglass_empty</mat-icon>
-                    JOIN WAITLIST
-                </button>
-            </ng-template>
+            <button mat-raised-button color="primary" (click)="joinEvent()" data-cy="eventJoinBtn"
+                *ngIf="!(teamEvent?.isLimitedAttendees && participants.length >= (teamEvent?.maxAttendees ?? 9999)) && participant?.status !== 'IN'">
+                <mat-icon inline=true>person_add</mat-icon>
+                JOIN
+            </button>
+            <button mat-raised-button color="primary" (click)="joinWaitlist()" data-cy="eventWaitlistBtn"
+                *ngIf="(teamEvent?.isLimitedAttendees && participants.length >= (teamEvent?.maxAttendees ?? 9999)) && participant?.status !== 'IN' && participant?.status !== 'WAITLIST'">
+                <mat-icon inline=true>hourglass_empty</mat-icon>
+                JOIN WAITLIST
+            </button>
             <ng-container *ngTemplateOutlet="sharedButtons"></ng-container>
         </mat-card-actions>
     </div>

@@ -257,7 +257,7 @@ export class EventComponent implements OnInit {
     }
     batch.commit();
     // HACK: participants array are not yet updated in firebase snapshot, so we take one participant out.
-    if (this.participants.length - 1 < (this.teamEvent?.maxAttendees ?? 0)) {
+    if (this.participant?.status === 'IN' && this.participants.length - 1 < (this.teamEvent?.maxAttendees ?? 0)) {
       this.promoteNextPersonOnWaitlist();
     }
   }
