@@ -251,6 +251,34 @@
         <source>Please sign in to continue</source>
         <target>Por favor, inicia sesión para continuar</target>
       </trans-unit>
+      <trans-unit id="3643606598991416718" datatype="html">
+        <source>Loading ...</source>
+        <target>Cargando ...</target>
+      </trans-unit>
+      <trans-unit id="4204880191779081093" datatype="html">
+        <source>Start Time</source>
+        <target>Hora de inicio</target>
+      </trans-unit>
+      <trans-unit id="206864272822296872" datatype="html">
+        <source>Team Size</source>
+        <target>Tamaño del equipo</target>
+      </trans-unit>
+      <trans-unit id="6117428090560827449" datatype="html">
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="t-icon inline=true&gt;"/>shopping_cart<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Proceed to Checkout </source>
+        <target><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="t-icon inline=true&gt;"/>shopping_cart<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Proceder al pago </target>
+      </trans-unit>
+      <trans-unit id="1686552718169076158" datatype="html">
+        <source>New Event</source>
+        <target>Nuevo Evento</target>
+      </trans-unit>
+      <trans-unit id="960665565485640516" datatype="html">
+        <source>Something went wrong</source>
+        <target>Algo salió mal</target>
+      </trans-unit>
+      <trans-unit id="9108896562075572592" datatype="html">
+        <source>Event was deleted</source>
+        <target>El evento fue eliminado</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

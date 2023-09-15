@@ -13,8 +13,7 @@
         "sourceLocale": "en",
         "locales": {
           "es": {
-            "translation": "src/locale/messages.es.xlf",
-            "baseHref": ""
+            "translation": "src/locale/messages.es.xlf"
           }
         }
       },
@@ -25,6 +24,7 @@
             "outputPath": "dist/team-bldr",
             "index": "src/index.html",
             "main": "src/main.ts",
+            "localize": true,
             "polyfills": [
               "zone.js"
             ],

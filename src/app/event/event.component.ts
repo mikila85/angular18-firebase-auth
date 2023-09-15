@@ -25,6 +25,7 @@ export class EventComponent implements OnInit {
   private auth: Auth = inject(Auth);
   private firestore: Firestore = inject(Firestore);
   private analytics: Analytics = inject(Analytics);
+  newEventTitle = $localize`New Event`;
   selectedTabIndex: number = 0;
   user: TeamUser | null = null;
   teamEventRef: DocumentReference<DocumentData> | undefined;
@@ -33,7 +34,7 @@ export class EventComponent implements OnInit {
   minDate: Date = new Date();
   eventDate: Date = new Date();
   eventTime: string = (new Date()).toTimeString().substring(0, 5);
-  eventTitle: string = "New Event";
+  eventTitle: string = $localize`New Event`;
   participant: Participant | undefined;
   participants: Participant[] = [];
   refusals: Participant[] = [];
@@ -82,7 +83,7 @@ export class EventComponent implements OnInit {
       const userDoc = userSnapshot.data() as TeamUser;
       if (!userDoc || !this.user) {
         console.error("ngOnInit userDoc.subscribe: returned falsy user");
-        this.snackBar.open('Something went wrong', 'OK');
+        this.snackBar.open($localize`Something went wrong`, 'OK');
         this.router.navigate([`/`]);
         return;
       }
@@ -122,7 +123,7 @@ export class EventComponent implements OnInit {
       onSnapshot(this.teamEventRef, async (eventSnapshot) => {
         if (!eventSnapshot.exists()) {
           console.error('Event does not exist');
-          this.snackBar.open('Event was deleted', 'OK', {
+          this.snackBar.open($localize`Event was deleted`, 'OK', {
             duration: 5000
           });
           deleteDoc(doc(this.firestore, 'users', user.uid, 'events', this.eventId as string));
@@ -485,7 +486,7 @@ export class EventComponent implements OnInit {
       } else {
         console.error("No URL returned by createStripeCheckoutSession")
         console.log(r);
-        this.snackBar.open('Something went wrong', 'OK');
+        this.snackBar.open($localize`Something went wrong`, 'OK');
         this.router.navigate([`/`]);
       }
     })

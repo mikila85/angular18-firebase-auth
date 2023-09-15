@@ -2,8 +2,8 @@
 <mat-card>
     <mat-card-header>
         <mat-card-title data-cy="eventCardTitle">
-            <span *ngIf="isLoading">Loading ...</span>
-            <span *ngIf="!isLoading">{{eventTitle ? eventTitle : "New Event"}}</span>
+            <span *ngIf="isLoading" i18n>Loading ...</span>
+            <span *ngIf="!isLoading">{{eventTitle ? eventTitle : newEventTitle}}</span>
         </mat-card-title>
         <span fxFlex></span>
         <mat-icon *ngIf="isOwner" (click)="updateEvent({isReadOnly: !teamEvent?.isReadOnly})" data-cy="readOnlyModeBtn">
@@ -14,7 +14,7 @@
         <div *ngSwitchCase="true">
             <div fxLayout='row'>
                 <mat-form-field fxFlex="55%">
-                    <mat-label>Choose a date</mat-label>
+                    <mat-label i18n>Choose a date</mat-label>
                     <input matInput [min]="minDate" [matDatepicker]="picker" [ngModel]="eventDate"
                         (dateChange)="updateEventDate($event.value)">
                     <mat-hint>MM/DD/YYYY</mat-hint>
@@ -22,45 +22,45 @@
                     <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
                 <mat-form-field fxFlex="45%">
-                    <input type="time" matInput placeholder="Start Time" [ngModel]="eventTime" name="startTime"
-                        (ngModelChange)="updateEventTime($event)">
+                    <input type="time" matInput i18n-placeholder placeholder="Start Time" [ngModel]="eventTime"
+                        name="startTime" (ngModelChange)="updateEventTime($event)">
                 </mat-form-field>
             </div>
             <mat-form-field class="full-width">
-                <mat-label>Title</mat-label>
+                <mat-label i18n>Title</mat-label>
                 <input matInput name="eventTitle" [ngModel]="teamEvent?.title"
                     (ngModelChange)="updateEventTitle($event)" data-cy="eventTitle">
             </mat-form-field>
             <mat-form-field class="full-width">
-                <mat-label>Description</mat-label>
+                <mat-label i18n>Description</mat-label>
                 <textarea matInput name="eventDescription" [ngModel]="teamEvent?.description"
                     (ngModelChange)="updateEvent({description: $event})" data-cy="eventDescription"></textarea>
             </mat-form-field>
             <mat-form-field class="full-width">
-                <mat-label>Location</mat-label>
+                <mat-label i18n>Location</mat-label>
                 <input matInput name="location" [ngModel]="teamEvent?.location"
                     (ngModelChange)="updateEvent({location: $event})" data-cy="location">
             </mat-form-field>
             <mat-form-field class="full-width">
-                <mat-label>Link to maps</mat-label>
+                <mat-label i18n>Link to maps</mat-label>
                 <input matInput name="mapsUrl" [ngModel]="teamEvent?.mapsUrl"
                     (ngModelChange)="updateEvent({mapsUrl: $event})" data-cy="mapsUrl">
                 <mat-icon matSuffix>location_on</mat-icon>
             </mat-form-field>
             <div fxLayout='row'>
                 <mat-slide-toggle [ngModel]="teamEvent?.isLimitedAttendees"
-                    (ngModelChange)="updateEvent({isLimitedAttendees: $event})" data-cy="attendeeLimitToggle">
+                    (ngModelChange)="updateEvent({isLimitedAttendees: $event})" data-cy="attendeeLimitToggle" i18n>
                     Attendee limit
                 </mat-slide-toggle>
                 <mat-form-field *ngIf="teamEvent?.isLimitedAttendees" data-cy="maxAttendeesField">
-                    <mat-label>Max number</mat-label>
+                    <mat-label i18n>Max number</mat-label>
                     <input matInput type="number" name="maxAttendees" [ngModel]="teamEvent?.maxAttendees"
                         (ngModelChange)="updateEvent({maxAttendees: $event})" data-cy="maxAttendees">
                 </mat-form-field>
             </div>
 
             <mat-slide-toggle [ngModel]="teamEvent?.isTeamAllocations" (ngModelChange)="updateTeamAllocations($event)"
-                data-cy="teamAllocationsToggle">
+                data-cy="teamAllocationsToggle" i18n>
                 Team Allocations
             </mat-slide-toggle>
             <div *ngIf="teamEvent?.isTeamAllocations">
@@ -72,15 +72,15 @@
                     </button>
                     <span fxFlex="1%"></span>
                     <mat-form-field fxFlex="40%">
-                        <input type="number" matInput placeholder="Team Size" [ngModel]="team.size" name="teamSize"
-                            (ngModelChange)="subTeamsUpdate(i, {size: $event})">
+                        <input type="number" matInput i18n-placeholder placeholder="Team Size" [ngModel]="team.size"
+                            name="teamSize" (ngModelChange)="subTeamsUpdate(i, {size: $event})">
                     </mat-form-field>
                     <button mat-icon-button aria-label="Remove team" (click)="subTeamsDelete(team.id!)">
                         <mat-icon>delete</mat-icon>
                     </button>
                 </div>
                 <button mat-raised-button [matMenuTriggerFor]="teamColorMenu"
-                    [matMenuTriggerData]="{index: subTeams.length}" (click)="subTeamsAdd()" data-cy="addTeamBtn">
+                    [matMenuTriggerData]="{index: subTeams.length}" (click)="subTeamsAdd()" data-cy="addTeamBtn" i18n>
                     <mat-icon inline=true>add</mat-icon>
                     Add Team
                 </button>
@@ -96,7 +96,7 @@
             <div [style]="teamEvent?.isEventFee && teamEvent?.isTestMode ? 'background-color:beige':''">
                 <div fxLayout='row'>
                     <mat-slide-toggle [ngModel]="teamEvent?.isEventFee"
-                        (ngModelChange)="updateEvent({isEventFee: $event})">
+                        (ngModelChange)="updateEvent({isEventFee: $event})" i18n>
                         Event Fee
                     </mat-slide-toggle>
                     <!-- disable until test mode is implemented
@@ -195,30 +195,30 @@
         <div *ngIf="isStripePrice && !participant">Fee {{(teamEvent?.stripePriceUnitAmount ?? 0)/100 | currency}} </div>
         <div *ngIf="isStripePrice && participant && !isPaid" fxLayout="row" fxLayoutAlign="stretch center">
             <span>Pay {{(teamEvent?.stripePriceUnitAmount ?? 0)/100 | currency}} </span>
-            <button mat-raised-button style="margin-left: 16px;" (click)="createStripeCheckoutSession()">
+            <button mat-raised-button style="margin-left: 16px;" (click)="createStripeCheckoutSession()" i18n>
                 <mat-icon inline=true>shopping_cart</mat-icon>
                 Proceed to Checkout
             </button>
         </div>
-        <p *ngIf="isPaid">
+        <p *ngIf="isPaid" i18n>
             Paid
             {{paidOn?.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
         </p>
     </mat-card-content>
     <div [ngSwitch]="isOwner">
         <div *ngSwitchCase="true">
-            <mat-card-content>
+            <mat-card-content i18n>
                 Use the "Invite" button to share the invite URL with your social network.
             </mat-card-content>
             <mat-card-actions>
                 <!--Owner of the event can always join without the waitlist-->
                 <button mat-raised-button color="primary" (click)="joinEvent()" data-cy="eventOwnerJoinBtn"
-                    *ngIf="participant?.status !== 'IN'">
+                    *ngIf="participant?.status !== 'IN'" i18n>
                     <mat-icon inline=true>person_add</mat-icon>
                     JOIN
                 </button>
                 <ng-container *ngTemplateOutlet="sharedButtons"></ng-container>
-                <button mat-raised-button (click)="copyEventInvite()" data-cy="eventInviteBtn">
+                <button mat-raised-button (click)="copyEventInvite()" data-cy="eventInviteBtn" i18n>
                     <mat-icon inline=true>share</mat-icon>
                     INVITE
                 </button>
@@ -226,12 +226,12 @@
                     <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu" yPosition="above">
-                    <button mat-menu-item (click)="deleteEvent()" data-cy="deleteEventBtn" style="color: red;">
+                    <button mat-menu-item (click)="deleteEvent()" data-cy="deleteEventBtn" style="color: red;" i18n>
                         <mat-icon color="warn">delete</mat-icon>
                         DELETE
                     </button>
                     <mat-divider></mat-divider>
-                    <button mat-menu-item (click)="duplicateEvent()">
+                    <button mat-menu-item (click)="duplicateEvent()" i18n>
                         <mat-icon>file_copy</mat-icon>
                         DUPLICATE
                     </button>
@@ -245,12 +245,14 @@
 
         <mat-card-actions *ngSwitchCase="false">
             <button mat-raised-button color="primary" (click)="joinEvent()" data-cy="eventJoinBtn"
-                *ngIf="!(teamEvent?.isLimitedAttendees && participants.length >= (teamEvent?.maxAttendees ?? 9999)) && participant?.status !== 'IN'">
+                *ngIf="!(teamEvent?.isLimitedAttendees && participants.length >= (teamEvent?.maxAttendees ?? 9999)) && participant?.status !== 'IN'"
+                i18n>
                 <mat-icon inline=true>person_add</mat-icon>
                 JOIN
             </button>
             <button mat-raised-button color="primary" (click)="joinWaitlist()" data-cy="eventWaitlistBtn"
-                *ngIf="(teamEvent?.isLimitedAttendees && participants.length >= (teamEvent?.maxAttendees ?? 9999)) && participant?.status !== 'IN' && participant?.status !== 'WAITLIST'">
+                *ngIf="(teamEvent?.isLimitedAttendees && participants.length >= (teamEvent?.maxAttendees ?? 9999)) && participant?.status !== 'IN' && participant?.status !== 'WAITLIST'"
+                i18n>
                 <mat-icon inline=true>hourglass_empty</mat-icon>
                 JOIN WAITLIST
             </button>
@@ -260,12 +262,12 @@
 </mat-card>
 <ng-template #sharedButtons>
     <button mat-raised-button [matMenuTriggerFor]="teamPickMenu" [style]="'background-color:'+participant?.teamColor"
-        data-cy="teamPickBtn" *ngIf="teamEvent?.isTeamAllocations && participant?.status === 'IN'">
+        data-cy="teamPickBtn" *ngIf="teamEvent?.isTeamAllocations && participant?.status === 'IN'" i18n>
         <mat-icon inline=true>palette</mat-icon>
         Pick a Team
     </button>
     <button mat-raised-button color="accent" (click)="notGoing()" data-cy="notGoingBtn"
-        *ngIf="participant?.status !== 'OUT'">
+        *ngIf="participant?.status !== 'OUT'" i18n>
         <mat-icon inline=true>cancel</mat-icon>
         Not Going
     </button>
@@ -282,14 +284,14 @@
     <mat-tab data-cy="attendeesTab">
         <ng-template mat-tab-label>
             <mat-icon class="mat-tab-icon">groups</mat-icon>
-            <span data-cy="attendeesTabTitle">Attendees {{numberOfAttendees()}}</span>
+            <span data-cy="attendeesTabTitle" i18n>Attendees {{numberOfAttendees()}}</span>
         </ng-template>
         <app-event-participants [participants]="participants" [refusals]="refusals"></app-event-participants>
     </mat-tab>
     <mat-tab *ngIf="waitlist.length > 0" data-cy="waitlistTab">
         <ng-template mat-tab-label>
             <mat-icon class="mat-tab-icon">hourglass_empty</mat-icon>
-            <span data-cy="waitlistTabTitle">Waitlist {{waitlist.length}}</span>
+            <span data-cy="waitlistTabTitle" i18n>Waitlist {{waitlist.length}}</span>
         </ng-template>
         <mat-list>
             <mat-list-item *ngFor="let participant of waitlist">
@@ -306,8 +308,8 @@
     <mat-tab label="Messages" hidden>
         <ng-template mat-tab-label>
             <mat-icon class="mat-tab-icon">forum</mat-icon>
-            <span matBadge="#" matBadgeColor="warn" [matBadgeHidden]="!isUnreadMessage"
-                data-cy="messagesTabTitle">Messages</span>
+            <span matBadge="#" matBadgeColor="warn" [matBadgeHidden]="!isUnreadMessage" data-cy="messagesTabTitle"
+                i18n>Messages</span>
         </ng-template>
         <app-messages [eventId]="eventId"></app-messages>
     </mat-tab>
