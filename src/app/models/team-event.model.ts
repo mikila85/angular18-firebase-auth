@@ -9,6 +9,7 @@ export interface TeamEvent extends TeamEventBrief {
     isTestMode?: boolean;
     isReadOnly?: boolean;
     isEventFee: boolean;
+    isPaymentRequired?: boolean;
     eventFee?: number;
     applicationFee?: number;
     stripeAccountId?: string;
