@@ -265,26 +265,39 @@ export class EventComponent implements OnInit {
 
   joinEvent(): void {
     logEvent(this.analytics, 'join_event', { uid: this.user?.uid, eventId: this.eventId })
-    this.registerParticipant(<TeamUserBrief>this.user);
+    if (!this.isOwner && this.teamEvent?.isEventFee && this.teamEvent?.isPaymentRequired && !this.isPaid) {
+      this.createStripeCheckoutSession(true);
+    } else {
+      this.registerParticipant(<TeamUserBrief>this.user);
+    }
   }
 
   private registerParticipant(user: TeamUserBrief) {
-    const batch = writeBatch(this.firestore);
-    batch.set(doc(this.firestore, 'events', this.eventId as string, 'participants', user.uid), {
-      uid: user.uid,
-      displayName: user.displayName,
-      photoURL: user.photoURL,
-      status: 'IN',
-      actedOn: new Date()
-    });
-    batch.set(doc(this.firestore, 'users', user.uid, 'events', this.eventId as string), {
-      dateTime: this.eventDate,
-      icon: this.teamEvent?.icon,
-      title: this.eventTitle
-    });
-    batch.commit().catch((error) => {
-      console.log(error);
-    });
+    if (this.participant) {
+      // existing participant
+      updateDoc(doc(this.firestore, 'events', this.eventId as string, 'participants', user.uid),
+        {
+          status: 'IN',
+          actedOn: new Date()
+        });
+    } else {
+      const batch = writeBatch(this.firestore);
+      batch.set(doc(this.firestore, 'events', this.eventId as string, 'participants', user.uid), {
+        uid: user.uid,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        status: 'IN',
+        actedOn: new Date()
+      });
+      batch.set(doc(this.firestore, 'users', user.uid, 'events', this.eventId as string), {
+        dateTime: this.eventDate,
+        icon: this.teamEvent?.icon,
+        title: this.eventTitle
+      });
+      batch.commit().catch((error) => {
+        console.log(error);
+      });
+    }
   }
 
   joinWaitlist(): void {
@@ -460,7 +473,7 @@ export class EventComponent implements OnInit {
     })
   }
 
-  createStripeCheckoutSession() {
+  createStripeCheckoutSession(registerParticipant: boolean = false) {
     logEvent(this.analytics, 'begin_checkout', { uid: this.user?.uid, eventId: this.eventId })
     this.isPriceLoading = true;
     const stripeCheckout = httpsCallableData<unknown, Stripe.Checkout.Session>(this.functions, 'createStripeCheckoutSession');
@@ -474,20 +487,26 @@ export class EventComponent implements OnInit {
         payment_intent_data: {
           application_fee_amount: this.teamEvent?.applicationFee,
         },
-        success_url: returnUrl + 'success',
+        success_url: returnUrl + (registerParticipant ? 'register' : 'success'),
         cancel_url: returnUrl + 'cancel',
       },
       connectedAccountId: this.teamEvent?.stripeAccountId
     }
-    stripeCheckout(checkoutData).subscribe(r => {
-      this.isPriceLoading = false;
-      if (r.url) {
-        window.location.assign(r.url);
-      } else {
-        console.error("No URL returned by createStripeCheckoutSession")
-        console.log(r);
-        this.snackBar.open($localize`Something went wrong`, 'OK');
+    stripeCheckout(checkoutData).subscribe({
+      next: (r) => {
+        this.isPriceLoading = false;
+        if (r.url) {
+          window.location.assign(r.url);
+        } else {
+          console.error("No URL returned by createStripeCheckoutSession")
+          console.log(r);
+          this.router.navigate([`/`]);
+        }
+      },
+      error: (err) => {
+        console.error(err);
         this.router.navigate([`/`]);
+        return;
       }
     })
   }
