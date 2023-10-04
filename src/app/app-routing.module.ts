@@ -24,6 +24,7 @@ const routes: Routes = [
   { path: 'teams', component: TeamsComponent, canActivate: [CanActivateGuard] },
   { path: 'team/:teamId', component: TeamComponent, canActivate: [CanActivateGuard] },
   { path: 'event/:eventId', component: EventComponent, canActivate: [CanActivateGuard] },
+  { path: 'event1/:eventId', component: EventComponent, canActivate: [CanActivateGuard] },
   { path: 'stripe/:eventId/:accountId', component: StripeAccountCreatedComponent, canActivate: [CanActivateGuard] },
   { path: 'stripe-payment/:eventId/:userId/:success', component: StripeCheckoutCompletedComponent, canActivate: [CanActivateGuard] },
   { path: '', component: HomeComponent }
