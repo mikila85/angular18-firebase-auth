@@ -279,6 +279,10 @@
         <source>Event was deleted</source>
         <target>El evento fue eliminado</target>
       </trans-unit>
+      <trans-unit id="5705618462923159699" datatype="html">
+        <source> Require payment prior to registering </source>
+        <target>Requerir pago antes de registrarse</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
