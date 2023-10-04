@@ -22,6 +22,7 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/team-bldr",
+            "outputHashing": "all",
             "index": "src/index.html",
             "main": "src/main.ts",
             "localize": true,
