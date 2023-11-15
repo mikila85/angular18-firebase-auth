@@ -9,6 +9,18 @@
             <mat-label i18n>Name</mat-label>
             <input matInput name="name" [(ngModel)]="attendee.displayName" cdkFocusInitial data-cy="name">
         </mat-form-field>
+        <button mat-raised-button [matMenuTriggerFor]="teamPickMenu" [style]="'background-color:'+attendee.teamColor"
+            data-cy="teamPickBtn" i18n>
+            <mat-icon inline=true>palette</mat-icon>
+            Pick a Team
+        </button>
+        <mat-menu #teamPickMenu="matMenu" yPosition="above">
+            <ng-template matMenuContent let-index="index">
+                <button mat-fab *ngFor="let color of teamColors" [style]="'background-color:'+color"
+                    (click)="attendee.teamColor = color" data-cy="setTeamColorBtn">
+                </button>
+            </ng-template>
+        </mat-menu>
     </mat-card-content>
     <mat-card-actions>
         <button mat-raised-button color="primary" [disabled]="!attendee.displayName" [mat-dialog-close]="attendee"

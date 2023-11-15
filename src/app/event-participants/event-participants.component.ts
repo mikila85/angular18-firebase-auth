@@ -118,6 +118,7 @@ export class EventParticipantsComponent {
           {
             displayName: result.displayName,
             status: 'IN',
+            teamColor: result.teamColor ?? null,
             actedOn: new Date()
           });
       }

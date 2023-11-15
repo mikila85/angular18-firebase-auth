@@ -8,6 +8,7 @@ import { TeamUserBrief } from '../models/team-user-brief';
   styleUrls: ['./event-participant-dialog.component.css']
 })
 export class EventParticipantDialogComponent {
+  teamColors = ['Red', 'White', 'Blue', 'Orange', 'Yellow', 'Green', 'Gray', 'Purple', 'Cyan', 'PapayaWhip'];
 
   constructor(
     public dialogRef: MatDialogRef<EventParticipantDialogComponent>,

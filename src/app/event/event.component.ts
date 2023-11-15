@@ -373,6 +373,7 @@ export class EventComponent implements OnInit {
           displayName: result.displayName,
           eventId: this.eventId,
           status: 'IN',
+          teamColor: result.teamColor ?? null,
           actedOn: new Date()
         });
     });
