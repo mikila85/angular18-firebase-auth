@@ -28,6 +28,12 @@ import { StripeCheckoutCompletedComponent } from './stripe-checkout-completed/st
 import { StripePaymentComponent } from './stripe-payment/stripe-payment.component';
 import { UserProfileViewComponent } from './user-profile-view/user-profile-view.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { TeamsComponent } from './teams/teams.component';
+import { TeamComponent } from './team/team.component';
+import { DemoHomeComponent } from './demo-home/demo-home.component';
+import { DemoEventComponent } from './demo-event/demo-event.component';
+import { DemoMessagesComponent } from './demo-messages/demo-messages.component';
+import { EventParticipantDialogComponent } from './event-participant-dialog/event-participant-dialog.component';
 
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -48,11 +54,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
-import { TeamsComponent } from './teams/teams.component';
-import { TeamComponent } from './team/team.component';
-import { DemoHomeComponent } from './demo-home/demo-home.component';
-import { DemoEventComponent } from './demo-event/demo-event.component';
-import { DemoMessagesComponent } from './demo-messages/demo-messages.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -74,6 +76,7 @@ import { DemoMessagesComponent } from './demo-messages/demo-messages.component';
     DemoHomeComponent,
     DemoEventComponent,
     DemoMessagesComponent,
+    EventParticipantDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -119,7 +122,8 @@ import { DemoMessagesComponent } from './demo-messages/demo-messages.component';
     MatBadgeModule,
     MatDividerModule,
     MatSnackBarModule,
-    MatChipsModule
+    MatChipsModule,
+    MatDialogModule
   ],
   providers: [
     ScreenTrackingService, UserTrackingService,

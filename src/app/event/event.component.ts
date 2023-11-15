@@ -2,7 +2,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit, inject } from '@angular/core';
 import { Analytics, logEvent } from '@angular/fire/analytics';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
-import { CollectionReference, DocumentData, DocumentReference, Firestore, Timestamp, addDoc, collection, deleteDoc, doc, getDoc, limit, onSnapshot, orderBy, query, updateDoc, writeBatch } from '@angular/fire/firestore';
+import { CollectionReference, DocumentData, DocumentReference, Firestore, Timestamp, addDoc, collection, deleteDoc, doc, getDoc, limit, onSnapshot, orderBy, query, setDoc, updateDoc, writeBatch } from '@angular/fire/firestore';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,6 +14,8 @@ import { SubTeam } from '../models/sub-team';
 import { TeamEvent } from '../models/team-event.model';
 import { TeamUser } from '../models/team-user';
 import { TeamUserBrief } from '../models/team-user-brief';
+import { MatDialog } from '@angular/material/dialog';
+import { EventParticipantDialogComponent } from '../event-participant-dialog/event-participant-dialog.component';
 
 @Component({
   selector: 'app-event',
@@ -64,6 +66,7 @@ export class EventComponent implements OnInit {
     private readonly functions: Functions,
     private snackBar: MatSnackBar,
     private clipboard: Clipboard,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -353,6 +356,26 @@ export class EventComponent implements OnInit {
 
   updateEvent(data: any) {
     updateDoc(this.teamEventRef as DocumentReference<DocumentData>, data)
+  }
+
+  addParticipant() {
+    const dialogRef = this.dialog.open(EventParticipantDialogComponent, {
+      data: { uid: null, displayName: "" },
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) {
+        return;
+      }
+      const uid = doc(collection(this.firestore, 'events', this.eventId as string, 'participants')).id;
+      setDoc(doc(this.firestore, 'events', this.eventId as string, 'participants', uid),
+        {
+          uid: uid,
+          displayName: result.displayName,
+          eventId: this.eventId,
+          status: 'IN',
+          actedOn: new Date()
+        });
+    });
   }
 
   duplicateEvent() {

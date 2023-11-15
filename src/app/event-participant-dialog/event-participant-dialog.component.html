@@ -1,0 +1,29 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title data-cy="eventCardTitle">
+            Attendee
+        </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <mat-form-field class="full-width">
+            <mat-label i18n>Name</mat-label>
+            <input matInput name="name" [(ngModel)]="attendee.displayName" cdkFocusInitial data-cy="name">
+        </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-raised-button color="primary" [disabled]="!attendee.displayName" [mat-dialog-close]="attendee"
+            data-cy="saveBtn" i18n>
+            <mat-icon inline=true>done</mat-icon>
+            SAVE
+        </button>
+        <button mat-raised-button [disabled]="!attendee.uid" (click)="delete()" style="color: red;" data-cy="deleteBtn"
+            i18n>
+            <mat-icon color="warn">delete</mat-icon>
+            DELETE
+        </button>
+        <button mat-raised-button (click)="close()" data-cy="closeBtn" i18n>
+            <mat-icon inline=true>clear</mat-icon>
+            CLOSE
+        </button>
+    </mat-card-actions>
+</mat-card>

@@ -1,5 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { Participant } from '../models/participant.model';
+import { EventParticipantDialogComponent } from '../event-participant-dialog/event-participant-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { Firestore, deleteDoc, doc, updateDoc } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-event-participants',
@@ -7,12 +10,15 @@ import { Participant } from '../models/participant.model';
   styleUrls: ['./event-participants.component.css']
 })
 export class EventParticipantsComponent {
+  private firestore: Firestore = inject(Firestore);
   sortedParticipants: Participant[][] = [];
   teamColors: string[] = [];
   @Input() set participants(value: Participant[]) {
     this.updateParticipants(value);
   }
   @Input() refusals: Participant[] = [];
+
+  constructor(public dialog: MatDialog) { }
 
   updateParticipants(newParticipants: Participant[]): void {
     newParticipants.forEach(p => { if (!p.teamColor) p.teamColor = 'Undecided' });
@@ -91,5 +97,30 @@ export class EventParticipantsComponent {
       (initialsRegExp.shift() || "") + (initialsRegExp.pop() || "")
     ).toUpperCase();
     return initials;
+  }
+
+  editParticipant(participant: Participant) {
+    if (!participant.eventId) {
+      // Only allow editing of participants added by organiser
+      return;
+    }
+    const dialogRef = this.dialog.open(EventParticipantDialogComponent, {
+      data: participant,
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) {
+        return;
+      }
+      if (result.isDelete) {
+        deleteDoc(doc(this.firestore, 'events', participant.eventId as string, 'participants', participant.uid));
+      } else {
+        updateDoc(doc(this.firestore, 'events', participant.eventId as string, 'participants', participant.uid),
+          {
+            displayName: result.displayName,
+            status: 'IN',
+            actedOn: new Date()
+          });
+      }
+    });
   }
 }
