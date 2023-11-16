@@ -44,6 +44,22 @@ it('first user creates event and invites the second user', () => {
   //ToDo make it work
   //cy.get('.mat-mdc-chip').contains('Red').should('exist')
 
+  // manually add attendee
+  cy.get('[data-cy="eventMenuActionBtn"]').click()
+  cy.get('[data-cy="addParticipantBtn"]').click()
+  cy.get('[data-cy="saveBtn"]').should('be.disabled')
+  cy.get('[data-cy="deleteBtn"]').should('be.disabled')
+  cy.get('[data-cy="name"]').type('Added Participant')
+  cy.get('[data-cy="saveBtn"]').should('be.enabled').click()
+  cy.get('[data-cy="attendeesTabTitle"]').contains('Attendees 2/5')
+  var manualAttendeeListItem = cy.contains('Added Participant')
+  manualAttendeeListItem.click()
+  cy.get('[data-cy="closeBtn"]').should('be.enabled').click()
+  cy.get('[data-cy="attendeesTabTitle"]').contains('Attendees 2/5')
+  manualAttendeeListItem.click()
+  cy.get('[data-cy="deleteBtn"]').should('be.enabled').click()
+  cy.get('[data-cy="attendeesTabTitle"]').contains('Attendees 1/5')
+
   // send message
   cy.get('[data-cy="messagesTabTitle"]').click()
   cy.get('[data-cy="messageInput"]').type('First test message')

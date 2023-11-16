@@ -6,7 +6,8 @@
     <mat-list-item *ngFor="let participant of sortedParticipants[i]">
         <img matListItemAvatar [src]="getAvatarUrl(participant)" referrerpolicy="no-referrer"
             [alt]="getDisplayNameInitials(participant.displayName)" [routerLink]="['/profile', participant.uid]">
-        <h3 matListItemTitle (click)="editParticipant(participant)">{{participant.displayName}}</h3>
+        <h3 matListItemTitle (click)="editParticipant(participant)" data-cy="participantDisplayNameTitle">
+            {{participant.displayName}}</h3>
         <p matListItemLine *ngIf="participant.isPaid">Paid
             {{participant.paidOn?.toDate()?.toLocaleString("en-AU", {dateStyle: "full", timeStyle: "short"})}}
         </p>
