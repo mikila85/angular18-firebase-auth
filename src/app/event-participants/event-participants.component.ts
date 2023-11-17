@@ -13,6 +13,7 @@ export class EventParticipantsComponent {
   private firestore: Firestore = inject(Firestore);
   sortedParticipants: Participant[][] = [];
   teamColors: string[] = [];
+  @Input() isOwner = false;
   @Input() set participants(value: Participant[]) {
     this.updateParticipants(value);
   }
@@ -100,7 +101,7 @@ export class EventParticipantsComponent {
   }
 
   editParticipant(participant: Participant) {
-    if (!participant.eventId) {
+    if (!(this.isOwner && participant.eventId)) {
       // Only allow editing of participants added by organiser
       return;
     }

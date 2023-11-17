@@ -296,7 +296,8 @@
             <mat-icon class="mat-tab-icon">groups</mat-icon>
             <span data-cy="attendeesTabTitle" i18n>Attendees {{numberOfAttendees()}}</span>
         </ng-template>
-        <app-event-participants [participants]="participants" [refusals]="refusals"></app-event-participants>
+        <app-event-participants [isOwner]="isOwner" [participants]="participants"
+            [refusals]="refusals"></app-event-participants>
     </mat-tab>
     <mat-tab *ngIf="waitlist.length > 0" data-cy="waitlistTab">
         <ng-template mat-tab-label>
