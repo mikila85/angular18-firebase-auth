@@ -1,7 +1,7 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit, inject } from '@angular/core';
 import { Analytics, logEvent } from '@angular/fire/analytics';
-import { Auth, onAuthStateChanged } from '@angular/fire/auth';
+import { Auth, onAuthStateChanged, signOut } from '@angular/fire/auth';
 import { CollectionReference, DocumentData, DocumentReference, Firestore, Timestamp, addDoc, collection, deleteDoc, doc, getDoc, limit, onSnapshot, orderBy, query, setDoc, updateDoc, writeBatch } from '@angular/fire/firestore';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -87,7 +87,8 @@ export class EventComponent implements OnInit {
       if (!userDoc || !this.user) {
         console.error("ngOnInit userDoc.subscribe: returned falsy user");
         this.snackBar.open($localize`Something went wrong`, 'OK');
-        this.router.navigate([`/`]);
+        await signOut(this.auth);
+        location.reload();
         return;
       }
       this.user.isStripeAccountEnabled = userDoc.isStripeAccountEnabled;

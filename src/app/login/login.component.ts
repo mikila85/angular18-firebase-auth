@@ -98,28 +98,28 @@ export class LoginComponent {
     setUserId(this.analytics, user.uid);
     logEvent(this.analytics, 'login', { uid: user.uid, providerId: user.providerData[0].providerId })
     const dbUserRef = doc(this.firestore, 'users', user.uid);
-    getDoc(dbUserRef).then((doc) => {
+    getDoc(dbUserRef).then(async (doc) => {
       if (doc.exists()) {
         const dbUser = doc.data() as TeamUser;
         if (!dbUser.photoURL) {
-          updateDoc(dbUserRef, { photoURL: user.photoURL });
+          await updateDoc(dbUserRef, { photoURL: user.photoURL });
         }
       } else {
-        setDoc(dbUserRef, {
+        await setDoc(dbUserRef, {
           uid: user.uid,
           displayName: user.displayName ?? this.name,
           email: user.email ?? this.email,
           photoURL: user.photoURL
         });
       }
-    });
-    this.route.queryParams.subscribe(params => {
-      const redirectUrl = params['redirectUrl'];
-      if (redirectUrl) {
-        this.router.navigate([`${redirectUrl}`]);
-      } else {
-        this.router.navigate([`/`]);
-      }
+      this.route.queryParams.subscribe(params => {
+        const redirectUrl = params['redirectUrl'];
+        if (redirectUrl) {
+          this.router.navigate([`${redirectUrl}`]);
+        } else {
+          this.router.navigate([`/`]);
+        }
+      });
     });
   }
 }
