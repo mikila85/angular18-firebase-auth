@@ -89,6 +89,6 @@ export class StripeCheckoutCompletedComponent {
   }
 
   navigateToEvent() {
-    this.router.navigate([`/event/${this.eventId}`]);
+    this.router.navigate([`/event/${this.eventId}`], { replaceUrl: true });
   }
 }
