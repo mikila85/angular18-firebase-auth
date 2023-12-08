@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { Participant } from '../models/participant.model';
 import { EventParticipantDialogComponent } from '../event-participant-dialog/event-participant-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,6 +18,7 @@ export class EventParticipantsComponent {
     this.updateParticipants(value);
   }
   @Input() refusals: Participant[] = [];
+  @Output() teamNumbers = new EventEmitter<any[]>();
 
   constructor(public dialog: MatDialog) { }
 
@@ -46,6 +47,11 @@ export class EventParticipantsComponent {
     this.teamColors = Array.from(uniqueColors);
     // Group participants by team color
     this.sortedParticipants = this.teamColors.map(color => newParticipants.filter(p => p.teamColor === color));
+    var teamNumbers: any = {};
+    uniqueColors.forEach(color => {
+      teamNumbers[color] = newParticipants.filter(p => p.teamColor === color).length;
+    });
+    this.teamNumbers.emit(teamNumbers);
   }
 
   getAvatarUrl(participant: Participant): string {

@@ -48,6 +48,7 @@ export class EventComponent implements OnInit {
   isStripePrice: boolean = false;
   teamEventTeamsRef: CollectionReference<DocumentData> | undefined;
   subTeams: SubTeam[] = [];
+  availableSubTeams: SubTeam[] = [];
   isFirstSubTeamDefined: boolean = false;
   teamColors = ['Red', 'White', 'Blue', 'Orange', 'Yellow', 'Green', 'Gray', 'Purple', 'Cyan', 'PapayaWhip'];
   isLoading = true;
@@ -587,6 +588,16 @@ export class EventComponent implements OnInit {
     console.log("subTeamColorUpdate", color);
     updateDoc(doc(this.firestore, 'events', this.eventId as string, 'participants', this.participant?.uid as string),
       { teamColor: color })
+  }
+
+  onTeamNumbers(teamNumbers: any) {
+    this.availableSubTeams = [];
+    this.subTeams.forEach((subTeam) => {
+      const teamSize = teamNumbers[subTeam.color];
+      if (subTeam.size === null || teamSize === undefined || subTeam.size > teamSize) {
+        this.availableSubTeams.push(subTeam);
+      }
+    });
   }
 
   /* - Feature Flag: disable for now
