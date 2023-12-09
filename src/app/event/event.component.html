@@ -284,8 +284,12 @@
 </ng-template>
 <mat-menu #teamPickMenu="matMenu" yPosition="above">
     <ng-template matMenuContent let-index="index">
-        <button mat-fab *ngFor="let team of availableSubTeams" [style]="'background-color:'+team.color"
+        <h2 style="text-align: center;">Available spots</h2>
+        <button mat-fab *ngFor="let team of availableSubTeams" [style]="'margin: 4px; background-color:' + team.color"
             (click)="subTeamColorUpdate(team.color)" data-cy="setTeamColorBtn">
+            <strong [style]="['White', 'Yellow', 'Cyan', 'PapayaWhip'].includes(team.color) ? 'color: black' : ''">
+                {{team.vacancies}}
+            </strong>
         </button>
     </ng-template>
 </mat-menu>

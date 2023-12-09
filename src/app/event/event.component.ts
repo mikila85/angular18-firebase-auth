@@ -593,8 +593,11 @@ export class EventComponent implements OnInit {
   onTeamNumbers(teamNumbers: any) {
     this.availableSubTeams = [];
     this.subTeams.forEach((subTeam) => {
-      const teamSize = teamNumbers[subTeam.color];
+      const teamSize = teamNumbers[subTeam.color] as number;
       if (subTeam.size === null || teamSize === undefined || subTeam.size > teamSize) {
+        if (subTeam.size) {
+          subTeam.vacancies = subTeam.size - (teamSize ?? 0);
+        }
         this.availableSubTeams.push(subTeam);
       }
     });

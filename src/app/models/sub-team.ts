@@ -1,5 +1,6 @@
 export interface SubTeam {
     id?: string,
     color: string,
-    size: number | null
+    size: number | null,
+    vacancies?: number
 }

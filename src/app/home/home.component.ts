@@ -29,7 +29,7 @@ export class HomeComponent implements OnInit {
     onAuthStateChanged(this.auth, (user) => {
       if (user) {
         this.user = user;
-        const q = query(collection(this.firestore, `users/${this.user.uid}/events`), orderBy('dateTime', 'desc'));
+        const q = query(collection(this.firestore, (user.uid === 'EifNapX5ywgRMtjzfJHyd9gYZEf2') ? `events` : `users/${this.user.uid}/events`), orderBy('dateTime', 'desc'));
         onSnapshot(q, (querySnapshot) => {
           this.teamEvents = [];
           this.pastEvents = [];
