@@ -77,10 +77,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "team-bldr:build:production"
+              "buildTarget": "team-bldr:build:production"
             },
             "development": {
-              "browserTarget": "team-bldr:build:development"
+              "buildTarget": "team-bldr:build:development"
             }
           },
           "defaultConfiguration": "development"

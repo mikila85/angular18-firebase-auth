@@ -17,29 +17,29 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^16.2.4",
+    "@angular/animations": "^17.3.12",
     "@angular/cdk": "^16.2.3",
-    "@angular/common": "^16.2.4",
-    "@angular/compiler": "^16.2.4",
-    "@angular/core": "^16.2.4",
+    "@angular/common": "^17.3.12",
+    "@angular/compiler": "^17.3.12",
+    "@angular/core": "^17.3.12",
     "@angular/fire": "^7.6.1",
     "@angular/flex-layout": "^15.0.0-beta.42",
-    "@angular/forms": "^16.2.4",
+    "@angular/forms": "^17.3.12",
     "@angular/material": "^16.2.3",
-    "@angular/platform-browser": "^16.2.4",
-    "@angular/platform-browser-dynamic": "^16.2.4",
-    "@angular/router": "^16.2.4",
-    "@angular/service-worker": "^16.2.4",
+    "@angular/platform-browser": "^17.3.12",
+    "@angular/platform-browser-dynamic": "^17.3.12",
+    "@angular/router": "^17.3.12",
+    "@angular/service-worker": "^17.3.12",
     "@types/nodemailer": "^6.4.7",
     "rxjs": "~7.8.0",
     "tslib": "^2.5.0",
-    "zone.js": "~0.13.0"
+    "zone.js": "~0.14.10"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^16.2.1",
-    "@angular/cli": "~16.2.1",
-    "@angular/compiler-cli": "^16.2.4",
-    "@angular/localize": "^16.2.4",
+    "@angular-devkit/build-angular": "^17.3.9",
+    "@angular/cli": "~17.3.9",
+    "@angular/compiler-cli": "^17.3.12",
+    "@angular/localize": "^17.3.12",
     "@cypress/schematic": "^2.5.0",
     "@types/jasmine": "~4.3.1",
     "arg": "^5.0.2",
@@ -54,6 +54,6 @@
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1",
     "stripe": "^11.17.0",
-    "typescript": "~4.9.5"
+    "typescript": "~5.4.5"
   }
 }
