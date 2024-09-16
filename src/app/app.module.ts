@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { isDevMode, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -56,79 +56,73 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule } from '@angular/material/dialog';
 
-@NgModule({
-  declarations: [
-    AuthFirebaseuiAvatarComponent,
-    AppComponent,
-    HomeComponent,
-    LoginComponent,
-    EventComponent,
-    EventParticipantsComponent,
-    MessagesComponent,
-    StripePaymentComponent,
-    StripeAccountCreatedComponent,
-    StripeCheckoutCompletedComponent,
-    UserProfileComponent,
-    AboutComponent,
-    UserProfileViewComponent,
-    TeamsComponent,
-    TeamComponent,
-    DemoHomeComponent,
-    DemoEventComponent,
-    DemoMessagesComponent,
-    EventParticipantDialogComponent,
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    FlexLayoutModule,
-    HttpClientModule,
-    FormsModule,
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAnalytics(() => getAnalytics()),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-    provideStorage(() => getStorage()),
-    provideFunctions(() => {
-      const functions = getFunctions(undefined, 'australia-southeast1');
-      if (environment.useEmulators) {
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-      }
-      return functions;
-    }),
-    provideMessaging(() => getMessaging()),
-    ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: !isDevMode(),
-      // Register the ServiceWorker as soon as the application is stable
-      // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000'
-    }),
-    ClipboardModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatButtonModule,
-    MatCardModule,
-    MatInputModule,
-    MatNativeDateModule,
-    MatDatepickerModule,
-    MatListModule,
-    MatProgressBarModule,
-    MatProgressSpinnerModule,
-    MatTabsModule,
-    MatMenuModule,
-    MatSlideToggleModule,
-    MatTooltipModule,
-    MatBadgeModule,
-    MatDividerModule,
-    MatSnackBarModule,
-    MatChipsModule,
-    MatDialogModule
-  ],
-  providers: [
-    ScreenTrackingService, UserTrackingService,
-    { provide: MAT_DATE_LOCALE, useValue: 'en-AU' },
-  ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AuthFirebaseuiAvatarComponent,
+        AppComponent,
+        HomeComponent,
+        LoginComponent,
+        EventComponent,
+        EventParticipantsComponent,
+        MessagesComponent,
+        StripePaymentComponent,
+        StripeAccountCreatedComponent,
+        StripeCheckoutCompletedComponent,
+        UserProfileComponent,
+        AboutComponent,
+        UserProfileViewComponent,
+        TeamsComponent,
+        TeamComponent,
+        DemoHomeComponent,
+        DemoEventComponent,
+        DemoMessagesComponent,
+        EventParticipantDialogComponent,
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        FlexLayoutModule,
+        FormsModule,
+        provideFirebaseApp(() => initializeApp(environment.firebase)),
+        provideAnalytics(() => getAnalytics()),
+        provideAuth(() => getAuth()),
+        provideFirestore(() => getFirestore()),
+        provideStorage(() => getStorage()),
+        provideFunctions(() => {
+            const functions = getFunctions(undefined, 'australia-southeast1');
+            if (environment.useEmulators) {
+                connectFunctionsEmulator(functions, 'localhost', 5001);
+            }
+            return functions;
+        }),
+        provideMessaging(() => getMessaging()),
+        ServiceWorkerModule.register('ngsw-worker.js', {
+            enabled: !isDevMode(),
+            // Register the ServiceWorker as soon as the application is stable
+            // or after 30 seconds (whichever comes first).
+            registrationStrategy: 'registerWhenStable:30000'
+        }),
+        ClipboardModule,
+        MatToolbarModule,
+        MatIconModule,
+        MatButtonModule,
+        MatCardModule,
+        MatInputModule,
+        MatNativeDateModule,
+        MatDatepickerModule,
+        MatListModule,
+        MatProgressBarModule,
+        MatProgressSpinnerModule,
+        MatTabsModule,
+        MatMenuModule,
+        MatSlideToggleModule,
+        MatTooltipModule,
+        MatBadgeModule,
+        MatDividerModule,
+        MatSnackBarModule,
+        MatChipsModule,
+        MatDialogModule], providers: [
+        ScreenTrackingService, UserTrackingService,
+        { provide: MAT_DATE_LOCALE, useValue: 'en-AU' },
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule { }
