@@ -124,7 +124,6 @@ import {MatDialogModule} from '@angular/material/dialog';
       return functions;
     }),
     provideMessaging(() => getMessaging()),
-
     ScreenTrackingService, UserTrackingService,
     {provide: MAT_DATE_LOCALE, useValue: 'en-AU'},
     provideHttpClient(withInterceptorsFromDi()),
